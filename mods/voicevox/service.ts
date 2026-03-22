@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Vrm, preferences } from "@hmcs/sdk";
+import { Character, Vrm, preferences } from "@hmcs/sdk";
 import { rpc } from "@hmcs/sdk/rpc";
 import { voicevoxToTimeline } from "./lib/timeline.ts";
 import { fetchWithTimeout } from "./lib/utils.ts";
@@ -191,7 +191,8 @@ await rpc.serve({
       }),
       handler: async ({ name, text }) => {
         return withCharacterLock(name, async () => {
-          const vrm = await Vrm.findByName(name);
+          const character = await Character.findByName(name);
+          const vrm = character.vrm();
           const assetId = await resolveAssetId(name, vrm.entity);
           const settings = await loadSettings(assetId);
 
