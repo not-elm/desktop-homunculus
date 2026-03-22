@@ -181,12 +181,11 @@ pub async fn destroy(
     ),
 )]
 pub async fn get_state(
-    State(_api): State<CharacterApi>,
-    CharacterIdExtractor { id: _, .. }: CharacterIdExtractor,
+    State(api): State<CharacterApi>,
+    CharacterIdExtractor { id, .. }: CharacterIdExtractor,
 ) -> HttpResult<serde_json::Value> {
-    todo!()
-    // let state = api.get_state(id).await?;
-    // Ok(Json(serde_json::json!({ "state": state.0 })))
+    let state = api.get_state(id).await?;
+    Ok(Json(serde_json::json!({ "state": state.0 })))
 }
 
 /// Update the state of a character.
@@ -202,12 +201,11 @@ pub async fn get_state(
     ),
 )]
 pub async fn put_state(
-    State(_api): State<CharacterApi>,
-    CharacterIdExtractor { id: _, .. }: CharacterIdExtractor,
-    Json(_body): Json<PutStateBody>,
+    State(api): State<CharacterApi>,
+    CharacterIdExtractor { id, .. }: CharacterIdExtractor,
+    Json(body): Json<PutStateBody>,
 ) -> HttpResult {
-    todo!()
-    // api.set_state(id, body.state).await.into_http_result()
+    api.set_state(id, body.state).await.into_http_result()
 }
 
 /// Get the persona of a character.
