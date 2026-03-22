@@ -4,7 +4,7 @@ pub mod extensions;
 
 use crate::extract::character::CharacterIdExtractor;
 use axum::Json;
-use axum::extract::State;
+use axum::extract::{Query, State};
 use homunculus_api::character::{CharacterApi, CharacterInfo};
 use homunculus_api::prelude::axum::{HttpResult, IntoHttpResult};
 use homunculus_core::prelude::{CharacterId, CharacterState, Persona};
@@ -62,6 +62,14 @@ pub struct AttachVrmBody {
     pub asset_id: String,
 }
 
+/// Query parameters for listing characters.
+#[derive(Serialize, Deserialize, Debug, Clone, Default, ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ListQuery {
+    /// Optional display name filter (case-sensitive exact match).
+    pub name: Option<String>,
+}
+
 /// Create a new character.
 ///
 /// If a character with the given ID already exists, its info is returned
@@ -87,17 +95,36 @@ pub async fn create(
     api.create(id, name).await.into_http_result()
 }
 
-/// List all characters.
+/// List all characters, optionally filtered by display name.
 #[utoipa::path(
     get,
     path = "",
     tag = "characters",
+    params(
+        ("name" = Option<String>, Query, description = "Optional display name filter"),
+    ),
     responses(
         (status = 200, description = "List of characters", body = Vec<CharacterInfo>),
     ),
 )]
-pub async fn list(State(api): State<CharacterApi>) -> HttpResult<Vec<CharacterInfo>> {
-    api.list().await.into_http_result()
+pub async fn list(
+    State(api): State<CharacterApi>,
+    Query(query): Query<ListQuery>,
+) -> HttpResult<Vec<CharacterInfo>> {
+    let characters = api.list().await?;
+    let filtered = filter_by_name(characters, query.name);
+    Ok(Json(filtered))
+}
+
+/// Filter characters by display name (case-sensitive exact match).
+fn filter_by_name(characters: Vec<CharacterInfo>, name: Option<String>) -> Vec<CharacterInfo> {
+    match name {
+        Some(name) => characters
+            .into_iter()
+            .filter(|c| c.name == name)
+            .collect(),
+        None => characters,
+    }
 }
 
 /// Get detailed information about a single character.
@@ -307,6 +334,30 @@ mod tests {
         let entity = spawn_character(&mut app, "elmer", "Elmer", "test:model.vrm");
 
         let request = Request::get("/characters").body(Body::empty()).unwrap();
+        assert_response(
+            &mut app,
+            router,
+            request,
+            vec![CharacterInfo {
+                id: "elmer".to_string(),
+                name: "Elmer".to_string(),
+                state: "idle".to_string(),
+                has_vrm: false,
+                entity: entity.to_bits(),
+            }],
+        )
+        .await;
+    }
+
+    #[tokio::test]
+    async fn test_list_characters_filter_by_name() {
+        let (mut app, router) = test_app();
+        let entity = spawn_character(&mut app, "elmer", "Elmer", "test:model.vrm");
+        spawn_character(&mut app, "alice", "Alice", "test:model2.vrm");
+
+        let request = Request::get("/characters?name=Elmer")
+            .body(Body::empty())
+            .unwrap();
         assert_response(
             &mut app,
             router,
