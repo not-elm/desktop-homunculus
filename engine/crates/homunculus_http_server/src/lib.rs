@@ -27,14 +27,9 @@
 //! ### Application Control
 //! - `POST /app/exit` - Exit the application
 //!
-//! ### VRM Management
+//! ### VRM Management (Legacy)
 //! - `POST /vrm` - Spawn new VRM model
 //! - `GET /vrm/stream` - SSE stream of VRM load events
-//! - `DELETE /vrm/{entity}` - Remove VRM model
-//!
-//! ### Animation Control
-//! - `POST /vrm/{entity}/vrma/play` - Play VRMA animation
-//! - `POST /vrm/{entity}/vrma/stop` - Stop VRMA animation
 //!
 //! ### Effects
 //! - `POST /effects/stamps` - Display visual stamp effect
@@ -389,11 +384,6 @@ fn vrm_router_bk() -> OpenApiRouter<HttpState> {
         .routes(routes!(vrm::snapshot::snapshot))
         .routes(routes!(vrm::stream::stream))
         .routes(routes!(vrm::wait_load::wait_load))
-        .nest("/{entity}", vrm_entity_router())
-}
-
-fn vrm_entity_router() -> OpenApiRouter<HttpState> {
-    OpenApiRouter::new().routes(routes!(vrm::state::get, vrm::state::put))
 }
 
 fn coordinates_router() -> OpenApiRouter<HttpState> {
