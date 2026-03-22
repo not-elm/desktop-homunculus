@@ -10,8 +10,8 @@ use homunculus_api::prelude::{ApiError, ApiReactor};
 use homunculus_core::prelude::{
     CharacterStateChangeEvent, ExpressionChangeEvent, OnClickEvent, OnDragEndEvent, OnDragEvent,
     OnDragStartEvent, OnPointerCancelEvent, OnPointerMoveEvent, OnPointerOutEvent,
-    OnPointerOverEvent, OnPointerPressedEvent, OnPointerReleasedEvent, VrmEventReceiver,
-    VrmaFinishEvent, VrmaPlayEvent,
+    OnPointerOverEvent, OnPointerPressedEvent, OnPointerReleasedEvent, PersonaChangeEvent,
+    VrmEventReceiver, VrmaFinishEvent, VrmaPlayEvent,
 };
 use serde::Serialize;
 use std::convert::Infallible;
@@ -127,6 +127,13 @@ pub async fn events(
                     once::run(observe_stream::<VrmaFinishEvent>).with(("vrma-finish", entity)),
                 )
                 .await;
+            let persona_change = task
+                .will(
+                    Update,
+                    once::run(observe_stream::<PersonaChangeEvent>)
+                        .with(("persona-change", entity)),
+                )
+                .await;
             select_all([
                 drag_start,
                 drag,
@@ -142,6 +149,7 @@ pub async fn events(
                 expression_change,
                 vrma_play,
                 vrma_finish,
+                persona_change,
             ])
         })
         .await?;

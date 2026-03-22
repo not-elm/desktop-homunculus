@@ -514,6 +514,534 @@ paths:
           description: VRM attached
         '404':
           description: Character not found
+  /characters/{id}/vrm/despawn:
+    delete:
+      tags:
+      - vrm
+      summary: Despawn a VRM model from a character.
+      operationId: despawn
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: VRM model despawned
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/events:
+    get:
+      tags:
+      - vrm
+      summary: Subscribe to VRM events via SSE for a character.
+      description: |-
+        Events include: drag-start, drag, drag-end, pointer-press, pointer-click,
+        pointer-move, pointer-release, pointer-over, pointer-out, pointer-cancel,
+        state-change, expression-change, vrma-play, vrma-finish.
+      operationId: events
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: SSE stream of VRM events
+          content:
+            text/event-stream: {}
+  /characters/{id}/vrm/expressions:
+    get:
+      tags:
+      - vrm
+      summary: List all expressions and their current weights for a VRM model.
+      operationId: list
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Expression weights
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpressionsResponse'
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+    put:
+      tags:
+      - vrm
+      summary: Set all expression weights for a VRM model (replaces all current weights).
+      operationId: set
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WeightsBody'
+        required: true
+      responses:
+        '200':
+          description: Expressions set
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+    delete:
+      tags:
+      - vrm
+      summary: Clear all expression weights for a VRM model.
+      operationId: clear
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Expressions cleared
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+    patch:
+      tags:
+      - vrm
+      summary: Modify specific expression weights for a VRM model (merges with current weights).
+      operationId: modify
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WeightsBody'
+        required: true
+      responses:
+        '200':
+          description: Expressions modified
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/expressions/mouth:
+    patch:
+      tags:
+      - vrm
+      summary: Modify mouth expression weights for a VRM model.
+      operationId: modify_mouth
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WeightsBody'
+        required: true
+      responses:
+        '200':
+          description: Mouth expressions modified
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/look:
+    delete:
+      tags:
+      - vrm
+      summary: Disable look-at control for the specified character's VRM.
+      operationId: unlook
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Look-at disabled
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/look/cursor:
+    put:
+      tags:
+      - vrm
+      summary: Set look-at to follow the cursor.
+      operationId: cursor
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Look-at cursor mode set
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/look/target/{target}:
+    put:
+      tags:
+      - vrm
+      summary: Set look-at target to another entity.
+      operationId: target
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      - name: target
+        in: path
+        description: Target entity ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Look-at target set
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/position:
+    get:
+      tags:
+      - vrm
+      summary: Get the position of a VRM model.
+      operationId: get
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: VRM position data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PositionResponse'
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/speech/timeline:
+    post:
+      tags:
+      - vrm
+      summary: Speak with a timeline of expression keyframes and audio data.
+      operationId: timeline
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimelineBody'
+        required: true
+      responses:
+        '200':
+          description: Speech timeline started
+        '400':
+          description: Invalid audio data
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/spring-bones:
+    get:
+      tags:
+      - vrm
+      summary: List all spring bone chains for a character's VRM model.
+      operationId: list
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Spring bone chains
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpringBoneChainsResponse'
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/spring-bones/{chain_id}:
+    get:
+      tags:
+      - vrm
+      summary: Get a specific spring bone chain by ID.
+      operationId: get
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      - name: chain_id
+        in: path
+        description: Spring bone chain entity ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Spring bone chain details
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/SpringBoneChain'
+        '404':
+          description: Character or chain not found
+        '422':
+          description: No VRM attached
+    put:
+      tags:
+      - vrm
+      summary: Update properties of a spring bone chain.
+      operationId: put
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      - name: chain_id
+        in: path
+        description: Spring bone chain entity ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpringBonePropsUpdate'
+        required: true
+      responses:
+        '200':
+          description: Spring bone properties updated
+        '404':
+          description: Character or chain not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/vrma:
+    get:
+      tags:
+      - vrm
+      summary: List all VRMA animations under a character's VRM.
+      operationId: get
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List of VRMA animations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VrmaInfo'
+        '404':
+          description: Character not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/vrma/play:
+    post:
+      tags:
+      - vrm
+      summary: Play a VRM animation.
+      operationId: play
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayBody'
+        required: true
+      responses:
+        '200':
+          description: Animation started
+        '404':
+          description: Character or animation not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/vrma/speed:
+    put:
+      tags:
+      - vrm
+      summary: Set the playback speed for a VRM animation.
+      operationId: speed
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpeedBody'
+        required: true
+      responses:
+        '200':
+          description: Playback speed updated
+        '404':
+          description: Character or animation not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/vrma/state:
+    get:
+      tags:
+      - vrm
+      summary: Get the state of a VRM animation.
+      operationId: state
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      - name: asset
+        in: query
+        description: Asset ID of the VRMA animation
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Animation state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VrmaState'
+        '404':
+          description: Character or animation not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/vrma/stop:
+    post:
+      tags:
+      - vrm
+      summary: Stop a VRM animation.
+      operationId: stop
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetRequest'
+        required: true
+      responses:
+        '200':
+          description: Animation stopped
+        '404':
+          description: Character or animation not found
+        '422':
+          description: No VRM attached
+  /characters/{id}/vrm/{bone_name}:
+    get:
+      tags:
+      - vrm
+      summary: Get the entity ID of a specific bone in a VRM model.
+      operationId: get
+      parameters:
+      - name: id
+        in: path
+        description: Character ID
+        required: true
+        schema:
+          type: string
+      - name: bone_name
+        in: path
+        description: Bone name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Bone entity ID
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: VRM or bone not found
   /commands/execute:
     post:
       tags:
@@ -1153,6 +1681,169 @@ paths:
       responses:
         '200':
           description: Signal sent
+  /stt/languages:
+    get:
+      tags:
+      - stt
+      summary: List supported STT languages.
+      operationId: list_languages
+      responses:
+        '200':
+          description: List of supported language codes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /stt/models:
+    get:
+      tags:
+      - stt
+      summary: List downloaded STT models.
+      operationId: list_models
+      responses:
+        '200':
+          description: List of available models
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModelInfo'
+  /stt/models/download:
+    post:
+      tags:
+      - stt
+      summary: Download an STT model.
+      operationId: download_model
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelDownloadRequest'
+        required: true
+      responses:
+        '200':
+          description: Download result
+        '422':
+          description: Invalid model size
+        '500':
+          description: Download failed
+    delete:
+      tags:
+      - stt
+      summary: Cancel an in-progress model download.
+      description: |-
+        With `modelSize` query param: cancel a specific download.
+        Without: cancel all in-progress downloads.
+      operationId: cancel_download
+      parameters:
+      - name: modelSize
+        in: query
+        description: Model size to cancel. Omit to cancel all.
+        required: false
+        schema:
+          $ref: '#/components/schemas/SttModelSize'
+      responses:
+        '200':
+          description: Download(s) cancelled
+        '404':
+          description: No active download for the specified model
+  /stt/models/download/stream:
+    post:
+      tags:
+      - stt
+      summary: Download an STT model with NDJSON progress streaming.
+      description: |-
+        Streams progress events as NDJSON lines. If the model already exists,
+        returns a single `complete` event. Returns 409 if a download is already in progress.
+      operationId: download_model_stream
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelDownloadRequest'
+        required: true
+      responses:
+        '200':
+          description: NDJSON stream of download progress
+          content:
+            application/x-ndjson: {}
+        '409':
+          description: Download already in progress
+        '422':
+          description: Invalid model size
+  /stt/start:
+    post:
+      tags:
+      - stt
+      summary: Start an STT session.
+      operationId: start
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: 'null'
+              - $ref: '#/components/schemas/SttStartOptions'
+      responses:
+        '200':
+          description: Session started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SttStartResponse'
+        '409':
+          description: Session already active or loading
+        '412':
+          description: Model not available
+        '422':
+          description: Invalid language
+        '500':
+          description: Internal server error
+        '503':
+          description: Microphone unavailable
+  /stt/status:
+    get:
+      tags:
+      - stt
+      summary: Get the current STT session status.
+      operationId: status
+      responses:
+        '200':
+          description: Current session state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SttState'
+  /stt/stop:
+    post:
+      tags:
+      - stt
+      summary: Stop the current STT session. Idempotent.
+      operationId: stop
+      responses:
+        '200':
+          description: Session stopped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SttState'
+  /stt/stream:
+    get:
+      tags:
+      - stt
+      summary: Stream STT events via SSE.
+      description: |-
+        Events: `status`, `result`, `session_error`, `stopped`.
+        Sends current status on connect (late-join sync).
+      operationId: stream
+      responses:
+        '200':
+          description: SSE event stream
+          content:
+            text/event-stream: {}
   /vrm:
     get:
       tags:
@@ -1250,389 +1941,6 @@ paths:
             text/plain:
               schema:
                 type: string
-  /vrm/{entity}:
-    delete:
-      tags:
-      - vrm
-      summary: Despawn a VRM model.
-      operationId: despawn
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: VRM model despawned
-        '404':
-          description: Entity not found
-  /vrm/{entity}/events:
-    get:
-      tags:
-      - vrm
-      summary: Subscribe to VRM events via SSE.
-      description: |-
-        Events include: drag-start, drag, drag-end, pointer-press, pointer-click,
-        pointer-move, pointer-release, pointer-over, pointer-out, pointer-cancel,
-        state-change, expression-change, vrma-play, vrma-finish.
-      operationId: events
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: SSE stream of VRM events
-          content:
-            text/event-stream: {}
-  /vrm/{entity}/expressions:
-    get:
-      tags:
-      - vrm
-      summary: List all expressions and their current weights for a VRM model.
-      operationId: list
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Expression weights
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExpressionsResponse'
-        '404':
-          description: Entity not found
-    put:
-      tags:
-      - vrm
-      summary: Set all expression weights for a VRM model (replaces all current weights).
-      operationId: set
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WeightsBody'
-        required: true
-      responses:
-        '200':
-          description: Expressions set
-        '404':
-          description: Entity not found
-    delete:
-      tags:
-      - vrm
-      summary: Clear all expression weights for a VRM model.
-      operationId: clear
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Expressions cleared
-        '404':
-          description: Entity not found
-    patch:
-      tags:
-      - vrm
-      summary: Modify specific expression weights for a VRM model (merges with current weights).
-      operationId: modify
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WeightsBody'
-        required: true
-      responses:
-        '200':
-          description: Expressions modified
-        '404':
-          description: Entity not found
-  /vrm/{entity}/expressions/mouth:
-    patch:
-      tags:
-      - vrm
-      summary: Modify mouth expression weights for a VRM model.
-      operationId: modify_mouth
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WeightsBody'
-        required: true
-      responses:
-        '200':
-          description: Mouth expressions modified
-        '404':
-          description: Entity not found
-  /vrm/{entity}/look:
-    delete:
-      tags:
-      - vrm
-      summary: Disable look-at control for the specified VRM entity.
-      operationId: unlook
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Look-at disabled
-        '404':
-          description: Entity not found
-  /vrm/{entity}/look/cursor:
-    put:
-      tags:
-      - vrm
-      summary: Set look-at to follow the cursor.
-      operationId: cursor
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Look-at cursor mode set
-        '404':
-          description: Entity not found
-  /vrm/{entity}/look/target/{target}:
-    put:
-      tags:
-      - vrm
-      summary: Set look-at target to another entity.
-      operationId: target
-      parameters:
-      - name: entity
-        in: path
-        description: VRM entity ID
-        required: true
-        schema:
-          type: string
-      - name: target
-        in: path
-        description: Target entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Look-at target set
-        '404':
-          description: Entity not found
-  /vrm/{entity}/persona:
-    get:
-      tags:
-      - vrm
-      summary: Get the persona of a VRM model.
-      operationId: get
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: VRM persona
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Persona'
-        '404':
-          description: Entity not found
-    put:
-      tags:
-      - vrm
-      summary: Set the persona of a VRM model.
-      operationId: put
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Persona'
-        required: true
-      responses:
-        '200':
-          description: Persona updated
-        '404':
-          description: Entity not found
-  /vrm/{entity}/position:
-    get:
-      tags:
-      - vrm
-      summary: Get the position of a VRM model.
-      operationId: get
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: VRM position data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PositionResponse'
-        '404':
-          description: Entity not found
-  /vrm/{entity}/speech/timeline:
-    post:
-      tags:
-      - vrm
-      summary: Speak with a timeline of expression keyframes and audio data.
-      operationId: timeline
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TimelineBody'
-        required: true
-      responses:
-        '200':
-          description: Speech timeline started
-        '400':
-          description: Invalid audio data
-        '404':
-          description: Entity not found
-  /vrm/{entity}/spring-bones:
-    get:
-      tags:
-      - vrm
-      summary: List all spring bone chains for a VRM model.
-      operationId: list
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Spring bone chains
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SpringBoneChainsResponse'
-        '404':
-          description: Entity not found
-  /vrm/{entity}/spring-bones/{chain_id}:
-    get:
-      tags:
-      - vrm
-      summary: Get a specific spring bone chain by ID.
-      operationId: get
-      parameters:
-      - name: entity
-        in: path
-        description: VRM entity ID
-        required: true
-        schema:
-          type: string
-      - name: chain_id
-        in: path
-        description: Spring bone chain entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Spring bone chain details
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - type: 'null'
-                - $ref: '#/components/schemas/SpringBoneChain'
-        '404':
-          description: Entity or chain not found
-    put:
-      tags:
-      - vrm
-      summary: Update properties of a spring bone chain.
-      operationId: put
-      parameters:
-      - name: entity
-        in: path
-        description: VRM entity ID
-        required: true
-        schema:
-          type: string
-      - name: chain_id
-        in: path
-        description: Spring bone chain entity ID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SpringBonePropsUpdate'
-        required: true
-      responses:
-        '200':
-          description: Spring bone properties updated
-        '404':
-          description: Entity or chain not found
   /vrm/{entity}/state:
     get:
       tags:
@@ -1678,158 +1986,6 @@ paths:
           description: VRM state updated
         '404':
           description: Entity not found
-  /vrm/{entity}/vrma:
-    get:
-      tags:
-      - vrm
-      summary: List all VRMA animations under a VRM entity.
-      operationId: get
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: List of VRMA animations
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/VrmaInfo'
-        '404':
-          description: Entity not found
-  /vrm/{entity}/vrma/play:
-    post:
-      tags:
-      - vrm
-      summary: Play a VRM animation.
-      operationId: play
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PlayBody'
-        required: true
-      responses:
-        '200':
-          description: Animation started
-        '404':
-          description: Entity or animation not found
-  /vrm/{entity}/vrma/speed:
-    put:
-      tags:
-      - vrm
-      summary: Set the playback speed for a VRM animation.
-      operationId: speed
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SpeedBody'
-        required: true
-      responses:
-        '200':
-          description: Playback speed updated
-        '404':
-          description: Entity or animation not found
-  /vrm/{entity}/vrma/state:
-    get:
-      tags:
-      - vrm
-      summary: Get the state of a VRM animation.
-      operationId: state
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      - name: asset
-        in: query
-        description: Asset ID of the VRMA animation
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Animation state
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VrmaState'
-        '404':
-          description: Entity or animation not found
-  /vrm/{entity}/vrma/stop:
-    post:
-      tags:
-      - vrm
-      summary: Stop a VRM animation.
-      operationId: stop
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AssetRequest'
-        required: true
-      responses:
-        '200':
-          description: Animation stopped
-        '404':
-          description: Entity or animation not found
-  /vrm/{entity}/{bone_name}:
-    get:
-      tags:
-      - vrm
-      summary: Get the entity ID of a specific bone in a VRM model.
-      operationId: get
-      parameters:
-      - name: vrm
-        in: path
-        description: VRM entity ID
-        required: true
-        schema:
-          type: string
-      - name: bone_name
-        in: path
-        description: Bone name
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Bone entity ID
-          content:
-            text/plain:
-              schema:
-                type: string
-        '404':
-          description: VRM or bone not found
   /webviews:
     get:
       tags:
@@ -2310,14 +2466,10 @@ components:
       required:
       - id
       - name
-      - assetId
       - state
       - hasVrm
       - persona
       properties:
-        assetId:
-          type: string
-          description: The asset ID of the VRM model bound to this character.
         hasVrm:
           type: boolean
           description: Whether a VRM model is currently attached.
@@ -2339,13 +2491,14 @@ components:
       required:
       - id
       - name
-      - assetId
       - state
       - hasVrm
+      - entity
       properties:
-        assetId:
-          type: string
-          description: The asset ID of the VRM model bound to this character.
+        entity:
+          type: integer
+          format: int64
+          minimum: 0
         hasVrm:
           type: boolean
           description: Whether a VRM model is currently attached.
@@ -2363,11 +2516,7 @@ components:
       description: Request body for creating a new character.
       required:
       - id
-      - assetId
       properties:
-        assetId:
-          type: string
-          description: The asset ID of the VRM model to bind.
         id:
           type: string
           description: The unique character identifier.
@@ -2639,6 +2788,30 @@ components:
           type: string
         text:
           type: string
+    ModelDownloadRequest:
+      type: object
+      description: Request body for model download.
+      required:
+      - modelSize
+      properties:
+        modelSize:
+          $ref: '#/components/schemas/SttModelSize'
+    ModelInfo:
+      type: object
+      description: Model info for the list endpoint.
+      required:
+      - modelSize
+      - sizeBytes
+      - path
+      properties:
+        modelSize:
+          $ref: '#/components/schemas/SttModelSize'
+        path:
+          type: string
+        sizeBytes:
+          type: integer
+          format: int64
+          minimum: 0
     MoveTarget:
       oneOf:
       - type: object
@@ -2738,12 +2911,6 @@ components:
       type: object
       description: Persona data for a VRM character.
       properties:
-        metadata:
-          type: object
-          additionalProperties:
-            type: object
-          propertyNames:
-            type: string
         ocean:
           $ref: '#/components/schemas/Ocean'
         personality:
@@ -3091,6 +3258,88 @@ components:
         properties:
           asset:
             $ref: '#/components/schemas/AssetId'
+    SttModelSize:
+      type: string
+      description: Whisper model size variants.
+      enum:
+      - tiny
+      - base
+      - small
+      - medium
+      - large-v3-turbo
+      - large-v3
+    SttStartOptions:
+      type: object
+      description: Session start options.
+      properties:
+        language:
+          type: string
+        modelSize:
+          $ref: '#/components/schemas/SttModelSize'
+    SttStartResponse:
+      allOf:
+      - $ref: '#/components/schemas/SttState'
+      - type: object
+        required:
+        - restarted
+        properties:
+          restarted:
+            type: boolean
+            description: True if an existing Listening session was implicitly stopped.
+      description: Response from the start endpoint, includes restart indicator.
+    SttState:
+      oneOf:
+      - type: object
+        required:
+        - state
+        properties:
+          state:
+            type: string
+            enum:
+            - idle
+      - type: object
+        required:
+        - language
+        - modelSize
+        - state
+        properties:
+          language:
+            type: string
+          modelSize:
+            $ref: '#/components/schemas/SttModelSize'
+          state:
+            type: string
+            enum:
+            - loading
+      - type: object
+        required:
+        - language
+        - modelSize
+        - state
+        properties:
+          language:
+            type: string
+          modelSize:
+            $ref: '#/components/schemas/SttModelSize'
+          state:
+            type: string
+            enum:
+            - listening
+      - type: object
+        required:
+        - error
+        - message
+        - state
+        properties:
+          error:
+            type: string
+          message:
+            type: string
+          state:
+            type: string
+            enum:
+            - error
+      description: STT session state.
     TimelineBody:
       allOf:
       - type:
@@ -3563,5 +3812,7 @@ tags:
   description: Asset management
 - name: rpc
   description: MOD service RPC registration and proxy
+- name: stt
+  description: Speech-to-text
 - name: characters
   description: Character lifecycle and configuration

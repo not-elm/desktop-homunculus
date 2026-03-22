@@ -1,0 +1,1 @@
+{"title":"Body","body":{"content":{"application/json":{"schema":{"type":"object","description":"Request body for updating the character state.","required":["state"],"properties":{"state":{"type":"object","description":"The new behavioral state value."}},"title":"PutStateBody"}}},"required":true}}

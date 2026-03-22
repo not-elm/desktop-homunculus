@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"VRM detached"},"404":{"description":"Character not found"},"422":{"description":"No VRM attached"}}}

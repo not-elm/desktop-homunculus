@@ -2,7 +2,9 @@ use crate::character::CharacterApi;
 use crate::error::{ApiError, ApiResult};
 use bevy::prelude::*;
 use bevy_flurx::prelude::*;
-use homunculus_core::prelude::{CharacterId, CharacterRegistry, Persona};
+use homunculus_core::prelude::{
+    CharacterId, CharacterRegistry, Persona, PersonaChangeEvent, VrmEvent, VrmEventSender,
+};
 use homunculus_prefs::characters::CharactersTable;
 use homunculus_prefs::prelude::PrefsDatabase;
 
@@ -50,6 +52,7 @@ fn set_character_persona(
     mut commands: Commands,
     registry: Res<CharacterRegistry>,
     db: NonSend<PrefsDatabase>,
+    tx: Option<Res<VrmEventSender<PersonaChangeEvent>>>,
 ) -> ApiResult {
     let entity = registry
         .get(&id)
@@ -61,6 +64,15 @@ fn set_character_persona(
     CharactersTable::new(&db)
         .update_persona(&id, &persona_json)
         .map_err(|e| ApiError::Sql(e.to_string()))?;
+
+    if let Some(tx) = &tx {
+        let _ = tx.try_broadcast(VrmEvent {
+            vrm: entity,
+            payload: PersonaChangeEvent {
+                persona: persona.clone(),
+            },
+        });
+    }
 
     Ok(())
 }

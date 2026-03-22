@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Character name","content":{"application/json":{"schema":{"type":"object","description":"Request body for updating the character display name.","required":["name"],"properties":{"name":{"type":"string","description":"The new display name."}},"title":"PutNameBody"}}}},"404":{"description":"Character not found"}}}

@@ -1,0 +1,70 @@
+---
+id: create
+title: "Create a new character."
+description: "If a character with the given ID already exists, its info is returned"
+sidebar_label: "Create a new character."
+hide_title: true
+hide_table_of_contents: true
+api: eJzFVU1vG0cM/SsETwmwXitN0MOemsZFI8BFDMdND7aBUDvU7iTzsZ7hShYE/feCu7K1tgKjhxbVRSOK5PA9PnK2KNRkrK6xbilRLZwy3hZoONfJdmJjwArnSyB4dIC1lRakZWjsigPMz4BcYjIb4HubJRdgJYMNywg2Q2LpU2BzEzQu9gJ1YhIbGiAwfedsTcLwqu8yJ4HMnoLYOr8uscDYcSKtYm6wwiGQscDEdz1n+TWaDVZbrGMQDqJH6saENobTb1mr32KuW/akJ9l0jBXGxTeuBZ/DvByzwiKaDSxjmhYaeH1goNyXYBMb5c4a5axLWq1YznqVNZMLsyQbmqMLr1qGPti7nifsWsNB7NLqNbsCA3k+ZLo+pAq9c8et+jQcyIGxuXO0AY0v4YyX1DvJIHHo3FdrvsK65QDRWxE2Je52BYoVp/V+GIge6N2p/QBWUs+DIXcx5BHqT7OZfj0t5MMjoLFrBmIa9aGEPogCi3+reZ977yltBtklP+QAWqjcCLINjeMX+7cnusAso8Rayl+SxwK1G7I5bvDefijMBuGGExY4VjCafn6HBXobrO89VrPdY+ZD4CJGxxSOIP3VsrScgODL5R/go2GnA1X3KXEQtwESobodmlf8R4J7KdMTiWnoyN0/it2DgAW3tLIxkYMhGl5x2ZRwg9Y4vsECbjBbUc3c4OtnIn1AMA/LqDrdFfjuR1KchxU5ayaQ52dDJs/SRl0sXcyqqI6kxQpPJ7uwwMxppafqeot9clhhK9JVp6cu1uTamKV6+2Y2O0J5rn+D4RW72HlV+O62QJX15WF7/XZPvnP8sDAm0z104eG3tldBKrV79B+j70Pduz7D+4v50e1nnL9L7GDi9vHq6kJ9x9UWg6TonA6jqusAuYA1L1aW17kA6o2NBVAw4GPicj+uVA/juq8xRGE3TIonq/yw812KTSKvRf/SqLmso1cYztYcMk/Cz3+/OD95W85OYnAbdVG2RxBvylk5U5P2x1OYRI0b6keL+QkPk7fhf3zF9uMgfC+nnSMbFNOgpe1ec8/fX5WVWrfbBWX+M7ndTs13PacNVte3Ba4oWVqoFK5vdakwGU6DSL/zRgkacZ9c6d3q7nqt4WjF7oqHiPd1zZ286Hs7mZmLT5+vsMDF/g3W9YQVJlrrcqU1Vji83xo97MvBtkVHoempUd8xp37+BujS85Y=
+sidebar_class_name: "post api-method"
+info_path: reference/api/homunculus-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Create a new character."}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/characters"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+If a character with the given ID already exists, its info is returned
+without creating a duplicate (upsert semantics).
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  parameters={undefined}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./create.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./create.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

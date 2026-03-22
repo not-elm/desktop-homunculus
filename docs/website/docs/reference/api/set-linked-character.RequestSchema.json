@@ -1,0 +1,1 @@
+{"title":"Body","body":{"content":{"application/json":{"schema":{"type":"object","description":"Request body for setting a linked character.","required":["characterId"],"properties":{"characterId":{"type":"string","description":"The character ID to link."}},"title":"SetLinkedCharacterRequest"}}},"required":true}}

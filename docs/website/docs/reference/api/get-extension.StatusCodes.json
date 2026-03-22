@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Extension data","content":{"application/json":{"schema":{}}}},"404":{"description":"Character or extension not found"}}}

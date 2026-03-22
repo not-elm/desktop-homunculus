@@ -394,9 +394,7 @@ fn vrm_router_bk() -> OpenApiRouter<HttpState> {
 }
 
 fn vrm_entity_router() -> OpenApiRouter<HttpState> {
-    OpenApiRouter::new()
-        .routes(routes!(vrm::state::get, vrm::state::put))
-        .routes(routes!(vrm::persona::get, vrm::persona::put))
+    OpenApiRouter::new().routes(routes!(vrm::state::get, vrm::state::put))
 }
 
 fn coordinates_router() -> OpenApiRouter<HttpState> {
