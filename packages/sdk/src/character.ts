@@ -204,6 +204,32 @@ export class Character {
     return (await response.json()) as CharacterInfo[];
   }
 
+  /**
+   * Finds a character by its display name.
+   *
+   * If multiple characters share the same name, the first match is returned.
+   *
+   * @param name - The character's display name (case-sensitive exact match).
+   * @returns The Character instance.
+   * @throws {Error} If no character exists with the given name.
+   *
+   * @example
+   * ```typescript
+   * const character = await Character.findByName("Elmer");
+   * const vrm = character.vrm();
+   * await vrm.setExpressions({ happy: 1.0 });
+   * ```
+   */
+  static async findByName(name: string): Promise<Character> {
+    const response = await host.get(host.createUrl("characters", { name }));
+    const characters = (await response.json()) as CharacterInfo[];
+    if (characters.length === 0) {
+      throw new Error(`Character not found: ${name}`);
+    }
+    const info = characters[0];
+    return new Character(info.id, info.entity);
+  }
+
   // --- Instance Methods ---
 
   /**
