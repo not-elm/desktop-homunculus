@@ -1926,51 +1926,6 @@ paths:
             text/plain:
               schema:
                 type: string
-  /vrm/{entity}/state:
-    get:
-      tags:
-      - vrm
-      summary: Get the state of a VRM model.
-      operationId: get
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: VRM state
-          content:
-            application/json:
-              schema:
-                type: object
-        '404':
-          description: Entity not found
-    put:
-      tags:
-      - vrm
-      summary: Set the state of a VRM model.
-      operationId: put
-      parameters:
-      - name: entity
-        in: path
-        description: Entity ID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PutBody'
-        required: true
-      responses:
-        '200':
-          description: VRM state updated
-        '404':
-          description: Entity not found
   /webviews:
     get:
       tags:
@@ -2957,13 +2912,6 @@ components:
           items:
             type: number
             format: float
-    PutBody:
-      type: object
-      required:
-      - state
-      properties:
-        state:
-          type: object
     PutNameBody:
       type: object
       description: Request body for updating the character display name.
