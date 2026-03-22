@@ -119,10 +119,7 @@ pub async fn list(
 /// Filter characters by display name (case-sensitive exact match).
 fn filter_by_name(characters: Vec<CharacterInfo>, name: Option<String>) -> Vec<CharacterInfo> {
     match name {
-        Some(name) => characters
-            .into_iter()
-            .filter(|c| c.name == name)
-            .collect(),
+        Some(name) => characters.into_iter().filter(|c| c.name == name).collect(),
         None => characters,
     }
 }

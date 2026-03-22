@@ -184,8 +184,15 @@ paths:
     get:
       tags:
       - characters
-      summary: List all characters.
+      summary: List all characters, optionally filtered by display name.
       operationId: list
+      parameters:
+      - name: name
+        in: query
+        description: Optional display name filter
+        required: false
+        schema:
+          type: string
       responses:
         '200':
           description: List of characters
@@ -1844,28 +1851,6 @@ paths:
           description: SSE event stream
           content:
             text/event-stream: {}
-  /vrm:
-    get:
-      tags:
-      - vrm
-      summary: List VRM model entities, optionally filtered by name.
-      operationId: get
-      parameters:
-      - name: name
-        in: query
-        description: Optional name filter
-        required: false
-        schema:
-          type: string
-      responses:
-        '200':
-          description: List of VRM entity IDs
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
   /vrm/snapshot:
     get:
       tags:
