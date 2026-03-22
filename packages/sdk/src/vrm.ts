@@ -72,7 +72,8 @@ export type OverrideType = "none" | "blend" | "block";
  *
  * @example
  * ```typescript
- * const vrm = await Vrm.findByName("MyCharacter");
+ * const character = await Character.findByName("MyCharacter");
+ * const vrm = character.vrm();
  * const { expressions } = await vrm.expressions();
  * for (const expr of expressions) {
  *   console.log(`${expr.name}: weight=${expr.weight}, binary=${expr.isBinary}`);
@@ -237,7 +238,8 @@ export interface VrmSnapshot {
  *
  * @example
  * ```ts
- * const vrm = await Vrm.findByName("MyCharacter");
+ * const character = await Character.findByName("MyCharacter");
+ * const vrm = character.vrm();
  * const pos = await vrm.position();
  * console.log(`Screen: (${pos.globalViewport?.[0]}, ${pos.globalViewport?.[1]})`);
  * console.log(`World: (${pos.world[0]}, ${pos.world[1]}, ${pos.world[2]})`);
@@ -456,7 +458,8 @@ export class Vrm {
      *
      * @example
      * ```typescript
-     * const vrm = await Vrm.findByName("MyCharacter");
+     * const character = await Character.findByName("MyCharacter");
+     * const vrm = character.vrm();
      * const persona = await vrm.persona();
      * console.log(persona.profile);
      * ```
@@ -477,7 +480,8 @@ export class Vrm {
      *
      * @example
      * ```typescript
-     * const vrm = await Vrm.findByName("MyCharacter");
+     * const character = await Character.findByName("MyCharacter");
+     * const vrm = character.vrm();
      * await vrm.setPersona({
      *   profile: "A cheerful assistant",
      *   ocean: { openness: 0.8, extraversion: 0.7 },
@@ -516,7 +520,8 @@ export class Vrm {
      *
      * @example
      * ```ts
-     * const vrm = await Vrm.findByName("MyCharacter");
+     * const character = await Character.findByName("MyCharacter");
+     * const vrm = character.vrm();
      * const pos = await vrm.position();
      * console.log(`Screen: (${pos.globalViewport?.[0]}, ${pos.globalViewport?.[1]})`);
      * console.log(`World: (${pos.world[0]}, ${pos.world[1]}, ${pos.world[2]})`);
@@ -533,7 +538,8 @@ export class Vrm {
      *
      * @example
      * ```typescript
-     * const vrm = await Vrm.findByName("MyCharacter");
+     * const character = await Character.findByName("MyCharacter");
+     * const vrm = character.vrm();
      * const { expressions } = await vrm.expressions();
      * for (const expr of expressions) {
      *   console.log(`${expr.name}: ${expr.weight}`);
@@ -553,7 +559,8 @@ export class Vrm {
      *
      * @example
      * ```typescript
-     * const vrm = await Vrm.findByName("MyCharacter");
+     * const character = await Character.findByName("MyCharacter");
+     * const vrm = character.vrm();
      * await vrm.setExpressions({ happy: 1.0, blink: 0.5 });
      * ```
      */
@@ -569,7 +576,8 @@ export class Vrm {
      *
      * @example
      * ```typescript
-     * const vrm = await Vrm.findByName("MyCharacter");
+     * const character = await Character.findByName("MyCharacter");
+     * const vrm = character.vrm();
      * // Only modifies "happy", leaves other overrides intact
      * await vrm.modifyExpressions({ happy: 1.0 });
      * ```
@@ -583,7 +591,8 @@ export class Vrm {
      *
      * @example
      * ```typescript
-     * const vrm = await Vrm.findByName("MyCharacter");
+     * const character = await Character.findByName("MyCharacter");
+     * const vrm = character.vrm();
      * await vrm.clearExpressions();
      * ```
      */
@@ -600,7 +609,8 @@ export class Vrm {
      *
      * @example
      * ```typescript
-     * const vrm = await Vrm.findByName("MyCharacter");
+     * const character = await Character.findByName("MyCharacter");
+     * const vrm = character.vrm();
      * await vrm.modifyMouth({ aa: 0.8, oh: 0.2 });
      * ```
      */
@@ -699,7 +709,8 @@ export class Vrm {
      *
      * @example
      * ```typescript
-     * const vrm = await Vrm.findByName("MyCharacter");
+     * const character = await Character.findByName("MyCharacter");
+     * const vrm = character.vrm();
      * const wavData = await fetchWavFromTTS("Hello world");
      * await vrm.speakWithTimeline(wavData, [
      *   { duration: 0.1, targets: { aa: 1.0 } },
@@ -750,21 +761,6 @@ export class Vrm {
     }
 
     /**
-     * Finds a VRM instance by its name.
-     *
-     * @deprecated Use {@link Character.find} instead for character-based lifecycle management.
-     * @param vrmName VRM character name
-     */
-    static async findByName(vrmName: string): Promise<Vrm> {
-        const response = await host.get(host.createUrl("vrm", { name: vrmName }));
-        const entities = (await response.json()) as number[];
-        if (entities.length === 0) {
-            throw new Error(`VRM not found: ${vrmName}`);
-        }
-        return new Vrm(entities[0]);
-    }
-
-    /**
      * Waits for a VRM instance to be spawned and initialized by its name.
      *
      * @param vrmName VRM character name
@@ -776,20 +772,6 @@ export class Vrm {
             }),
         );
         return new Vrm(Number(await response.json()));
-    }
-
-    /**
-     * Returns entity IDs of all currently loaded VRM instances.
-     *
-     * @example
-     * ```typescript
-     * const entities = await Vrm.findAllEntities();
-     * console.log(`Found ${entities.length} VRM entities`);
-     * ```
-     */
-    static async findAllEntities(): Promise<number[]> {
-        const response = await host.get(host.createUrl("vrm"));
-        return (await response.json()) as number[];
     }
 
     /**
@@ -828,14 +810,6 @@ export class Vrm {
         return Vrm.streamMetadata((metadata) => {
             f(new Vrm(metadata.entity));
         });
-    }
-
-    /**
-     * Returns all VRM instances that are currently loaded.
-     */
-    static async findAll(): Promise<Vrm[]> {
-        const entities = await Vrm.findAllEntities();
-        return entities.map((entity) => new Vrm(entity));
     }
 
     private async resolveCharacterId(): Promise<string> {
