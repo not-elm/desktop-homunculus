@@ -380,7 +380,6 @@ fn entities_id_router() -> OpenApiRouter<HttpState> {
 
 fn vrm_router_bk() -> OpenApiRouter<HttpState> {
     OpenApiRouter::new()
-        .routes(routes!(vrm::spawn::spawn))
         .routes(routes!(vrm::snapshot::snapshot))
         .routes(routes!(vrm::stream::stream))
         .routes(routes!(vrm::wait_load::wait_load))

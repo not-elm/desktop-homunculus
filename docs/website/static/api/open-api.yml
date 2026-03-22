@@ -1873,27 +1873,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/VrmSnapshot'
-  /vrm/spawn:
-    post:
-      tags:
-      - vrm
-      summary: Spawn a VRM model.
-      operationId: spawn
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/VrmSpawnArgs'
-        required: true
-      responses:
-        '200':
-          description: VRM model spawned, returns entity ID
-          content:
-            text/plain:
-              schema:
-                type: string
-        '400':
-          description: Invalid request
   /vrm/stream:
     get:
       tags:
@@ -3309,30 +3288,6 @@ components:
             format: float
           propertyNames:
             type: string
-    TransformArgs:
-      type: object
-      properties:
-        rotation:
-          type:
-          - array
-          - 'null'
-          items:
-            type: number
-            format: float
-        scale:
-          type:
-          - array
-          - 'null'
-          items:
-            type: number
-            format: float
-        translation:
-          type:
-          - array
-          - 'null'
-          items:
-            type: number
-            format: float
     TrayMenuItem:
       type: object
       description: |-
@@ -3458,21 +3413,6 @@ components:
           type: string
         transform:
           type: object
-    VrmSpawnArgs:
-      type: object
-      required:
-      - asset
-      properties:
-        asset:
-          $ref: '#/components/schemas/AssetId'
-        persona:
-          type:
-          - object
-          - 'null'
-        transform:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/TransformArgs'
     VrmaInfo:
       type: object
       required:
