@@ -28,7 +28,6 @@
 //! - `POST /app/exit` - Exit the application
 //!
 //! ### VRM Management
-//! - `GET /vrm` - List VRM models (optional `?name=` filter)
 //! - `POST /vrm` - Spawn new VRM model
 //! - `GET /vrm/stream` - SSE stream of VRM load events
 //! - `DELETE /vrm/{entity}` - Remove VRM model
@@ -386,7 +385,7 @@ fn entities_id_router() -> OpenApiRouter<HttpState> {
 
 fn vrm_router_bk() -> OpenApiRouter<HttpState> {
     OpenApiRouter::new()
-        .routes(routes!(vrm::get::get, vrm::spawn::spawn))
+        .routes(routes!(vrm::spawn::spawn))
         .routes(routes!(vrm::snapshot::snapshot))
         .routes(routes!(vrm::stream::stream))
         .routes(routes!(vrm::wait_load::wait_load))

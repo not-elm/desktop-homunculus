@@ -1,8 +1,14 @@
-use super::get::VrmGetQuery;
 use axum::extract::{Query, State};
 use axum::response::{IntoResponse, Response};
 use homunculus_api::prelude::axum::IntoHttpResult;
 use homunculus_api::vrm::{VrmApi, VrmSnapshot};
+use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, ToSchema)]
+pub struct VrmGetQuery {
+    pub name: Option<String>,
+}
 
 /// Get detailed snapshot of all VRM instances.
 #[utoipa::path(

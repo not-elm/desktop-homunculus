@@ -1,6 +1,5 @@
 //! `/vrm` provides methods for interacting with VRM models.
 
-pub(crate) mod get;
 pub mod snapshot;
 pub(crate) mod spawn;
 pub mod state;
