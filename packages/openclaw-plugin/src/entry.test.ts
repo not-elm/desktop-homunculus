@@ -8,7 +8,7 @@ interface EntryShape {
 }
 
 describe('entry', () => {
-  test('registers bootstrap hook + persona-sync service', () => {
+  test('registers message hooks + bootstrap hook + persona-sync service', () => {
     const registerTool = vi.fn();
     const registerHook = vi.fn();
     const on = vi.fn();
@@ -39,8 +39,8 @@ describe('entry', () => {
     register!(api);
 
     expect(registerTool).not.toHaveBeenCalled();
-    // No api.on subscriptions in this stage — message hooks arrive in a follow-up PR.
-    expect(on).not.toHaveBeenCalled();
+    const hookNames = on.mock.calls.map((call) => call[0]);
+    expect(hookNames).toEqual(['reply_dispatch', 'session_end']);
 
     expect(registerHook).toHaveBeenCalledWith('agent:bootstrap', expect.any(Function), {
       name: 'hmcs-openclaw.bootstrap',
