@@ -13,6 +13,22 @@ export async function getPersonas(deps: PluginDeps): Promise<HmcsPersonaSnapshot
   return await hmcsFetch<HmcsPersonaSnapshot[]>(deps, '/personas', { method: 'GET' });
 }
 
+/**
+ * POST /rpc/call - proxies an RPC to a specific HMCS mod.
+ * Used for TTS (`@hmcs/voicevox` `speak`).
+ */
+export async function rpcCall<T = unknown>(
+  deps: PluginDeps,
+  modName: string,
+  method: string,
+  body?: unknown,
+): Promise<T> {
+  return await hmcsFetch<T>(deps, '/rpc/call', {
+    method: 'POST',
+    body: { modName, method, body },
+  });
+}
+
 async function hmcsFetch<T>(deps: PluginDeps, path: string, opts: HmcsFetchOptions): Promise<T> {
   const url = `${deps.config.hmcsBaseUrl}${path}`;
   const init: RequestInit = { method: opts.method };

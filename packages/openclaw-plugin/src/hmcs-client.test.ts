@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { PluginDeps } from './deps.js';
-import { getPersonas } from './hmcs-client.js';
+import { getPersonas, rpcCall } from './hmcs-client.js';
 
 function makeDeps(): PluginDeps {
   const logger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() };
@@ -37,5 +37,39 @@ describe('getPersonas', () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response('err', { status: 500 }));
     const deps = makeDeps();
     await expect(getPersonas(deps)).rejects.toThrow(/500/);
+  });
+});
+
+describe('rpcCall', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test('POSTs to /rpc/call with {modName, method, body}', async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response(JSON.stringify({ ok: true }), { status: 200 }));
+
+    const deps = makeDeps();
+    await rpcCall(deps, '@hmcs/voicevox', 'speak', { personaId: 'alice', text: ['hi'] });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://127.0.0.1:3100/rpc/call',
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({ 'content-type': 'application/json' }),
+        body: JSON.stringify({
+          modName: '@hmcs/voicevox',
+          method: 'speak',
+          body: { personaId: 'alice', text: ['hi'] },
+        }),
+      }),
+    );
+  });
+
+  test('throws on non-2xx with status code in message', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response('nope', { status: 503 }));
+    const deps = makeDeps();
+    await expect(rpcCall(deps, 'x', 'y', {})).rejects.toThrow(/503/);
   });
 });
