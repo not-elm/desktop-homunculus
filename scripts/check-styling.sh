@@ -38,6 +38,7 @@ is_allowlisted_css() {
     packages/ui/src/animation.css) return 0 ;;
     packages/ui/.storybook/storybook.css) return 0 ;;
     mods/menu/ui/.storybook/storybook.css) return 0 ;;
+    mods/persona/management/src/index.css) return 0 ;;
   esac
   if [[ "$path" =~ ^mods/[^/]+/ui/src/index\.css$ ]]; then return 0; fi
   if [[ "$path" =~ ^mods/persona/shared/[^/]+\.css$ ]]; then return 0; fi

@@ -196,6 +196,17 @@ DIR="$(setup_tmp_repo)"
 )
 rm -rf "$DIR"
 
+echo "=== test_allowlist_includes_persona_management_index ==="
+DIR="$(setup_tmp_repo)"
+(
+  cd "$DIR"
+  mkdir -p mods/persona/management/src
+  echo "@import 'tailwindcss';" > mods/persona/management/src/index.css
+  output="$(./scripts/check-styling.sh --full 2>&1)" && exit_code=0 || exit_code=$?
+  assert_exit 0 "$exit_code" "persona/management/src/index.css is allowlisted"
+)
+rm -rf "$DIR"
+
 echo "=== test_diff_scope_fails_when_base_missing ==="
 DIR="$(setup_tmp_repo)"
 (
