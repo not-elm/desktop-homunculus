@@ -122,40 +122,71 @@ for f in "${css_candidates[@]+"${css_candidates[@]}"}"; do
 done
 
 # Step 3: scan TSX/TS files for static inline style attributes.
-# Heuristic: match `style={{ ... }}` where every value is a string or number literal.
-# Multi-line objects are out of scope (false negatives ok).
+#
+# Heuristic: match `style={{ ... }}` on a single line where every value is a
+# string literal or numeric literal (no template literals, identifiers,
+# function calls, member access, spreads, etc.).
+#
+# Implemented in awk for portable, deterministic regex behavior across
+# bash 3.2 (macOS) and bash 5 (Linux CI). The earlier sed-pipeline version
+# diverged between BSD sed and GNU sed in subtle ways.
 #
 # Heuristic limitations (acceptable false negatives):
 # - Only the first style={{...}} per line is scanned
-# - JS comments inside style objects (/*...*/) may be misread as identifiers
-# - Commented-out @apply lines (e.g. /* @apply ... */) are still scanned
-# The .claude/rules/tailwind-style.md doc is the source of truth; this script
-# is a heuristic safety net that biases toward false negatives.
+# - Multi-line object literals are not analysed
+# - JS comments inside style objects may be misread
+# The .claude/rules/tailwind-style.md doc is the source of truth; this
+# script is a heuristic safety net that biases toward false negatives.
+classify_inline_style() {
+  # Reads stdin (the line). Prints "static" if the line contains a static
+  # inline style={{...}}, "dynamic" if it has a dynamic one, "none" otherwise.
+  awk '
+    {
+      line = $0
+      # Find style={{ marker
+      if (!match(line, /style=\{\{/)) { print "none"; exit }
+      rest = substr(line, RSTART + RLENGTH)
+      # Find closing }} (first occurrence)
+      if (!match(rest, /\}\}/)) { print "none"; exit }
+      content = substr(rest, 1, RSTART - 1)
+
+      # Dynamic indicators inside the object literal.
+      # Template-literal substitution or backtick.
+      if (content ~ /\$\{/ || content ~ /`/) { print "dynamic"; exit }
+      # Spread.
+      if (content ~ /\.\.\./) { print "dynamic"; exit }
+
+      # Strip string literals (single-quoted and double-quoted, non-greedy).
+      gsub(/'\''[^'\'']*'\''/, "", content)
+      gsub(/"[^"]*"/, "", content)
+      # Strip numeric literals (incl. negatives, decimals).
+      gsub(/-?[0-9]+(\.[0-9]+)?/, "", content)
+      # Strip property-name identifiers followed by colon
+      # (key may be plain identifier; quoted-key was already stripped above).
+      gsub(/[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*:/, "", content)
+      # Strip whitespace, commas, parentheses around the colon stripping.
+      gsub(/[[:space:],]/, "", content)
+
+      if (length(content) == 0) { print "static"; exit }
+      print "dynamic"
+    }
+  '
+}
+
 for f in "${tsx_candidates[@]+"${tsx_candidates[@]}"}"; do
   [ -z "$f" ] && continue
   if [ ! -f "$f" ]; then
     continue
   fi
   while IFS= read -r line; do
-    if ! echo "$line" | grep -qE 'style=\{\{'; then
-      continue
-    fi
-    after="$(echo "$line" | sed -E 's/^.*style=\{\{//')"
-    # Strip string literals so their contents don't count as identifiers.
-    stripped="$(echo "$after" | sed -E "s/'[^']*'//g; s/\"[^\"]*\"//g")"
-    # Template literal or substitution -> dynamic.
-    if echo "$stripped" | grep -qE '\$\{|\`'; then
-      continue
-    fi
-    # Take only the chunk inside the first style={{...}}.
-    inside="$(echo "$stripped" | sed -E 's/\}\}.*$//')"
-    # Strip property-name identifiers (followed by colon) and numeric literals.
-    cleaned="$(echo "$inside" | sed -E 's/[a-zA-Z_$][a-zA-Z0-9_$]*[[:space:]]*://g; s/-?[0-9]+(\.[0-9]+)?//g')"
-    # Any remaining identifier means a non-literal value (variable, fn call, spread, etc.).
-    if echo "$cleaned" | grep -qE '[a-zA-Z_$]'; then
-      continue
-    fi
-    errors+=("static inline style in $f: $line")
+    case "$line" in
+      *"style={{"*)
+        verdict="$(printf '%s\n' "$line" | classify_inline_style)"
+        if [ "$verdict" = "static" ]; then
+          errors+=("static inline style in $f: $line")
+        fi
+        ;;
+    esac
   done < "$f"
 done
 
