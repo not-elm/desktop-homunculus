@@ -33,8 +33,10 @@ export function App() {
   if (loading) {
     return (
       <Shell onClose={handleClose}>
-        <div className="settings-loading">
-          <div className="settings-loading-text">Loading…</div>
+        <div className="flex min-h-[200px] items-center justify-center">
+          <div className="animate-[holo-corner-pulse_2s_ease-in-out_infinite] text-[var(--hud-font-size-sm)] uppercase tracking-[0.12em] text-[oklch(0.72_0.14_192/0.5)] motion-reduce:animate-none motion-reduce:opacity-50">
+            Loading…
+          </div>
         </div>
       </Shell>
     );
@@ -43,11 +45,13 @@ export function App() {
   if (error || !linked.persona || !linked.snapshot) {
     return (
       <Shell onClose={handleClose}>
-        <div className="openclaw-error-block">
-          <span className="openclaw-error-text">{error ?? 'No linked persona'}</span>
+        <div className="flex flex-col gap-[var(--hud-space-md)] p-[var(--hud-space-lg)] text-left">
+          <span className="text-[var(--hud-font-size-sm)] text-[oklch(0.7_0.16_350/0.85)]">
+            {error ?? 'No linked persona'}
+          </span>
           <button
             type="button"
-            className="openclaw-retry"
+            className="relative z-[7] cursor-pointer self-start rounded-md border border-[oklch(0.72_0.14_192/0.3)] bg-[oklch(0.72_0.14_192/0.2)] px-5 py-[var(--hud-space-md)] font-[inherit] text-[var(--hud-font-size-sm)] font-medium text-[oklch(0.72_0.14_192)] transition-all duration-200 ease-[ease] hover:bg-[oklch(0.72_0.14_192/0.3)]"
             onClick={() => {
               linked.refetch();
               ttsEngines.refetch();
@@ -141,7 +145,11 @@ function PersonaPanel({
           </SelectGroup>
         </SelectContent>
       </Select>
-      {err && <span className="openclaw-error-text">{err}</span>}
+      {err && (
+        <span className="text-[var(--hud-font-size-sm)] text-[oklch(0.7_0.16_350/0.85)]">
+          {err}
+        </span>
+      )}
     </label>
   );
 }

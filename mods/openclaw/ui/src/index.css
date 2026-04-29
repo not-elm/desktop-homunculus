@@ -196,23 +196,6 @@ body {
   animation: holo-scanline 4s linear infinite;
 }
 
-/* ━━ Loading State ━━ */
-
-.settings-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-}
-
-.settings-loading-text {
-  font-size: var(--hud-font-size-sm);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: oklch(0.72 0.14 192 / 0.5);
-  animation: holo-corner-pulse 2s ease-in-out infinite;
-}
-
 /* ━━ Reduced Motion ━━ */
 
 @media (prefers-reduced-motion: reduce) {
@@ -228,44 +211,4 @@ body {
     animation: none;
     opacity: 0.6;
   }
-
-  .settings-loading-text {
-    animation: none;
-    opacity: 0.5;
-  }
-}
-
-/* === Openclaw-specific === */
-
-.openclaw-retry {
-  align-self: flex-start;
-  padding: var(--hud-space-md) 20px;
-  font-size: var(--hud-font-size-sm);
-  font-family: inherit;
-  font-weight: 500;
-  border-radius: 6px;
-  background: oklch(0.72 0.14 192 / 0.2);
-  color: oklch(0.72 0.14 192);
-  border: 1px solid oklch(0.72 0.14 192 / 0.3);
-  cursor: pointer;
-  transition: all 200ms ease;
-  position: relative;
-  z-index: 7;
-}
-
-.openclaw-retry:hover {
-  background: oklch(0.72 0.14 192 / 0.3);
-}
-
-.openclaw-error-text {
-  font-size: var(--hud-font-size-sm);
-  color: oklch(0.7 0.16 350 / 0.85);
-}
-
-.openclaw-error-block {
-  display: flex;
-  flex-direction: column;
-  gap: var(--hud-space-md);
-  padding: var(--hud-space-lg);
-  text-align: left;
 }
