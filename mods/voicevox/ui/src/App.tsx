@@ -1,4 +1,5 @@
 import {
+  cn,
   Select,
   SelectContent,
   SelectGroup,
@@ -330,17 +331,25 @@ function Footer({
   saved: boolean;
   disabled: boolean;
 }) {
+  const closeBtn =
+    'cursor-pointer rounded-md border border-[oklch(0.4_0.02_250/0.25)] bg-transparent px-[var(--hud-space-2xl)] py-[var(--hud-space-md)] font-[inherit] text-[var(--hud-font-size-sm)] uppercase tracking-[0.08em] text-[oklch(0.75_0.04_250/0.75)] transition-[color,border-color,text-shadow] duration-[var(--hud-duration-content)] ease-out hover:border-[oklch(0.55_0.04_250/0.35)] hover:text-[oklch(0.88_0.08_250/0.9)] hover:[text-shadow:0_0_10px_oklch(0.72_0.14_192/0.2)] active:scale-[0.97]';
+
   return (
     <div className="relative z-[7] flex justify-end gap-[var(--hud-space-md)] pt-[var(--hud-space-md)]">
-      <button type="button" className="settings-close" onClick={onClose}>
+      <button type="button" className={closeBtn} onClick={onClose}>
         Close
       </button>
-      <button type="button" className="settings-close" onClick={onReset}>
+      <button type="button" className={closeBtn} onClick={onReset}>
         Reset
       </button>
       <button
         type="button"
-        className={`settings-save ${saved ? 'settings-save--success' : ''}`}
+        className={cn(
+          'cursor-pointer rounded-md border px-[var(--hud-space-2xl)] py-[var(--hud-space-md)] font-[inherit] text-[var(--hud-font-size-sm)] uppercase tracking-[0.08em] transition-[background,border-color,box-shadow,color] duration-[var(--hud-duration-content)] ease-out active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50',
+          saved
+            ? 'border-[oklch(0.65_0.18_145/0.4)] bg-[oklch(0.65_0.18_145/0.15)] text-[oklch(0.65_0.18_145)] [box-shadow:0_0_12px_oklch(0.65_0.18_145/0.15)] hover:border-[oklch(0.65_0.18_145/0.5)] hover:bg-[oklch(0.65_0.18_145/0.2)] hover:[box-shadow:0_0_16px_oklch(0.65_0.18_145/0.25)]'
+            : 'border-[oklch(0.72_0.14_192/0.3)] bg-[oklch(0.72_0.14_192/0.15)] text-[oklch(0.72_0.14_192)] hover:border-[oklch(0.72_0.14_192/0.5)] hover:bg-[oklch(0.72_0.14_192/0.25)] hover:[box-shadow:0_0_12px_oklch(0.72_0.14_192/0.2)]',
+        )}
         onClick={onSave}
         disabled={saving || disabled}
       >
