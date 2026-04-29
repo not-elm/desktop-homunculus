@@ -467,6 +467,33 @@
     );
 }
 
+/* SVG fractal-noise background — same content as legacy .holo-noise::before.
+   Used by the <HoloNoise> React component (real DOM child, no pseudo-element). */
+@utility holo-noise-bg {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  opacity: 0.02;
+
+  :where(.dark *) & {
+    opacity: 0.04;
+  }
+}
+
+/* Animated prismatic light sweep — same gradient/animation as legacy
+   .holo-shimmer::after. Used by the <HoloShimmer> React component. */
+@utility holo-shimmer-bg {
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    oklch(1 0 0 / 0.03) 45%,
+    oklch(1 0 0 / 0.06) 50%,
+    oklch(1 0 0 / 0.03) 55%,
+    transparent 60%
+  );
+  background-size: 250% 100%;
+  animation: var(--animate-holo-shimmer);
+}
+
 /* Animated prismatic border via @property --holo-angle.
    Uses background-clip trick — NO pseudo-elements, so it composes
    cleanly with HoloShimmer/HoloNoise overlays. */
