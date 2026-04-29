@@ -104,10 +104,9 @@ function RightColumn({
         <div className="detail-field-label">ID</div>
         <input
           type="text"
-          className="settings-input"
+          className="settings-input w-full cursor-not-allowed opacity-50"
           value={personaId}
           readOnly
-          style={{ opacity: 0.5, cursor: 'not-allowed', width: '100%' }}
         />
       </div>
       <PersonaFields values={formValues} onChange={onFormChange} />
