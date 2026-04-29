@@ -103,12 +103,16 @@ export default function DetailView({
         saved={saved}
       />
 
-      <div className="settings-tabs">
+      <div className="relative z-[7] flex flex-row gap-1 border-b border-[oklch(0.72_0.14_192/0.1)] pb-0">
         {TABS.map((t) => (
           <button
             type="button"
             key={t.id}
-            className={`settings-tab ${tab === t.id ? 'settings-tab--active' : ''}`}
+            className={cn(
+              'cursor-pointer border-none border-b-2 border-transparent bg-transparent px-3 py-2 font-[inherit] text-xs uppercase tracking-[0.08em] text-[oklch(0.75_0.02_250/0.6)] transition-[color,border-color,text-shadow] duration-[var(--hud-duration-content)] ease-linear hover:text-[oklch(0.85_0.06_192/0.8)]',
+              tab === t.id &&
+                'border-b-[oklch(0.72_0.14_192/0.8)] text-[oklch(0.72_0.14_192)] [text-shadow:0_0_12px_oklch(0.72_0.14_192/0.3)]',
+            )}
             onClick={() => setTab(t.id)}
           >
             {t.label}

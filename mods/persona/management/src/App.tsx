@@ -116,11 +116,7 @@ export default function App() {
               <div className="text-xs uppercase tracking-[0.1em] text-[oklch(0.55_0.02_250)]">
                 No personas yet
               </div>
-              <button
-                type="button"
-                className={managementBtnClasses}
-                onClick={mgmt.enterCreateMode}
-              >
+              <button type="button" className={managementBtnClasses} onClick={mgmt.enterCreateMode}>
                 + Create
               </button>
             </div>

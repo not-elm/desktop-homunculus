@@ -1,8 +1,5 @@
 import { useMemo, useState } from 'react';
-import {
-  managementBtnClasses,
-  managementBtnSecondaryClasses,
-} from '../styles';
+import { managementBtnClasses, managementBtnSecondaryClasses } from '../styles';
 
 interface CreateFormProps {
   onCreate: (id: string, name: string) => Promise<void>;
