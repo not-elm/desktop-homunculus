@@ -3,6 +3,7 @@
 ## UI Components
 
 - Always use `@hmcs/ui` components (Select, Button, Label, etc.) instead of native HTML elements (`<select>`, `<button>`, etc.) in MOD WebView UIs. The `@hmcs/ui` library provides glassmorphism-styled components that render correctly in CEF WebViews. Native elements may not display properly in the transparent window context.
+- For all styling, follow the utility-first rules in `tailwind-style.md`. Do not author semantic CSS classes or component-scoped `.css` files.
 
 ## Comments
 

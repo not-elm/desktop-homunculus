@@ -4,6 +4,12 @@ export {
   type AssetSelectItem,
   type AssetSelectProps,
 } from './components/asset-select';
+export {
+  HoloFrame,
+  type HoloFrameProps,
+  HoloNoise,
+  HoloShimmer,
+} from './components/holo-frame';
 export * from './components/sliders/NumericSlider';
 export * from './components/ui/accordion';
 export * from './components/ui/alert';

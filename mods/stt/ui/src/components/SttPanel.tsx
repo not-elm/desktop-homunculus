@@ -85,7 +85,7 @@ function ModelCard({
               style={{ width: `${model.downloadProgress ?? 0}%` }}
             />
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="flex items-center justify-between">
             <span className="stt-model-card__size">{Math.round(model.downloadProgress ?? 0)}%</span>
             <button type="button" className="stt-model-card__cancel" onClick={onCancel}>
               ✕
