@@ -1,5 +1,6 @@
 import { audio, type Persona, type PersonaSnapshot, Webview } from '@hmcs/sdk';
 import {
+  cn,
   Select,
   SelectContent,
   SelectGroup,
@@ -31,54 +32,59 @@ export function App() {
 
   if (loading) {
     return (
-      <div className="settings-panel holo-noise">
-        <Decorations />
-        <Toolbar title="Openclaw" onClose={handleClose} />
-        <div className="settings-content">
-          <div className="settings-loading">
-            <div className="settings-loading-text">Loading…</div>
-          </div>
+      <Shell onClose={handleClose}>
+        <div className="settings-loading">
+          <div className="settings-loading-text">Loading…</div>
         </div>
-      </div>
+      </Shell>
     );
   }
 
   if (error || !linked.persona || !linked.snapshot) {
     return (
-      <div className="settings-panel holo-noise">
-        <Decorations />
-        <Toolbar title="Openclaw" onClose={handleClose} />
-        <div className="settings-content">
-          <div className="openclaw-error-block">
-            <span className="openclaw-error-text">{error ?? 'No linked persona'}</span>
-            <button
-              type="button"
-              className="openclaw-retry"
-              onClick={() => {
-                linked.refetch();
-                ttsEngines.refetch();
-              }}
-            >
-              Retry
-            </button>
-          </div>
+      <Shell onClose={handleClose}>
+        <div className="openclaw-error-block">
+          <span className="openclaw-error-text">{error ?? 'No linked persona'}</span>
+          <button
+            type="button"
+            className="openclaw-retry"
+            onClick={() => {
+              linked.refetch();
+              ttsEngines.refetch();
+            }}
+          >
+            Retry
+          </button>
         </div>
-      </div>
+      </Shell>
     );
   }
 
   return (
-    <div className="settings-panel holo-noise">
+    <Shell onClose={handleClose}>
+      <section className="flex flex-col gap-[var(--hud-space-xl)]">
+        <PersonaPanel
+          persona={linked.persona}
+          snapshot={linked.snapshot}
+          engines={ttsEngines.data}
+        />
+      </section>
+    </Shell>
+  );
+}
+
+function Shell({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+  return (
+    <div
+      className={cn(
+        'holo-noise relative box-border flex h-screen max-h-screen max-w-screen flex-col gap-0 overflow-hidden rounded-xl bg-[oklch(0.15_0.01_250/0.92)] p-0',
+        'animate-settings-in motion-reduce:animate-none motion-reduce:opacity-100',
+      )}
+    >
       <Decorations />
-      <Toolbar title="Openclaw" onClose={handleClose} />
-      <div className="settings-content">
-        <section className="settings-section">
-          <PersonaPanel
-            persona={linked.persona}
-            snapshot={linked.snapshot}
-            engines={ttsEngines.data}
-          />
-        </section>
+      <Toolbar title="Openclaw" onClose={onClose} />
+      <div className="relative z-[7] flex min-h-0 flex-1 flex-col gap-[var(--hud-space-xl)] overflow-y-auto px-5 py-[var(--hud-space-xl)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {children}
       </div>
     </div>
   );
@@ -115,7 +121,10 @@ function PersonaPanel({
   }
 
   return (
-    <label className="settings-label" htmlFor="openclaw-tts-engine-select">
+    <label
+      className="flex flex-col gap-[var(--hud-space-sm)] text-[var(--hud-font-size-sm)] uppercase tracking-[0.1em] text-[oklch(0.72_0.14_192/0.7)]"
+      htmlFor="openclaw-tts-engine-select"
+    >
       TTS Engine
       <Select value={value} onValueChange={onChange} disabled={saving}>
         <SelectTrigger id="openclaw-tts-engine-select" className="w-full">
