@@ -36,6 +36,6 @@ jobs:
       - run: pnpm check-types
       - run: pnpm test
       - run: pnpm lint:ci
-      - run: pnpm lint:styling -- --diff origin/${{ github.base_ref }}
+      - run: pnpm lint:styling --diff origin/${{ github.base_ref }}
         if: github.event_name == 'pull_request'
       - run: pnpm lint:styling:test
