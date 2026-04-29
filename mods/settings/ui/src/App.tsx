@@ -1,4 +1,5 @@
 import { cn, Toolbar } from '@hmcs/ui';
+import { Decorations } from './components/Decorations';
 import { GeneralTab } from './components/GeneralTab';
 import { useSettings } from './hooks/useSettings';
 
@@ -20,13 +21,7 @@ export function App() {
 
   return (
     <div className={cn(panelClasses, 'holo-refract-border holo-noise')}>
-      <div className="settings-highlight" />
-      <div className="settings-bottom-line" />
-      <div className="settings-scanline" />
-      <span className="settings-corner settings-corner--tl" />
-      <span className="settings-corner settings-corner--tr" />
-      <span className="settings-corner settings-corner--bl" />
-      <span className="settings-corner settings-corner--br" />
+      <Decorations />
 
       <Toolbar title="Settings" onClose={handleClose} />
 
