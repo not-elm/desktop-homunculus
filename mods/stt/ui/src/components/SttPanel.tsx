@@ -12,7 +12,7 @@ export function SttPanel() {
   }, []);
 
   return (
-    <div className="settings-panel holo-refract-border holo-noise">
+    <div className="holo-refract-border holo-noise relative box-border flex h-screen max-h-screen max-w-screen flex-col overflow-hidden rounded-xl bg-[oklch(0.15_0.01_250/0.92)] animate-settings-in motion-reduce:animate-none motion-reduce:opacity-100">
       {/* Decorative elements */}
       <div className="settings-highlight" />
       <div className="settings-bottom-line" />
@@ -24,8 +24,8 @@ export function SttPanel() {
 
       <Toolbar title="Speech to Text" onClose={handleClose} />
 
-      <div className="settings-content">
-        <div className="settings-section">
+      <div className="relative z-[7] flex min-h-0 flex-1 flex-col gap-[var(--hud-space-xl)] overflow-y-auto p-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex flex-col gap-[var(--hud-space-xl)]">
           {errorMessage && <div className="stt-error">{errorMessage}</div>}
 
           <div className="stt-section-divider">
