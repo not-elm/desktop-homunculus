@@ -12,6 +12,13 @@ import { PersonaDetailBody } from '@persona/shared/components/PersonaDetailBody'
 import { usePersonaDetail } from '@persona/shared/hooks/usePersonaDetail';
 import { useThumbnailImport } from '@persona/shared/hooks/useThumbnailImport';
 import { useMemo, useState } from 'react';
+import {
+  loadingTextClasses,
+  managementBtnClasses,
+  managementBtnDangerClasses,
+  managementBtnSecondaryClasses,
+  managementBtnSuccessClasses,
+} from '../styles';
 
 type Tab = 'persona' | 'appearance';
 
@@ -60,8 +67,8 @@ export default function DetailView({
 
   if (!snapshot || !formValues) {
     return (
-      <div className="main-loading">
-        <div className="main-loading-text">Loading...</div>
+      <div className="flex h-full min-h-[200px] items-center justify-center">
+        <div className={loadingTextClasses}>Loading...</div>
       </div>
     );
   }
@@ -177,7 +184,7 @@ function DetailHeader({
         </button>
         <button
           type="button"
-          className="management-btn management-btn--success"
+          className={`${managementBtnClasses} ${managementBtnSuccessClasses}`}
           onClick={onSave}
           disabled={saving}
         >
@@ -191,7 +198,11 @@ function DetailHeader({
 function DeleteSection({ onDelete }: { onDelete: () => void }) {
   return (
     <div className="delete-section">
-      <button type="button" className="management-btn management-btn--danger" onClick={onDelete}>
+      <button
+        type="button"
+        className={`${managementBtnClasses} ${managementBtnDangerClasses}`}
+        onClick={onDelete}
+      >
         Delete Persona
       </button>
     </div>
@@ -217,14 +228,14 @@ function DeleteConfirmDialog({
         <DialogFooter>
           <button
             type="button"
-            className="management-btn management-btn--secondary"
+            className={`${managementBtnClasses} ${managementBtnSecondaryClasses}`}
             onClick={() => onOpenChange(false)}
           >
             Cancel
           </button>
           <button
             type="button"
-            className="management-btn management-btn--danger"
+            className={`${managementBtnClasses} ${managementBtnDangerClasses}`}
             onClick={onConfirm}
           >
             Delete

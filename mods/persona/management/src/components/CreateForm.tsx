@@ -1,4 +1,8 @@
 import { useMemo, useState } from 'react';
+import {
+  managementBtnClasses,
+  managementBtnSecondaryClasses,
+} from '../styles';
 
 interface CreateFormProps {
   onCreate: (id: string, name: string) => Promise<void>;
@@ -70,12 +74,16 @@ export default function CreateForm({ onCreate, onCancel }: CreateFormProps) {
         <div className="create-form-actions">
           <button
             type="button"
-            className="management-btn management-btn--secondary"
+            className={`${managementBtnClasses} ${managementBtnSecondaryClasses}`}
             onClick={onCancel}
           >
             Cancel
           </button>
-          <button type="submit" className="management-btn" disabled={!formValid || submitting}>
+          <button
+            type="submit"
+            className={managementBtnClasses}
+            disabled={!formValid || submitting}
+          >
             {submitting ? 'Creating...' : 'Create'}
           </button>
         </div>
