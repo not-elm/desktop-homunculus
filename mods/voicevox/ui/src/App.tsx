@@ -118,8 +118,10 @@ export function App() {
         {!connected ? (
           <DisconnectedView onRetry={handleRetry} />
         ) : speakers.length === 0 ? (
-          <div className="voicevox-error">
-            <div className="voicevox-error-text">No speakers found</div>
+          <div className="flex flex-col items-center justify-center gap-[var(--hud-space-xl)] px-[var(--hud-space-2xl)] py-10 text-center">
+            <div className="text-[var(--hud-font-size-base)] text-[oklch(0.7_0.16_350/0.8)]">
+              No speakers found
+            </div>
           </div>
         ) : (
           <SettingsForm
@@ -170,9 +172,21 @@ function Header({ name, connected }: { name: string; connected: boolean }) {
         {name}
       </span>
       <span
-        className={`voicevox-status ${connected ? 'voicevox-status--connected' : 'voicevox-status--disconnected'}`}
+        className={cn(
+          'ml-auto inline-flex items-center gap-[var(--hud-space-sm)] rounded-[20px] border px-[10px] py-[3px] text-[var(--hud-font-size-xs)]',
+          connected
+            ? 'border-[oklch(0.65_0.18_145/0.2)] bg-[oklch(0.65_0.18_145/0.1)] text-[oklch(0.65_0.18_145/0.8)]'
+            : 'border-[oklch(0.7_0.16_350/0.2)] bg-[oklch(0.7_0.16_350/0.1)] text-[oklch(0.7_0.16_350/0.8)]',
+        )}
       >
-        <span className="voicevox-status-dot" />
+        <span
+          className={cn(
+            'h-1.5 w-1.5 rounded-full',
+            connected
+              ? 'bg-[oklch(0.65_0.18_145)] [box-shadow:0_0_6px_oklch(0.65_0.18_145/0.5)]'
+              : 'bg-[oklch(0.7_0.16_350)] [box-shadow:0_0_6px_oklch(0.7_0.16_350/0.5)]',
+          )}
+        />
         {connected ? 'Connected' : 'Disconnected'}
       </span>
     </div>
@@ -181,9 +195,15 @@ function Header({ name, connected }: { name: string; connected: boolean }) {
 
 function DisconnectedView({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="voicevox-error">
-      <div className="voicevox-error-text">Cannot connect to VOICEVOX</div>
-      <button type="button" className="voicevox-error-retry" onClick={onRetry}>
+    <div className="flex flex-col items-center justify-center gap-[var(--hud-space-xl)] px-[var(--hud-space-2xl)] py-10 text-center">
+      <div className="text-[var(--hud-font-size-base)] text-[oklch(0.7_0.16_350/0.8)]">
+        Cannot connect to VOICEVOX
+      </div>
+      <button
+        type="button"
+        className="relative z-[7] cursor-pointer rounded-md border border-[oklch(0.72_0.14_192/0.3)] bg-[oklch(0.72_0.14_192/0.2)] px-5 py-[var(--hud-space-md)] text-[13px] font-medium text-[oklch(0.72_0.14_192)] transition-all duration-[var(--hud-duration-content)] ease-out hover:bg-[oklch(0.72_0.14_192/0.3)]"
+        onClick={onRetry}
+      >
         Retry
       </button>
     </div>
@@ -210,7 +230,7 @@ function SettingsForm({
   return (
     <>
       {invalidSpeaker && (
-        <div className="voicevox-warning">
+        <div className="relative z-[7] rounded-md border border-[oklch(0.8_0.14_80/0.2)] bg-[oklch(0.8_0.14_80/0.08)] px-[var(--hud-space-lg)] py-[var(--hud-space-md)] text-[var(--hud-font-size-sm)] text-[oklch(0.8_0.14_80/0.8)]">
           Previous speaker is unavailable. Please select a new one.
         </div>
       )}
@@ -242,8 +262,10 @@ function SettingsForm({
         </Select>
       </label>
 
-      <div className="voicevox-divider" />
-      <div className="voicevox-section-title">Voice Parameters</div>
+      <div className="my-[var(--hud-space-xs)] h-px bg-[oklch(0.72_0.14_192/0.1)]" />
+      <div className="relative z-[7] text-[var(--hud-font-size-sm)] font-medium tracking-[0.06em] text-[oklch(0.72_0.14_192/0.5)]">
+        Voice Parameters
+      </div>
 
       {PARAMS.map((param) => (
         <label
@@ -270,11 +292,13 @@ function SettingsForm({
               {(settings[param.key] as number).toFixed(2)}
             </span>
           </div>
-          <div className="voicevox-param-desc">{param.desc}</div>
+          <div className="mt-0.5 text-[var(--hud-font-size-xs)] text-[oklch(0.72_0.14_192/0.4)]">
+            {param.desc}
+          </div>
         </label>
       ))}
 
-      <div className="voicevox-divider" />
+      <div className="my-[var(--hud-space-xs)] h-px bg-[oklch(0.72_0.14_192/0.1)]" />
       <SpeechTest speaking={speaking} disabled={disabled} onSpeak={onSpeak} />
     </>
   );
@@ -292,8 +316,10 @@ function SpeechTest({
   const [text, setText] = useState('');
 
   return (
-    <div className="voicevox-speech-test">
-      <div className="voicevox-section-title">Speech Test</div>
+    <div className="relative z-[7] flex flex-col gap-[var(--hud-space-md)]">
+      <div className="relative z-[7] text-[var(--hud-font-size-sm)] font-medium tracking-[0.06em] text-[oklch(0.72_0.14_192/0.5)]">
+        Speech Test
+      </div>
       <Textarea
         className="resize-none"
         rows={3}
@@ -302,10 +328,10 @@ function SpeechTest({
         onChange={(e) => setText(e.target.value)}
         disabled={disabled || speaking}
       />
-      <div className="voicevox-speech-test-actions">
+      <div className="flex justify-end">
         <button
           type="button"
-          className="voicevox-speech-test-btn"
+          className="cursor-pointer rounded-md border border-[oklch(0.72_0.14_192/0.3)] bg-[oklch(0.72_0.14_192/0.15)] px-[var(--hud-space-2xl)] py-[var(--hud-space-md)] font-[inherit] text-[var(--hud-font-size-sm)] uppercase tracking-[0.08em] text-[oklch(0.72_0.14_192)] transition-[background,border-color,box-shadow] duration-[var(--hud-duration-content)] ease-out enabled:hover:border-[oklch(0.72_0.14_192/0.5)] enabled:hover:bg-[oklch(0.72_0.14_192/0.25)] enabled:hover:[box-shadow:0_0_12px_oklch(0.72_0.14_192/0.2)] enabled:active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
           disabled={disabled || speaking || text.trim().length === 0}
           onClick={() => onSpeak(text.trim())}
         >
