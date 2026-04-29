@@ -46,57 +46,6 @@ body {
   }
 }
 
-/* ━━ Create Form ━━ */
-
-.create-form-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 20px;
-}
-
-.create-form {
-  background: oklch(0.72 0.14 192 / 0.04);
-  border: 1px solid oklch(0.72 0.14 192 / 0.15);
-  border-radius: 8px;
-  padding: 24px;
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.create-form-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: oklch(0.72 0.14 192 / 0.9);
-  letter-spacing: 0.06em;
-  margin: 0 0 4px;
-}
-
-.create-form-error-hint {
-  font-size: 11px;
-  color: oklch(0.62 0.2 25);
-  margin-top: 2px;
-}
-
-.create-form-error {
-  font-size: 12px;
-  color: oklch(0.62 0.2 25);
-  padding: 8px 10px;
-  background: oklch(0.62 0.2 25 / 0.08);
-  border-radius: 6px;
-  border: 1px solid oklch(0.62 0.2 25 / 0.2);
-}
-
-.create-form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 4px;
-}
-
 /* ━━ Shared Form Elements (used by PersonaFields, VrmSelect) ━━ */
 
 .settings-section {
