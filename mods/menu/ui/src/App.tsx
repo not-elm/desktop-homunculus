@@ -1,5 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hmcs/ui';
 import { useRef } from 'react';
+import { HudCorner } from './components/HudCorner';
+import { HudHighlight } from './components/HudHighlight';
 import { useMenuActions } from './hooks/useMenuActions';
 import { useMenuData } from './hooks/useMenuData';
 
@@ -24,12 +26,12 @@ export function App() {
         align="start"
       >
         {/* Decorative layers */}
-        <div className="menu-hud-highlight" />
-        <div className="menu-hud-bottom-line" />
-        <span className="menu-hud-corner menu-hud-corner--tl" />
-        <span className="menu-hud-corner menu-hud-corner--tr" />
-        <span className="menu-hud-corner menu-hud-corner--bl" />
-        <span className="menu-hud-corner menu-hud-corner--br" />
+        <HudHighlight />
+        <div className="absolute bottom-0 left-[10%] right-[10%] h-px pointer-events-none z-10 bg-[linear-gradient(90deg,transparent,oklch(0.7_0.16_350/0.15)_30%,oklch(0.65_0.18_285/0.1)_50%,oklch(0.72_0.14_192/0.15)_70%,transparent)]" />
+        <HudCorner position="tl" />
+        <HudCorner position="tr" />
+        <HudCorner position="bl" />
+        <HudCorner position="br" />
 
         {/* Character status bar */}
         {characterName && (

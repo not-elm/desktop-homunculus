@@ -24,11 +24,11 @@ body {
 /* ━━ Animation tokens (so `animate-orbital-*` and `animate-holo-*` utilities work) ━━ */
 
 @theme inline {
-  --animate-orbital-hud-open: orbital-hud-in var(--hud-duration-content)
-      cubic-bezier(0.16, 1, 0.3, 1) both,
+  --animate-orbital-hud-open:
+    orbital-hud-in var(--hud-duration-content) cubic-bezier(0.16, 1, 0.3, 1) both,
     orbital-float 4s ease-in-out infinite 0.8s;
-  --animate-orbital-hud-closed: orbital-hud-out var(--hud-duration-micro)
-    cubic-bezier(0.4, 0, 1, 1) forwards;
+  --animate-orbital-hud-closed: orbital-hud-out var(--hud-duration-micro) cubic-bezier(0.4, 0, 1, 1)
+    forwards;
   --animate-orbital-float: orbital-float 4s ease-in-out infinite;
   --animate-orbital-card-in: orbital-card-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-holo-highlight-sweep: holo-highlight-sweep 3s ease-in-out infinite;
@@ -100,118 +100,5 @@ body {
   }
   50% {
     opacity: 0.8;
-  }
-}
-
-/* ━━ Corner Accents ━━ */
-
-.menu-hud-corner {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  pointer-events: none;
-  z-index: 10;
-  animation: holo-corner-pulse 3s ease-in-out infinite;
-}
-
-.menu-hud-corner--tl {
-  top: -1px;
-  left: -1px;
-  border-top: 1.5px solid oklch(0.72 0.14 192 / 0.6);
-  border-left: 1.5px solid oklch(0.72 0.14 192 / 0.6);
-}
-
-.menu-hud-corner--tr {
-  top: -1px;
-  right: -1px;
-  border-top: 1.5px solid oklch(0.65 0.18 285 / 0.4);
-  border-right: 1.5px solid oklch(0.65 0.18 285 / 0.4);
-  animation-delay: 0.75s;
-}
-
-.menu-hud-corner--bl {
-  bottom: -1px;
-  left: -1px;
-  border-bottom: 1.5px solid oklch(0.65 0.18 285 / 0.4);
-  border-left: 1.5px solid oklch(0.65 0.18 285 / 0.4);
-  animation-delay: 1.5s;
-}
-
-.menu-hud-corner--br {
-  bottom: -1px;
-  right: -1px;
-  border-bottom: 1.5px solid oklch(0.7 0.16 350 / 0.4);
-  border-right: 1.5px solid oklch(0.7 0.16 350 / 0.4);
-  animation-delay: 2.25s;
-}
-
-/* ━━ Top Edge Highlight ━━ */
-
-.menu-hud-highlight {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 5%,
-    oklch(0.72 0.14 192 / 0.35) 20%,
-    oklch(0.65 0.18 285 / 0.25) 50%,
-    oklch(0.7 0.16 350 / 0.35) 80%,
-    transparent 95%
-  );
-  pointer-events: none;
-  z-index: 10;
-  border-radius: inherit;
-}
-
-.menu-hud-highlight::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    oklch(1 0 0 / 0.15) 45%,
-    oklch(1 0 0 / 0.25) 50%,
-    oklch(1 0 0 / 0.15) 55%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  animation: holo-highlight-sweep 3s ease-in-out infinite;
-  animation-delay: 1s;
-}
-
-/* ━━ Bottom Edge Line ━━ */
-
-.menu-hud-bottom-line {
-  position: absolute;
-  bottom: 0;
-  left: 10%;
-  right: 10%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    oklch(0.7 0.16 350 / 0.15) 30%,
-    oklch(0.65 0.18 285 / 0.1) 50%,
-    oklch(0.72 0.14 192 / 0.15) 70%,
-    transparent
-  );
-  pointer-events: none;
-  z-index: 10;
-}
-
-/* ━━ Reduced Motion ━━ */
-
-@media (prefers-reduced-motion: reduce) {
-  .menu-hud-highlight::after {
-    animation: none;
-  }
-
-  .menu-hud-corner {
-    animation: none;
-    opacity: 0.6;
   }
 }
