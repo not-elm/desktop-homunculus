@@ -44,15 +44,21 @@ export function App() {
         )}
 
         {/* Action card grid */}
-        <div className={useGrid ? 'menu-card-grid' : 'menu-card-grid menu-card-grid--list'}>
+        <div
+          className={`grid gap-[5px] p-0.5 relative z-[7] ${useGrid ? 'grid-cols-2' : 'grid-cols-1'}`}
+        >
           {items.map((item, i) => (
             <DropdownMenuItem
               key={item.id}
-              className="menu-card menu-card-stagger"
+              className={`relative flex items-center rounded-md border cursor-pointer transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] border-[oklch(1_0_0/0.14)] bg-[oklch(0.13_0.015_var(--menu-accent-hue)/0.45)] text-[oklch(0.9_0.01_230)] hover:border-[oklch(0.72_0.14_var(--menu-accent-hue)/0.5)] hover:bg-[linear-gradient(135deg,oklch(0.72_0.14_var(--menu-accent-hue)/0.18)_0%,oklch(0.65_0.18_285/0.08)_100%)] hover:-translate-y-px hover:text-[oklch(0.92_0.03_var(--menu-accent-hue))] focus:border-[oklch(0.72_0.14_var(--menu-accent-hue)/0.5)] focus:bg-[linear-gradient(135deg,oklch(0.72_0.14_var(--menu-accent-hue)/0.18)_0%,oklch(0.65_0.18_285/0.08)_100%)] focus:-translate-y-px focus:text-[oklch(0.92_0.03_var(--menu-accent-hue))] active:border-[oklch(0.65_0.18_285/0.4)] active:bg-[oklch(0.65_0.18_285/0.12)] active:scale-[0.97] active:text-[oklch(0.88_0.04_285)] data-[variant=destructive]:hover:border-[oklch(0.6_0.22_25/0.35)] data-[variant=destructive]:hover:bg-[oklch(0.6_0.22_25/0.1)] data-[variant=destructive]:hover:text-[oklch(0.78_0.16_25)] opacity-0 animate-orbital-card-in [animation-delay:calc(60ms+var(--i,0)*30ms)] motion-reduce:opacity-100 motion-reduce:animate-none ${useGrid ? 'min-h-[52px] justify-center px-2.5 py-[var(--hud-space-md)]' : 'min-h-[40px] justify-start px-[var(--hud-space-lg)] py-[var(--hud-space-sm)]'}`}
               style={{ '--i': i } as React.CSSProperties}
               onSelect={() => handleSelect(item)}
             >
-              <span className="menu-card-label">{item.text}</span>
+              <span
+                className={`text-[12.5px] font-medium tracking-[0.01em] leading-[1.3] pointer-events-none ${useGrid ? 'text-center' : 'text-left'}`}
+              >
+                {item.text}
+              </span>
             </DropdownMenuItem>
           ))}
         </div>
