@@ -28,7 +28,9 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-# Allowlist of CSS paths permitted to exist. Globs match via case statement.
+# Allowlist of CSS paths permitted to exist.
+# Exact paths use `case`; segment-bounded globs use `=~` regex with [^/]+
+# to ensure exactly one path segment (no nesting).
 is_allowlisted_css() {
   local path="$1"
   case "$path" in
@@ -36,10 +38,10 @@ is_allowlisted_css() {
     packages/ui/src/animation.css) return 0 ;;
     packages/ui/.storybook/storybook.css) return 0 ;;
     mods/menu/ui/.storybook/storybook.css) return 0 ;;
-    mods/*/ui/src/index.css) return 0 ;;
-    mods/persona/shared/*.css) return 0 ;;
-    *) return 1 ;;
   esac
+  if [[ "$path" =~ ^mods/[^/]+/ui/src/index\.css$ ]]; then return 0; fi
+  if [[ "$path" =~ ^mods/persona/shared/[^/]+\.css$ ]]; then return 0; fi
+  return 1
 }
 
 # Allowed @apply lines (substring match after trimming).
@@ -69,23 +71,32 @@ read_lines() {
 css_candidates=()
 tsx_candidates=()
 if [ "$MODE" = "full" ]; then
-  read_lines css_candidates < <(find packages mods -type f -name "*.css" 2>/dev/null | sort)
-  read_lines tsx_candidates < <(find packages mods -type f \( -name "*.tsx" -o -name "*.ts" \) 2>/dev/null | sort)
+  read_lines css_candidates < <(
+    find packages mods \
+      \( -name node_modules -o -name dist -o -name build -o -name .next -o -name .turbo \) -prune -o \
+      -type f -name "*.css" -print 2>/dev/null | sort
+  )
+  read_lines tsx_candidates < <(
+    find packages mods \
+      \( -name node_modules -o -name dist -o -name build -o -name .next -o -name .turbo \) -prune -o \
+      -type f \( -name "*.tsx" -o -name "*.ts" \) -print 2>/dev/null | sort
+  )
 else
   if ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
-    echo "warn: base ref '$BASE' not found; skipping diff-scope checks" >&2
-  else
-    read_lines css_candidates < <(
-      git diff --name-only --diff-filter=AM "$BASE"...HEAD 2>/dev/null \
-        | grep -E '\.css$' \
-        | sort || true
-    )
-    read_lines tsx_candidates < <(
-      git diff --name-only --diff-filter=AM "$BASE"...HEAD 2>/dev/null \
-        | grep -E '\.(tsx|ts)$' \
-        | sort || true
-    )
+    echo "error: base ref '$BASE' not found. Run 'git fetch' or pass --diff <existing-ref>." >&2
+    echo "error: refusing to silently skip enforcement." >&2
+    exit 2
   fi
+  read_lines css_candidates < <(
+    git diff --name-only --diff-filter=AM "$BASE"...HEAD 2>/dev/null \
+      | grep -E '\.css$' \
+      | sort || true
+  )
+  read_lines tsx_candidates < <(
+    git diff --name-only --diff-filter=AM "$BASE"...HEAD 2>/dev/null \
+      | grep -E '\.(tsx|ts)$' \
+      | sort || true
+  )
 fi
 
 # Step 2: check each CSS file is allowlisted; if so, scan @apply usage.
@@ -112,6 +123,13 @@ done
 # Step 3: scan TSX/TS files for static inline style attributes.
 # Heuristic: match `style={{ ... }}` where every value is a string or number literal.
 # Multi-line objects are out of scope (false negatives ok).
+#
+# Heuristic limitations (acceptable false negatives):
+# - Only the first style={{...}} per line is scanned
+# - JS comments inside style objects (/*...*/) may be misread as identifiers
+# - Commented-out @apply lines (e.g. /* @apply ... */) are still scanned
+# The .claude/rules/tailwind-style.md doc is the source of truth; this script
+# is a heuristic safety net that biases toward false negatives.
 for f in "${tsx_candidates[@]+"${tsx_candidates[@]}"}"; do
   [ -z "$f" ] && continue
   if [ ! -f "$f" ]; then

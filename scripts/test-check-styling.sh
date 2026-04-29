@@ -172,6 +172,40 @@ TSX
 )
 rm -rf "$DIR"
 
+echo "=== test_allowlist_rejects_deeply_nested_css ==="
+DIR="$(setup_tmp_repo)"
+(
+  cd "$DIR"
+  mkdir -p mods/persona/shared/sub/dir
+  echo ".sneaky { color: red }" > mods/persona/shared/sub/dir/anything.css
+  output="$(./scripts/check-styling.sh --full 2>&1)" && exit_code=0 || exit_code=$?
+  assert_exit 1 "$exit_code" "deeply-nested CSS under allowlisted prefix is rejected"
+  assert_contains "mods/persona/shared/sub/dir/anything.css" "$output" "error names the deeply-nested file"
+)
+rm -rf "$DIR"
+
+echo "=== test_full_scope_ignores_dist_and_node_modules ==="
+DIR="$(setup_tmp_repo)"
+(
+  cd "$DIR"
+  mkdir -p packages/ui/dist packages/ui/node_modules/something
+  echo ".leak { color: red }" > packages/ui/dist/leak.css
+  echo ".vendor { color: blue }" > packages/ui/node_modules/something/foo.css
+  output="$(./scripts/check-styling.sh --full 2>&1)" && exit_code=0 || exit_code=$?
+  assert_exit 0 "$exit_code" "build artifacts under dist/ and node_modules/ are pruned"
+)
+rm -rf "$DIR"
+
+echo "=== test_diff_scope_fails_when_base_missing ==="
+DIR="$(setup_tmp_repo)"
+(
+  cd "$DIR"
+  output="$(./scripts/check-styling.sh --diff nonexistent-ref 2>&1)" && exit_code=0 || exit_code=$?
+  assert_exit 2 "$exit_code" "missing diff base ref exits 2"
+  assert_contains "nonexistent-ref" "$output" "error names the missing ref"
+)
+rm -rf "$DIR"
+
 PASS="$(cat "$COUNTER_DIR/pass")"
 FAIL="$(cat "$COUNTER_DIR/fail")"
 echo
