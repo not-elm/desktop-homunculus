@@ -46,117 +46,6 @@ body {
   }
 }
 
-/* ━━ Detail View ━━ */
-
-.detail-view {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 18px;
-  border-bottom: 1px solid oklch(0.72 0.14 192 / 0.08);
-  flex-shrink: 0;
-}
-
-.detail-header-left {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.detail-header-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: oklch(0.72 0.14 192 / 0.95);
-  letter-spacing: 0.06em;
-}
-
-.detail-header-id {
-  font-size: 9px;
-  font-family: monospace;
-  color: oklch(0.72 0.14 192 / 0.25);
-  letter-spacing: 0.5px;
-}
-
-.detail-header-actions {
-  display: flex;
-  gap: 6px;
-}
-
-/* Spawn button (detail header) */
-.detail-spawn-btn {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 6px 14px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  text-align: center;
-  font-family: inherit;
-}
-
-.detail-spawn-btn.activate {
-  background: oklch(0.72 0.14 192 / 0.15);
-  color: oklch(0.72 0.14 192);
-  border: 1px solid oklch(0.72 0.14 192 / 0.4);
-}
-
-.detail-spawn-btn.activate:hover {
-  background: oklch(0.72 0.14 192 / 0.25);
-  box-shadow: 0 0 12px oklch(0.72 0.14 192 / 0.15);
-}
-
-.detail-spawn-btn.deactivate {
-  background: oklch(0.62 0.2 25 / 0.08);
-  color: oklch(0.7 0.15 25);
-  border: 1px solid oklch(0.62 0.2 25 / 0.25);
-}
-
-.detail-spawn-btn.deactivate:hover {
-  background: oklch(0.62 0.2 25 / 0.15);
-  box-shadow: 0 0 12px oklch(0.62 0.2 25 / 0.3);
-}
-
-.detail-spawn-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Delete section */
-.delete-section {
-  flex-shrink: 0;
-  padding: 12px 18px;
-  border-top: 1px solid oklch(0.62 0.2 25 / 0.08);
-}
-
-/* ━━ Status Indicators ━━ */
-
-.status-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: inline-block;
-}
-
-.status-dot.active {
-  background: oklch(0.68 0.17 155);
-  box-shadow: 0 0 4px oklch(0.68 0.17 155 / 0.4);
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-.status-dot.inactive {
-  background: oklch(0.4 0.02 250);
-}
-
 /* ━━ Create Form ━━ */
 
 .create-form-wrapper {
@@ -473,12 +362,6 @@ body {
   text-shadow: 0 0 12px oklch(0.72 0.14 192 / 0.3);
 }
 
-.detail-tab-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px 18px;
-}
-
 /* ━━ Behavior Section ━━ */
 
 .settings-section {
@@ -552,10 +435,6 @@ body {
 /* ━━ Reduced Motion ━━ */
 
 @media (prefers-reduced-motion: reduce) {
-  .status-dot.active {
-    animation: none;
-  }
-
   .settings-age-segment,
   .settings-age-value-area {
     transition-duration: 0ms;

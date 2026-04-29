@@ -82,7 +82,14 @@ function SidebarItem({
           {persona.name}
         </span>
         <span className="mt-px flex items-center gap-[3px] text-[8px] text-[oklch(0.55_0.02_250/0.5)]">
-          <span className={`status-dot ${persona.spawned ? 'active' : 'inactive'}`} />
+          <span
+            className={cn(
+              'inline-block h-[5px] w-[5px] flex-shrink-0 rounded-full',
+              persona.spawned
+                ? 'bg-[oklch(0.68_0.17_155)] [box-shadow:0_0_4px_oklch(0.68_0.17_155/0.4)] animate-pulse-dot motion-reduce:animate-none'
+                : 'bg-[oklch(0.4_0.02_250)]',
+            )}
+          />
           {persona.spawned ? 'Spawned' : 'Offline'}
         </span>
       </div>
