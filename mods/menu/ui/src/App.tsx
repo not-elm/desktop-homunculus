@@ -1,4 +1,4 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hmcs/ui';
+import { cn, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hmcs/ui';
 import { useRef } from 'react';
 import { HudCorner } from './components/HudCorner';
 import { HudHighlight } from './components/HudHighlight';
@@ -47,17 +47,42 @@ export function App() {
 
         {/* Action card grid */}
         <div
-          className={`grid gap-[5px] p-0.5 relative z-[7] ${useGrid ? 'grid-cols-2' : 'grid-cols-1'}`}
+          className={cn(
+            'grid gap-[5px] p-0.5 relative z-[7]',
+            useGrid ? 'grid-cols-2' : 'grid-cols-1',
+          )}
         >
           {items.map((item, i) => (
             <DropdownMenuItem
               key={item.id}
-              className={`relative flex items-center rounded-md border cursor-pointer transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] border-[oklch(1_0_0/0.14)] bg-[oklch(0.13_0.015_var(--menu-accent-hue)/0.45)] text-[oklch(0.9_0.01_230)] hover:border-[oklch(0.72_0.14_var(--menu-accent-hue)/0.5)] hover:bg-[linear-gradient(135deg,oklch(0.72_0.14_var(--menu-accent-hue)/0.18)_0%,oklch(0.65_0.18_285/0.08)_100%)] hover:-translate-y-px hover:text-[oklch(0.92_0.03_var(--menu-accent-hue))] focus:border-[oklch(0.72_0.14_var(--menu-accent-hue)/0.5)] focus:bg-[linear-gradient(135deg,oklch(0.72_0.14_var(--menu-accent-hue)/0.18)_0%,oklch(0.65_0.18_285/0.08)_100%)] focus:-translate-y-px focus:text-[oklch(0.92_0.03_var(--menu-accent-hue))] active:border-[oklch(0.65_0.18_285/0.4)] active:bg-[oklch(0.65_0.18_285/0.12)] active:scale-[0.97] active:text-[oklch(0.88_0.04_285)] data-[variant=destructive]:hover:border-[oklch(0.6_0.22_25/0.35)] data-[variant=destructive]:hover:bg-[oklch(0.6_0.22_25/0.1)] data-[variant=destructive]:hover:text-[oklch(0.78_0.16_25)] opacity-0 animate-orbital-card-in [animation-delay:calc(60ms+var(--i,0)*30ms)] motion-reduce:opacity-100 motion-reduce:animate-none ${useGrid ? 'min-h-[52px] justify-center px-2.5 py-[var(--hud-space-md)]' : 'min-h-[40px] justify-start px-[var(--hud-space-lg)] py-[var(--hud-space-sm)]'}`}
+              className={cn(
+                // Base
+                'relative flex items-center rounded-md border cursor-pointer transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] border-[oklch(1_0_0/0.14)] bg-[oklch(0.13_0.015_var(--menu-accent-hue)/0.45)] text-[oklch(0.9_0.01_230)]',
+                // Hover
+                'hover:border-[oklch(0.72_0.14_var(--menu-accent-hue)/0.5)] hover:bg-[linear-gradient(135deg,oklch(0.72_0.14_var(--menu-accent-hue)/0.18)_0%,oklch(0.65_0.18_285/0.08)_100%)] hover:-translate-y-px hover:text-[oklch(0.92_0.03_var(--menu-accent-hue))]',
+                // Focus (keyboard) — mirror hover for parity with the original :hover, :focus rule
+                'focus-visible:border-[oklch(0.72_0.14_var(--menu-accent-hue)/0.5)] focus-visible:bg-[linear-gradient(135deg,oklch(0.72_0.14_var(--menu-accent-hue)/0.18)_0%,oklch(0.65_0.18_285/0.08)_100%)] focus-visible:-translate-y-px focus-visible:text-[oklch(0.92_0.03_var(--menu-accent-hue))]',
+                // Active
+                'active:border-[oklch(0.65_0.18_285/0.4)] active:bg-[oklch(0.65_0.18_285/0.12)] active:scale-[0.97] active:text-[oklch(0.88_0.04_285)]',
+                // Destructive — hover
+                'data-[variant=destructive]:hover:border-[oklch(0.6_0.22_25/0.35)] data-[variant=destructive]:hover:bg-[oklch(0.6_0.22_25/0.1)] data-[variant=destructive]:hover:text-[oklch(0.78_0.16_25)]',
+                // Destructive — focus (keyboard) parity with original CSS
+                'data-[variant=destructive]:focus-visible:border-[oklch(0.6_0.22_25/0.35)] data-[variant=destructive]:focus-visible:bg-[oklch(0.6_0.22_25/0.1)] data-[variant=destructive]:focus-visible:text-[oklch(0.78_0.16_25)]',
+                // Motion / stagger
+                'opacity-0 animate-orbital-card-in [animation-delay:calc(60ms+var(--i,0)*30ms)] motion-reduce:opacity-100 motion-reduce:animate-none',
+                // Layout (grid vs list)
+                useGrid
+                  ? 'min-h-[52px] justify-center px-2.5 py-[var(--hud-space-md)]'
+                  : 'min-h-[40px] justify-start px-[var(--hud-space-lg)] py-[var(--hud-space-sm)]',
+              )}
               style={{ '--i': i } as React.CSSProperties}
               onSelect={() => handleSelect(item)}
             >
               <span
-                className={`text-[12.5px] font-medium tracking-[0.01em] leading-[1.3] pointer-events-none ${useGrid ? 'text-center' : 'text-left'}`}
+                className={cn(
+                  'text-[12.5px] font-medium tracking-[0.01em] leading-[1.3] pointer-events-none',
+                  useGrid ? 'text-center' : 'text-left',
+                )}
               >
                 {item.text}
               </span>

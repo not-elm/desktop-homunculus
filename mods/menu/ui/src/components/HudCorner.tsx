@@ -1,3 +1,5 @@
+import { cn } from '@hmcs/ui';
+
 /**
  * Decorative L-shaped corner accent rendered at one of the four corners of the
  * menu HUD. Each corner has its own color and animation stagger to create a
@@ -15,7 +17,11 @@ const positionClasses: Record<Position, string> = {
 export function HudCorner({ position }: { position: Position }) {
   return (
     <span
-      className={`absolute w-2.5 h-2.5 pointer-events-none z-10 animate-holo-corner-pulse motion-reduce:animate-none motion-reduce:opacity-60 ${positionClasses[position]}`}
+      aria-hidden
+      className={cn(
+        'absolute w-2.5 h-2.5 pointer-events-none z-10 animate-holo-corner-pulse motion-reduce:animate-none motion-reduce:opacity-60',
+        positionClasses[position],
+      )}
     />
   );
 }
