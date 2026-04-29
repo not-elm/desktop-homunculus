@@ -2,6 +2,7 @@ import { audio, Webview } from '@hmcs/sdk';
 import { cn, Toolbar } from '@hmcs/ui';
 import { useCallback } from 'react';
 import { type ModelCardState, useStt } from '../hooks/useStt';
+import { Decorations } from './Decorations';
 
 export function SttPanel() {
   const { models, downloadModel, cancelDownload, errorMessage } = useStt();
@@ -13,14 +14,7 @@ export function SttPanel() {
 
   return (
     <div className="holo-refract-border holo-noise relative box-border flex h-screen max-h-screen max-w-screen flex-col overflow-hidden rounded-xl bg-[oklch(0.15_0.01_250/0.92)] animate-settings-in motion-reduce:animate-none motion-reduce:opacity-100">
-      {/* Decorative elements */}
-      <div className="settings-highlight" />
-      <div className="settings-bottom-line" />
-      <div className="settings-scanline" />
-      <span className="settings-corner settings-corner--tl" />
-      <span className="settings-corner settings-corner--tr" />
-      <span className="settings-corner settings-corner--bl" />
-      <span className="settings-corner settings-corner--br" />
+      <Decorations />
 
       <Toolbar title="Speech to Text" onClose={handleClose} />
 
