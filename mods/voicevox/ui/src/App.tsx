@@ -250,7 +250,7 @@ function SettingsForm({
           className="flex flex-col gap-[var(--hud-space-sm)] text-[var(--hud-font-size-sm)] uppercase tracking-[0.1em] text-[oklch(0.72_0.14_192/0.7)]"
         >
           {param.label}
-          <div className="settings-slider-row">
+          <div className="flex flex-row items-center gap-[var(--hud-space-lg)]">
             <input
               type="range"
               className="settings-slider"
@@ -265,7 +265,7 @@ function SettingsForm({
                 })
               }
             />
-            <span className="settings-slider-value">
+            <span className="min-w-[3.5em] text-right font-mono text-[var(--hud-font-size-sm)] text-[oklch(0.72_0.14_192)]">
               {(settings[param.key] as number).toFixed(2)}
             </span>
           </div>
