@@ -21,6 +21,20 @@ body {
   --menu-accent-hue: 192;
 }
 
+/* ━━ Animation tokens (so `animate-orbital-*` and `animate-holo-*` utilities work) ━━ */
+
+@theme inline {
+  --animate-orbital-hud-open: orbital-hud-in var(--hud-duration-content)
+      cubic-bezier(0.16, 1, 0.3, 1) both,
+    orbital-float 4s ease-in-out infinite 0.8s;
+  --animate-orbital-hud-closed: orbital-hud-out var(--hud-duration-micro)
+    cubic-bezier(0.4, 0, 1, 1) forwards;
+  --animate-orbital-float: orbital-float 4s ease-in-out infinite;
+  --animate-orbital-card-in: orbital-card-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-holo-highlight-sweep: holo-highlight-sweep 3s ease-in-out infinite;
+  --animate-holo-corner-pulse: holo-corner-pulse 3s ease-in-out infinite;
+}
+
 /* ━━ Keyframes ━━ */
 
 @keyframes orbital-hud-in {
@@ -87,93 +101,6 @@ body {
   50% {
     opacity: 0.8;
   }
-}
-
-/* ━━ Menu HUD Container ━━ */
-
-.menu-hud {
-  --menu-w: calc(100vw - 20px);
-  position: relative;
-  overflow-x: hidden;
-  scrollbar-gutter: stable;
-  width: var(--menu-w);
-  max-width: 340px;
-  padding: var(--hud-space-sm) var(--hud-space-sm) var(--hud-space-sm) var(--hud-space-sm);
-  box-shadow: none;
-  animation: orbital-float 4s ease-in-out infinite;
-  animation-delay: 0.8s;
-}
-
-.menu-hud[data-state="open"] {
-  animation:
-    orbital-hud-in var(--hud-duration-content) cubic-bezier(0.16, 1, 0.3, 1) both,
-    orbital-float 4s ease-in-out infinite 0.8s;
-}
-
-.menu-hud[data-state="closed"] {
-  animation: orbital-hud-out var(--hud-duration-micro) cubic-bezier(0.4, 0, 1, 1) forwards;
-}
-
-/* Noise texture — handled by shared .holo-noise class */
-
-/* Connection line — subtle cyan thread toward the character */
-.menu-hud::after {
-  content: "";
-  position: absolute;
-  left: -6px;
-  top: 25%;
-  bottom: 25%;
-  width: 1px;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    oklch(0.72 0.14 var(--menu-accent-hue) / 0.2) 25%,
-    oklch(0.72 0.14 var(--menu-accent-hue) / 0.35) 50%,
-    oklch(0.72 0.14 var(--menu-accent-hue) / 0.2) 75%,
-    transparent
-  );
-  pointer-events: none;
-  z-index: 10;
-  border-radius: 1px;
-}
-
-/* ━━ Status Bar ━━ */
-
-.menu-status-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--hud-space-xs) var(--hud-space-md) var(--hud-space-sm);
-  position: relative;
-  z-index: 7;
-}
-
-.menu-status-name {
-  font-size: var(--hud-font-size-sm);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: oklch(0.93 0.03 var(--menu-accent-hue));
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 200px;
-}
-
-/* ━━ Separator ━━ */
-
-.menu-separator {
-  height: 1px;
-  margin: 2px var(--hud-space-sm) var(--hud-space-xs);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    oklch(0.72 0.14 var(--menu-accent-hue) / 0.2) 20%,
-    oklch(0.65 0.18 285 / 0.15) 50%,
-    oklch(0.7 0.16 350 / 0.2) 80%,
-    transparent
-  );
-  position: relative;
-  z-index: 7;
 }
 
 /* ━━ Card Grid ━━ */
@@ -384,19 +311,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .menu-card-stagger {
     opacity: 1;
-    animation: none;
-  }
-
-  .menu-hud {
-    animation: none;
-  }
-
-  .menu-hud[data-state="open"] {
-    animation: none;
-    opacity: 1;
-  }
-
-  .menu-hud[data-state="closed"] {
     animation: none;
   }
 
