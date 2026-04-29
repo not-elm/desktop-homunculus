@@ -100,18 +100,20 @@ export function App() {
 
   if (loading) {
     return (
-      <div className="settings-panel settings-loading">
-        <div className="settings-loading-text">Loading...</div>
+      <div className="holo-refract-border holo-noise relative box-border flex h-screen max-h-screen max-w-screen flex-col gap-[var(--hud-space-xl)] overflow-hidden rounded-xl bg-[oklch(0.15_0.01_250/0.92)] p-5 animate-settings-in motion-reduce:animate-none motion-reduce:opacity-100 items-center justify-center min-h-[200px]">
+        <div className="text-[var(--hud-font-size-sm)] uppercase tracking-[0.12em] text-[oklch(0.72_0.14_192/0.5)] animate-[holo-corner-pulse_2s_ease-in-out_infinite] motion-reduce:animate-none motion-reduce:opacity-50">
+          Loading...
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="settings-panel holo-refract-border holo-noise">
+    <div className="holo-refract-border holo-noise relative box-border flex h-screen max-h-screen max-w-screen flex-col gap-[var(--hud-space-xl)] overflow-hidden rounded-xl bg-[oklch(0.15_0.01_250/0.92)] p-5 animate-settings-in motion-reduce:animate-none motion-reduce:opacity-100">
       <Decorations />
       <Header name={characterName} connected={connected} />
 
-      <div className="settings-content">
+      <div className="relative z-[7] min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {!connected ? (
           <DisconnectedView onRetry={handleRetry} />
         ) : speakers.length === 0 ? (
@@ -159,9 +161,13 @@ function Decorations() {
 
 function Header({ name, connected }: { name: string; connected: boolean }) {
   return (
-    <div className="settings-header">
-      <h1 className="settings-title">VOICEVOX</h1>
-      <span className="settings-entity-name">{name}</span>
+    <div className="relative z-[7] flex flex-row items-center justify-between">
+      <h1 className="m-0 text-[var(--hud-font-size-base)] font-semibold uppercase tracking-[0.15em] text-[oklch(0.72_0.14_192/0.9)]">
+        VOICEVOX
+      </h1>
+      <span className="font-mono text-[var(--hud-font-size-sm)] text-[oklch(0.72_0.14_192/0.5)]">
+        {name}
+      </span>
       <span
         className={`voicevox-status ${connected ? 'voicevox-status--connected' : 'voicevox-status--disconnected'}`}
       >
@@ -208,7 +214,10 @@ function SettingsForm({
         </div>
       )}
 
-      <label className="settings-label" htmlFor="voicevox-speaker-select">
+      <label
+        className="flex flex-col gap-[var(--hud-space-sm)] text-[var(--hud-font-size-sm)] uppercase tracking-[0.1em] text-[oklch(0.72_0.14_192/0.7)]"
+        htmlFor="voicevox-speaker-select"
+      >
         Speaker
         <Select
           value={settings.speakerId === -1 ? undefined : String(settings.speakerId)}
@@ -236,7 +245,10 @@ function SettingsForm({
       <div className="voicevox-section-title">Voice Parameters</div>
 
       {PARAMS.map((param) => (
-        <label key={param.key} className="settings-label">
+        <label
+          key={param.key}
+          className="flex flex-col gap-[var(--hud-space-sm)] text-[var(--hud-font-size-sm)] uppercase tracking-[0.1em] text-[oklch(0.72_0.14_192/0.7)]"
+        >
           {param.label}
           <div className="settings-slider-row">
             <input
@@ -319,7 +331,7 @@ function Footer({
   disabled: boolean;
 }) {
   return (
-    <div className="settings-footer">
+    <div className="relative z-[7] flex justify-end gap-[var(--hud-space-md)] pt-[var(--hud-space-md)]">
       <button type="button" className="settings-close" onClick={onClose}>
         Close
       </button>
