@@ -5,12 +5,22 @@ interface GeneralTabProps {
   setAlpha: (v: number) => void;
 }
 
+const labelClasses =
+  'flex flex-col gap-1.5 text-xs uppercase tracking-[0.1em] text-[oklch(0.72_0.14_192/0.7)]';
+
+const descriptionClasses =
+  'text-[0.7rem] tracking-[0.04em] normal-case text-[oklch(0.55_0.02_250/0.6)] leading-[1.4]';
+
+const sliderRowClasses = 'flex flex-row items-center gap-3';
+
+const sliderValueClasses = 'min-w-[3.5em] text-right font-mono text-xs text-[oklch(0.72_0.14_192)]';
+
 export function GeneralTab({ fps, setFps, alpha, setAlpha }: GeneralTabProps) {
   return (
-    <div className="settings-section">
-      <label className="settings-label">
+    <div className="flex flex-col gap-4">
+      <label className={labelClasses}>
         Frame Rate
-        <div className="settings-slider-row">
+        <div className={sliderRowClasses}>
           <input
             type="range"
             className="settings-slider"
@@ -20,16 +30,16 @@ export function GeneralTab({ fps, setFps, alpha, setAlpha }: GeneralTabProps) {
             value={fps}
             onChange={(e) => setFps(Number(e.target.value))}
           />
-          <span className="settings-slider-value">{Math.round(fps)} fps</span>
+          <span className={sliderValueClasses}>{Math.round(fps)} fps</span>
         </div>
-        <span className="settings-description">
+        <span className={descriptionClasses}>
           Controls the rendering frame rate. Lower values reduce CPU/GPU usage.
         </span>
       </label>
 
-      <label className="settings-label">
+      <label className={labelClasses}>
         Shadow Opacity
-        <div className="settings-slider-row">
+        <div className={sliderRowClasses}>
           <input
             type="range"
             className="settings-slider"
@@ -39,9 +49,9 @@ export function GeneralTab({ fps, setFps, alpha, setAlpha }: GeneralTabProps) {
             value={alpha}
             onChange={(e) => setAlpha(Number(e.target.value))}
           />
-          <span className="settings-slider-value">{Math.round(alpha * 100)}%</span>
+          <span className={sliderValueClasses}>{Math.round(alpha * 100)}%</span>
         </div>
-        <span className="settings-description">
+        <span className={descriptionClasses}>
           Controls the transparency of the shadow panel overlay behind the character.
         </span>
       </label>
