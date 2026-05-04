@@ -1,15 +1,20 @@
 import { audio, Persona, Webview } from '@hmcs/sdk';
+import { cn, Tabs, TabsContent, TabsList, TabsTrigger, Toolbar } from '@hmcs/ui';
 import { PersonaDetailBody } from '@persona/shared/components/PersonaDetailBody';
 import { usePersonaDetail } from '@persona/shared/hooks/usePersonaDetail';
 import { useThumbnailImport } from '@persona/shared/hooks/useThumbnailImport';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AppearanceTab } from './components/AppearanceTab';
+import { Decorations } from './components/Decorations';
 import { useScale } from './hooks/useScale';
 
 type Tab = 'persona' | 'appearance';
 
 const NOOP = () => {};
 const DETAIL_CALLBACKS = { onDirtyChange: NOOP, onSaved: NOOP };
+
+const panelClasses =
+  'holo-noise relative box-border flex h-screen max-h-screen max-w-screen flex-col overflow-hidden rounded-xl bg-panel/92 animate-settings-in motion-reduce:animate-none motion-reduce:opacity-100';
 
 export function App() {
   const [personaId, setPersonaId] = useState<string | null>(null);
@@ -30,8 +35,8 @@ export function App() {
 
   if (!personaId) {
     return (
-      <div className="settings-panel settings-loading">
-        <div className="settings-loading-text">Loading...</div>
+      <div className={cn(panelClasses, 'items-center justify-center')}>
+        <div className="text-xs uppercase tracking-[0.12em] text-primary/50">Loading...</div>
       </div>
     );
   }
@@ -79,8 +84,8 @@ function SettingsContent({ personaId }: { personaId: string }) {
 
   if (!detail.snapshot || !detail.formValues || scaleState.loading) {
     return (
-      <div className="settings-panel settings-loading">
-        <div className="settings-loading-text">Loading...</div>
+      <div className={cn(panelClasses, 'items-center justify-center')}>
+        <div className="text-xs uppercase tracking-[0.12em] text-primary/50">Loading...</div>
       </div>
     );
   }
@@ -88,45 +93,27 @@ function SettingsContent({ personaId }: { personaId: string }) {
   const autoSpawn = detail.snapshot.metadata?.['auto-spawn'] === true;
   const name = detail.snapshot.name ?? '';
 
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'persona', label: 'Persona' },
-    { id: 'appearance', label: 'Appearance' },
-  ];
-
   return (
-    <div className="settings-panel holo-refract-border holo-noise">
-      {/* Decorative layers */}
-      <div className="settings-highlight" />
-      <div className="settings-bottom-line" />
-      <div className="settings-scanline" />
-      <span className="settings-corner settings-corner--tl" />
-      <span className="settings-corner settings-corner--tr" />
-      <span className="settings-corner settings-corner--bl" />
-      <span className="settings-corner settings-corner--br" />
+    <div className={panelClasses}>
+      <Decorations />
 
-      {/* Header */}
-      <div className="settings-header">
-        <h1 className="settings-title">Settings</h1>
-        <span className="settings-entity-name">{name}</span>
-      </div>
+      <Toolbar title="Settings" onClose={handleClose}>
+        {name && (
+          <span className="font-mono text-[10px] tracking-[0.04em] text-primary/50">{name}</span>
+        )}
+      </Toolbar>
 
-      {/* Tabs */}
-      <div className="settings-tabs">
-        {tabs.map((t) => (
-          <button
-            type="button"
-            key={t.id}
-            className={`settings-tab ${tab === t.id ? 'settings-tab--active' : ''}`}
-            onClick={() => setTab(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        value={tab}
+        onValueChange={(v) => setTab(v as Tab)}
+        className="relative z-[7] flex min-h-0 flex-1 flex-col"
+      >
+        <TabsList className="mx-5 mt-3 self-start">
+          <TabsTrigger value="persona">Persona</TabsTrigger>
+          <TabsTrigger value="appearance">Appearance</TabsTrigger>
+        </TabsList>
 
-      {/* Content */}
-      <div className="settings-content">
-        {tab === 'persona' && (
+        <TabsContent value="persona" className="no-scrollbar flex-1 overflow-y-auto p-5">
           <PersonaDetailBody
             personaId={personaId}
             thumbnailUrl={persona.thumbnailUrl(detail.thumbnail)}
@@ -138,8 +125,9 @@ function SettingsContent({ personaId }: { personaId: string }) {
             formValues={detail.formValues}
             onFormChange={detail.setFormValues}
           />
-        )}
-        {tab === 'appearance' && (
+        </TabsContent>
+
+        <TabsContent value="appearance" className="no-scrollbar flex-1 overflow-y-auto p-5">
           <AppearanceTab
             scale={scaleState.scale}
             onScaleChange={scaleState.setScale}
@@ -148,23 +136,38 @@ function SettingsContent({ personaId }: { personaId: string }) {
             onBehaviorProcessChange={detail.setBehaviorProcess}
             onBehaviorAnimationsChange={detail.setBehaviorAnimations}
           />
-        )}
-      </div>
+        </TabsContent>
+      </Tabs>
 
-      {/* Footer */}
-      <div className="settings-footer">
-        <button type="button" className="settings-close" onClick={handleClose}>
-          Close
-        </button>
-        <button
-          type="button"
-          className={`settings-save ${saved ? 'settings-save--success' : ''}`}
-          onClick={handleSave}
-          disabled={saving}
-        >
-          {saving ? 'Saving...' : saved ? 'Saved!' : 'Save'}
-        </button>
-      </div>
+      <Footer onSave={handleSave} saving={saving} saved={saved} />
+    </div>
+  );
+}
+
+function Footer({
+  onSave,
+  saving,
+  saved,
+}: {
+  onSave: () => void;
+  saving: boolean;
+  saved: boolean;
+}) {
+  return (
+    <div className="relative z-[7] flex shrink-0 justify-end gap-2 border-t border-primary/12 bg-primary/4 px-3.5 py-2">
+      <button
+        type="button"
+        className={cn(
+          'cursor-pointer rounded-md border px-5 py-2 text-xs uppercase tracking-[0.08em] transition-[background,border-color,box-shadow,color] duration-200 ease-out active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50',
+          saved
+            ? 'border-success/40 bg-success/15 text-success hover:border-success/50 hover:bg-success/20 hover:shadow-holo-sm'
+            : 'border-primary/30 bg-primary/15 text-primary hover:border-primary/50 hover:bg-primary/25 hover:shadow-holo-sm',
+        )}
+        onClick={onSave}
+        disabled={saving}
+      >
+        {saving ? 'Saving...' : saved ? 'Saved!' : 'Save'}
+      </button>
     </div>
   );
 }
