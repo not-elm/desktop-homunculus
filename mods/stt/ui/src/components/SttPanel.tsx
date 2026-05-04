@@ -109,9 +109,7 @@ function ModelCard({
         </>
       )}
 
-      {isReady && (
-        <span className="text-[0.7rem] tracking-[0.04em] text-success">✓ Ready</span>
-      )}
+      {isReady && <span className="text-[0.7rem] tracking-[0.04em] text-success">✓ Ready</span>}
     </div>
   );
 }

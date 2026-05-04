@@ -1,6 +1,6 @@
+import { cn } from '@hmcs/ui';
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 import { useRef } from 'react';
-import { cn } from '@hmcs/ui';
 import type { AgeValue } from '../PersonaFields';
 
 interface AgeFieldProps {
@@ -92,12 +92,7 @@ export function AgeField({ value, onChange, disabled }: AgeFieldProps) {
           Unknown
         </RadioGroupPrimitive.Item>
       </RadioGroupPrimitive.Root>
-      <div
-        className={valueAreaClasses}
-        role="status"
-        aria-live="polite"
-        data-mode={mode}
-      >
+      <div className={valueAreaClasses} role="status" aria-live="polite" data-mode={mode}>
         {mode === 'unknown' ? (
           <span className="text-center font-mono text-[0.95rem] text-holo-violet tabular-nums">
             Unknown

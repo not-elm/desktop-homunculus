@@ -38,10 +38,7 @@ function Textarea({ className, size, ...props }: TextareaProps) {
   );
 }
 
-type TextareaAutosizeProps = Omit<
-  React.ComponentProps<typeof TextareaAutosizeComponent>,
-  'size'
-> &
+type TextareaAutosizeProps = Omit<React.ComponentProps<typeof TextareaAutosizeComponent>, 'size'> &
   VariantProps<typeof textareaVariants>;
 
 function TextareaAutosize({ className, size, ...props }: TextareaAutosizeProps) {
@@ -59,7 +56,7 @@ function TextareaAutosize({ className, size, ...props }: TextareaAutosizeProps) 
 export {
   Textarea,
   TextareaAutosize,
-  textareaVariants,
-  type TextareaProps,
   type TextareaAutosizeProps,
+  type TextareaProps,
+  textareaVariants,
 };

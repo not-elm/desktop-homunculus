@@ -39,4 +39,4 @@ function Input({ className, type, size, ...props }: InputProps) {
   );
 }
 
-export { Input, inputVariants, type InputProps };
+export { Input, type InputProps, inputVariants };

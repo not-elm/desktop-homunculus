@@ -127,7 +127,10 @@ function SettingsContent({ personaId }: { personaId: string }) {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="persona" className="no-scrollbar flex-1 overflow-y-auto px-[18px] py-[14px]">
+        <TabsContent
+          value="persona"
+          className="no-scrollbar flex-1 overflow-y-auto px-[18px] py-[14px]"
+        >
           <PersonaDetailBody
             personaId={personaId}
             thumbnailUrl={persona.thumbnailUrl(detail.thumbnail)}
@@ -141,7 +144,10 @@ function SettingsContent({ personaId }: { personaId: string }) {
           />
         </TabsContent>
 
-        <TabsContent value="appearance" className="no-scrollbar flex-1 overflow-y-auto px-[18px] py-[14px]">
+        <TabsContent
+          value="appearance"
+          className="no-scrollbar flex-1 overflow-y-auto px-[18px] py-[14px]"
+        >
           <AppearanceTab
             scale={scaleState.scale}
             onScaleChange={scaleState.setScale}

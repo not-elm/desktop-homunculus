@@ -24,8 +24,7 @@ const labelClasses = 'flex flex-col gap-1.5 text-xs uppercase tracking-[0.1em] t
 const descriptionClasses =
   'text-[0.7rem] tracking-[0.04em] normal-case leading-[1.4] text-hud-text-subdued';
 
-const sectionHeadingClasses =
-  'text-[0.7rem] uppercase tracking-[0.12em] text-hud-text-subdued';
+const sectionHeadingClasses = 'text-[0.7rem] uppercase tracking-[0.12em] text-hud-text-subdued';
 
 const sliderBoxClasses =
   'flex flex-row items-center gap-3 rounded-md border border-primary/20 bg-input px-3 py-2.5';
