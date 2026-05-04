@@ -74,6 +74,7 @@
       }
     }
   },
+  "plugins": ["./.biome-plugins/no-inline-style.grit"],
   "assist": {
     "enabled": true,
     "actions": {
