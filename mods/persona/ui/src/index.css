@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "@hmcs/ui/dist/index.css";
 
+/* Tailwind v4 does not auto-follow path aliases; @source ensures classes used
+   in @persona/shared/components are included in CSS generation. */
+@source "../../shared/**/*.{ts,tsx}";
+
 body {
   background: transparent;
 }
