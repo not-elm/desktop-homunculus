@@ -72,6 +72,7 @@
   /* Persona-derived auxiliary surfaces (extend --hud-* family) */
   --color-hud-surface-toggle-off: var(--hud-surface-toggle-off);
   --color-hud-text-subdued: var(--hud-text-subdued);
+  --color-hud-surface-elevated: var(--hud-surface-elevated);
 
   /* Holographic shadow system — luminous glow effects */
   --shadow-holo-xs: inset 0 0 6px oklch(0.72 0.14 192 / 0.08), 0 0 4px oklch(0.72 0.14 192 / 0.04);
@@ -136,6 +137,7 @@
 
   --hud-surface-toggle-off: oklch(0.85 0.01 250);
   --hud-text-subdued: oklch(0.5 0.02 250);
+  --hud-surface-elevated: oklch(0.85 0.02 250 / 0.6);
 
   /* Light mode shadow overrides — ~50% opacity of dark mode */
   --shadow-holo-xs: inset 0 0 6px oklch(0.65 0.15 192 / 0.04), 0 0 4px oklch(0.65 0.15 192 / 0.02);
@@ -208,6 +210,7 @@
 
   --hud-surface-toggle-off: oklch(0.25 0.01 250);
   --hud-text-subdued: oklch(0.45 0.02 250);
+  --hud-surface-elevated: oklch(0.18 0.02 250 / 0.5);
 
   /* Dark mode shadow values (full intensity) */
   --shadow-holo-xs: inset 0 0 6px oklch(0.72 0.14 192 / 0.08), 0 0 4px oklch(0.72 0.14 192 / 0.04);
