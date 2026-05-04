@@ -10,7 +10,7 @@ export function Decorations() {
       <HudHighlight />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 left-[10%] right-[10%] z-10 h-px bg-[linear-gradient(90deg,transparent,oklch(0.7_0.16_350/0.15)_30%,oklch(0.65_0.18_285/0.1)_50%,oklch(0.72_0.14_192/0.15)_70%,transparent)]"
+        className="pointer-events-none absolute bottom-0 left-[10%] right-[10%] z-10 h-px [background:linear-gradient(90deg,transparent,color-mix(in_oklab,var(--holo-rose),transparent_85%)_30%,color-mix(in_oklab,var(--holo-violet),transparent_90%)_50%,color-mix(in_oklab,var(--primary),transparent_85%)_70%,transparent)]"
       />
       <HudScanline />
       <HudCorner position="tl" />
@@ -29,7 +29,7 @@ function HudHighlight() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute left-0 right-0 top-0 z-10 h-px rounded-[inherit] bg-[linear-gradient(90deg,transparent_5%,oklch(0.72_0.14_192/0.35)_20%,oklch(0.65_0.18_285/0.25)_50%,oklch(0.7_0.16_350/0.35)_80%,transparent_95%)] after:absolute after:inset-0 after:bg-[linear-gradient(90deg,transparent_0%,oklch(1_0_0/0.15)_45%,oklch(1_0_0/0.25)_50%,oklch(1_0_0/0.15)_55%,transparent_100%)] after:bg-[length:200%_100%] after:[content:''] after:animate-holo-highlight-sweep after:[animation-delay:1s] motion-reduce:after:animate-none"
+      className="pointer-events-none absolute left-0 right-0 top-0 z-10 h-px rounded-[inherit] [background:linear-gradient(90deg,transparent_5%,color-mix(in_oklab,var(--primary),transparent_65%)_20%,color-mix(in_oklab,var(--holo-violet),transparent_75%)_50%,color-mix(in_oklab,var(--holo-rose),transparent_65%)_80%,transparent_95%)] after:absolute after:inset-0 after:[background:linear-gradient(90deg,transparent_0%,color-mix(in_oklab,white,transparent_85%)_45%,color-mix(in_oklab,white,transparent_75%)_50%,color-mix(in_oklab,white,transparent_85%)_55%,transparent_100%)] after:bg-[length:200%_100%] after:[content:''] after:animate-holo-highlight-sweep after:[animation-delay:1s] motion-reduce:after:animate-none"
     />
   );
 }
@@ -42,7 +42,7 @@ function HudScanline() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-[6] overflow-hidden rounded-[inherit] after:absolute after:left-0 after:right-0 after:h-10 after:bg-[linear-gradient(180deg,transparent,oklch(0.72_0.14_192/0.03)_40%,oklch(0.72_0.14_192/0.05)_50%,oklch(0.72_0.14_192/0.03)_60%,transparent)] after:[content:''] after:animate-holo-scanline motion-reduce:after:animate-none"
+      className="pointer-events-none absolute inset-0 z-[6] overflow-hidden rounded-[inherit] after:absolute after:left-0 after:right-0 after:h-10 after:[background:linear-gradient(180deg,transparent,color-mix(in_oklab,var(--primary),transparent_97%)_40%,color-mix(in_oklab,var(--primary),transparent_95%)_50%,color-mix(in_oklab,var(--primary),transparent_97%)_60%,transparent)] after:[content:''] after:animate-holo-scanline motion-reduce:after:animate-none"
     />
   );
 }
@@ -50,10 +50,10 @@ function HudScanline() {
 type Position = 'tl' | 'tr' | 'bl' | 'br';
 
 const positionClasses: Record<Position, string> = {
-  tl: '-top-px -left-px border-t-[1.5px] border-l-[1.5px] border-t-[oklch(0.72_0.14_192/0.6)] border-l-[oklch(0.72_0.14_192/0.6)] [filter:drop-shadow(0_0_3px_oklch(0.72_0.14_192/0.3))]',
-  tr: '-top-px -right-px border-t-[1.5px] border-r-[1.5px] border-t-[oklch(0.65_0.18_285/0.4)] border-r-[oklch(0.65_0.18_285/0.4)] [filter:drop-shadow(0_0_3px_oklch(0.65_0.18_285/0.2))] [animation-delay:0.75s]',
-  bl: '-bottom-px -left-px border-b-[1.5px] border-l-[1.5px] border-b-[oklch(0.65_0.18_285/0.4)] border-l-[oklch(0.65_0.18_285/0.4)] [filter:drop-shadow(0_0_3px_oklch(0.65_0.18_285/0.2))] [animation-delay:1.5s]',
-  br: '-bottom-px -right-px border-b-[1.5px] border-r-[1.5px] border-b-[oklch(0.7_0.16_350/0.4)] border-r-[oklch(0.7_0.16_350/0.4)] [filter:drop-shadow(0_0_3px_oklch(0.7_0.16_350/0.2))] [animation-delay:2.25s]',
+  tl: '-top-px -left-px border-t-[1.5px] border-l-[1.5px] border-t-primary/60 border-l-primary/60 [filter:drop-shadow(0_0_3px_var(--primary))]',
+  tr: '-top-px -right-px border-t-[1.5px] border-r-[1.5px] border-t-holo-violet/40 border-r-holo-violet/40 [filter:drop-shadow(0_0_3px_var(--holo-violet))] [animation-delay:0.75s]',
+  bl: '-bottom-px -left-px border-b-[1.5px] border-l-[1.5px] border-b-holo-violet/40 border-l-holo-violet/40 [filter:drop-shadow(0_0_3px_var(--holo-violet))] [animation-delay:1.5s]',
+  br: '-bottom-px -right-px border-b-[1.5px] border-r-[1.5px] border-b-holo-rose/40 border-r-holo-rose/40 [filter:drop-shadow(0_0_3px_var(--holo-rose))] [animation-delay:2.25s]',
 };
 
 /**
