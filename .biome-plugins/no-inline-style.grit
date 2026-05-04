@@ -1,0 +1,45 @@
+// Layer 3 of the Tailwind utility-first enforcement (see .claude/rules/tailwind-style.md).
+//
+// Layer 1: documented rules in .claude/rules/tailwind-style.md (source of truth).
+// Layer 2: scripts/check-styling.sh — bash heuristic invoked via `pnpm lint:styling`.
+// Layer 3: this Grit plugin — AST-aware safety net for inline JSX `style={...}` patterns.
+//
+// Two patterns are matched:
+//
+//   1. Static `style={{ ... }}` whose object literal contains no template expressions,
+//      no function calls, no member-access values, and no spreads. These are 100%
+//      static and can always be expressed as Tailwind utility classes.
+//
+//   2. `style={someIdentifier}` — passing a pre-built style object hides the contents
+//      from reviewers and bypasses the literal-object check above. Inline the literal
+//      (so the dynamic parts are visible) or convert to Tailwind classes.
+//
+// Intentionally NOT flagged:
+//   - `style={{ width: `${w}%` }}` — template literal value (dynamic).
+//   - `style={{ ...base, width: '100%' }}` — spread (caller composition).
+//   - `style={{ width: getValue() }}` — function call value (dynamic).
+//   - `style={{ background: item.color }}` — member-access value (dynamic data).
+//   - `style={{ ... } as React.CSSProperties}` — TS cast around an object literal,
+//     which appears in shadcn/ui chart components and is dynamic in practice.
+
+language js(jsx);
+
+or {
+  `style={{$props}}` where {
+    $props <: not contains JsTemplateExpression(),
+    $props <: not contains `$f($args)`,
+    $props <: not contains `...$x`,
+    $props <: not contains `$o.$p`,
+    register_diagnostic(
+      span = $props,
+      message = "Static inline `style={{...}}`: use Tailwind utility classes instead. See .claude/rules/tailwind-style.md."
+    )
+  },
+  `style={$id}` where {
+    $id <: JsIdentifierExpression(),
+    register_diagnostic(
+      span = $id,
+      message = "Avoid `style={identifier}` — inline the literal object so reviewers can see exactly what is dynamic, or convert to Tailwind utility classes. See .claude/rules/tailwind-style.md."
+    )
+  }
+}

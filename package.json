@@ -11,6 +11,9 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "lint:ci": "biome ci .",
+    "lint:styling": "bash scripts/check-styling.sh",
+    "lint:styling:full": "bash scripts/check-styling.sh --full",
+    "lint:styling:test": "bash scripts/test-check-styling.sh",
     "format": "biome format --write ."
   },
   "devDependencies": {

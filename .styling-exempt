@@ -1,0 +1,15 @@
+# Files exempted from the Biome inline-style enforcement plugin.
+# Each line is a glob path, matched relative to repo root.
+# Add new entries with PR review justification.
+#
+# Note: this file is currently a future-extension placeholder. The
+# .biome-plugins/no-inline-style.grit plugin does not (yet) read this file —
+# Biome 2.4 GritQL plugins do not have a built-in glob-exemption mechanism.
+# When an exemption is genuinely required, options are:
+#   1. Add a `// biome-ignore lint/plugin: <reason>` comment above the line.
+#   2. Wire the file path into the Grit predicate via a project-level
+#      override block in biome.json (see .claude/rules/tailwind-style.md).
+#
+# Empty exemption list — add entries only when an identifier-based or
+# all-static inline style is truly necessary (e.g., third-party component
+# prop forwarding, generated chart wrappers).
