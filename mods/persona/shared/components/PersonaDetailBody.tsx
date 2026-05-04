@@ -65,7 +65,7 @@ function LeftColumn({
   onAutoSpawnToggle: () => void;
 }) {
   return (
-    <div className="flex w-44 shrink-0 flex-col gap-3">
+    <div className="flex w-32 shrink-0 flex-col gap-3">
       <ThumbnailCard thumbnailUrl={thumbnailUrl} onThumbnailChange={onThumbnailChange} />
 
       <VrmSelect personaId={personaId} value={vrmAssetId} onChange={onVrmChange} />
