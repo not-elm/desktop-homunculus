@@ -11,7 +11,6 @@ export function NameField({ value, onChange, disabled }: NameFieldProps) {
     <Label className="flex flex-col gap-1.5 text-xs uppercase tracking-[0.1em] text-primary/70">
       Name
       <Input
-        size="sm"
         value={value}
         placeholder="Name"
         onChange={(e) => onChange(e.target.value)}

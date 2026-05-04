@@ -65,7 +65,7 @@ function LeftColumn({
   onAutoSpawnToggle: () => void;
 }) {
   return (
-    <div className="flex w-[140px] shrink-0 flex-col gap-3">
+    <div className="flex w-[160px] shrink-0 flex-col gap-3">
       <ThumbnailCard thumbnailUrl={thumbnailUrl} onThumbnailChange={onThumbnailChange} />
 
       <VrmSelect personaId={personaId} value={vrmAssetId} onChange={onVrmChange} />
@@ -101,12 +101,7 @@ function RightColumn({
     <div className="flex min-w-0 flex-1 flex-col gap-3">
       <div className="flex flex-col gap-1.5">
         <div className="text-xs uppercase tracking-[0.1em] text-primary/70">ID</div>
-        <Input
-          size="sm"
-          value={personaId}
-          readOnly
-          className="cursor-not-allowed opacity-50"
-        />
+        <Input value={personaId} readOnly className="cursor-not-allowed opacity-50" />
       </div>
       <PersonaFields values={formValues} onChange={onFormChange} />
     </div>

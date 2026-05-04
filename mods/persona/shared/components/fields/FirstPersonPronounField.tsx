@@ -15,7 +15,6 @@ export function FirstPersonPronounField({
     <Label className="flex flex-col gap-1.5 text-xs uppercase tracking-[0.1em] text-primary/70">
       First Person Pronoun
       <Input
-        size="sm"
         value={value}
         placeholder="e.g. watashi, boku, ore"
         onChange={(e) => onChange(e.target.value)}

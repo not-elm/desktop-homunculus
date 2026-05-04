@@ -19,7 +19,7 @@ export function GenderField({ value, onChange, disabled }: GenderFieldProps) {
     <Label className="flex flex-col gap-1.5 text-xs uppercase tracking-[0.1em] text-primary/70">
       Gender
       <Select value={value} onValueChange={(v) => onChange(v as Gender)} disabled={disabled}>
-        <SelectTrigger size="sm" className="w-full">
+        <SelectTrigger className="w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
