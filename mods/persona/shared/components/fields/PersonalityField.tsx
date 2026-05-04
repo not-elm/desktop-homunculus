@@ -8,7 +8,7 @@ interface PersonalityFieldProps {
 
 export function PersonalityField({ value, onChange, disabled }: PersonalityFieldProps) {
   return (
-    <Label className="flex flex-col gap-1.5 text-xs uppercase tracking-[0.1em] text-primary/70">
+    <Label className="flex flex-col items-start gap-1.5 text-xs uppercase tracking-[0.1em] text-primary/70">
       Personality
       <Textarea
         rows={3}
