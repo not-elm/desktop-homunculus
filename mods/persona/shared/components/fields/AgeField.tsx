@@ -1,6 +1,6 @@
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 import { useRef } from 'react';
-import { cn, Input } from '@hmcs/ui';
+import { cn } from '@hmcs/ui';
 import type { AgeValue } from '../PersonaFields';
 
 interface AgeFieldProps {
@@ -16,19 +16,22 @@ const segmentsClasses = cn(
 );
 
 const segmentClasses = cn(
-  'flex flex-1 cursor-pointer items-center justify-center text-xs font-medium uppercase tracking-[0.08em] transition-colors',
+  'flex flex-1 cursor-pointer items-center justify-center border-b-2 border-transparent bg-transparent py-1.5 text-xs font-medium uppercase tracking-[0.08em] transition-colors',
   'text-muted-foreground',
-  'hover:text-foreground',
-  // active (data-state=checked) styling per data-mode
-  'data-[state=checked][data-mode=specify]:bg-input/80 data-[state=checked][data-mode=specify]:text-primary data-[state=checked][data-mode=specify]:[text-shadow:0_0_12px_var(--primary)]',
-  'data-[state=checked][data-mode=unknown]:bg-input/80 data-[state=checked][data-mode=unknown]:text-holo-violet data-[state=checked][data-mode=unknown]:[text-shadow:0_0_12px_var(--holo-violet)]',
+  // hover varies by mode (specify → cyan, unknown → violet)
+  'data-[mode=specify]:hover:text-primary',
+  'data-[mode=unknown]:hover:text-holo-violet',
+  // active (data-state=checked) — underline indicator + light background (not solid fill)
+  'data-[state=checked][data-mode=specify]:border-b-primary/80 data-[state=checked][data-mode=specify]:bg-hud-surface-elevated data-[state=checked][data-mode=specify]:text-primary data-[state=checked][data-mode=specify]:[text-shadow:0_0_12px_color-mix(in_oklab,var(--primary),transparent_70%)]',
+  'data-[state=checked][data-mode=unknown]:border-b-holo-violet/80 data-[state=checked][data-mode=unknown]:bg-hud-surface-elevated data-[state=checked][data-mode=unknown]:text-holo-violet data-[state=checked][data-mode=unknown]:[text-shadow:0_0_12px_color-mix(in_oklab,var(--holo-violet),transparent_70%)]',
+  'focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2',
   'disabled:cursor-not-allowed disabled:opacity-50',
 );
 
 const valueAreaClasses = cn(
-  'mt-1.5 flex h-9 items-center rounded-md border px-3 transition-colors',
-  'border-primary/20 focus-within:border-primary/50 focus-within:[box-shadow:0_0_8px_var(--primary)]',
-  'data-[mode=unknown]:border-holo-violet/20 data-[mode=unknown]:focus-within:border-holo-violet/50',
+  'mt-1.5 flex h-9 items-center justify-center rounded-md border bg-input px-3 py-2 transition-[border-color,box-shadow]',
+  'border-primary/20 focus-within:border-primary/50 focus-within:[box-shadow:0_0_8px_color-mix(in_oklab,var(--primary),transparent_85%),inset_0_0_4px_color-mix(in_oklab,var(--primary),transparent_95%)]',
+  'data-[mode=unknown]:border-holo-violet/20 data-[mode=unknown]:focus-within:border-holo-violet/50 data-[mode=unknown]:focus-within:[box-shadow:0_0_8px_color-mix(in_oklab,var(--holo-violet),transparent_85%),inset_0_0_4px_color-mix(in_oklab,var(--holo-violet),transparent_95%)]',
 );
 
 export function AgeField({ value, onChange, disabled }: AgeFieldProps) {
@@ -98,15 +101,16 @@ export function AgeField({ value, onChange, disabled }: AgeFieldProps) {
         data-mode={mode}
       >
         {mode === 'unknown' ? (
-          <span className="font-mono text-sm text-holo-violet">Unknown</span>
+          <span className="text-center font-mono text-[0.95rem] text-holo-violet tabular-nums">
+            Unknown
+          </span>
         ) : (
-          <Input
+          <input
             ref={inputRef}
             type="text"
             inputMode="numeric"
             pattern="[0-9]*"
-            size="sm"
-            className="h-auto border-0 bg-transparent p-0 font-mono text-sm text-foreground shadow-none focus-visible:border-0 focus-visible:shadow-none focus-visible:ring-0"
+            className="w-full border-0 bg-transparent p-0 text-center font-mono text-[0.95rem] text-foreground tabular-nums outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             value={String(value.age)}
             onChange={(e) => handleInput(e.target.value)}
             aria-label="Age value"
