@@ -14,6 +14,9 @@ import DetailView from './components/DetailView';
 import Sidebar from './components/Sidebar';
 import { usePersonaManagement } from './hooks/usePersonaManagement';
 
+const panelClasses =
+  'relative box-border flex h-screen max-h-screen max-w-screen flex-col overflow-hidden rounded-xl bg-panel/92 animate-settings-in motion-reduce:animate-none motion-reduce:opacity-100';
+
 export default function App() {
   const mgmt = usePersonaManagement();
   const dirtyRef = useRef(false);
@@ -74,26 +77,26 @@ export default function App() {
 
   if (mgmt.loading) {
     return (
-      <div className="management-panel">
+      <div className={panelClasses}>
         <Toolbar title="Persona" onClose={handleClose} />
-        <div className="main-loading">
-          <div className="main-loading-text">Loading...</div>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="text-xs uppercase tracking-[0.12em] text-primary/50">Loading...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="management-panel">
+    <div className={panelClasses}>
       <Toolbar title="Persona" onClose={handleClose} />
-      <div className="management-body">
+      <div className="flex min-h-0 flex-1 flex-row">
         <Sidebar
           personas={mgmt.personas}
           selectedId={mgmt.createMode ? null : mgmt.selectedId}
           onSelect={handleSelectPersona}
           onCreateClick={handleCreateClick}
         />
-        <div className="main-area">
+        <div className="flex flex-1 min-w-0 flex-col">
           {mgmt.createMode ? (
             <CreateForm onCreate={mgmt.createPersona} onCancel={mgmt.exitCreateMode} />
           ) : mgmt.selectedId ? (
@@ -105,9 +108,13 @@ export default function App() {
               onDelete={handleDelete}
             />
           ) : (
-            <div className="main-empty">
-              <div className="main-empty-text">No personas yet</div>
-              <button type="button" className="management-btn" onClick={mgmt.enterCreateMode}>
+            <div className="flex flex-1 flex-col items-center justify-center gap-3">
+              <div className="text-sm text-muted-foreground">No personas yet</div>
+              <button
+                type="button"
+                onClick={mgmt.enterCreateMode}
+                className="cursor-pointer rounded-md border border-primary/30 bg-primary/15 px-5 py-2 text-xs uppercase tracking-[0.08em] text-primary transition-[background,border-color] duration-200 hover:border-primary/50 hover:bg-primary/25"
+              >
                 + Create
               </button>
             </div>
@@ -143,14 +150,14 @@ function DiscardDialog({
         <DialogFooter>
           <button
             type="button"
-            className="management-btn management-btn--secondary"
+            className="cursor-pointer rounded-md border border-muted-foreground/25 bg-transparent px-5 py-2 text-xs uppercase tracking-[0.08em] text-muted-foreground transition-colors duration-200 hover:border-muted-foreground/45 hover:text-foreground"
             onClick={onCancel}
           >
             Cancel
           </button>
           <button
             type="button"
-            className="management-btn management-btn--danger"
+            className="cursor-pointer rounded-md border border-destructive/40 bg-destructive/15 px-5 py-2 text-xs uppercase tracking-[0.08em] text-destructive transition-colors duration-200 hover:border-destructive/55 hover:bg-destructive/25"
             onClick={onConfirm}
           >
             Discard
