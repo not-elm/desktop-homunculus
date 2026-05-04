@@ -32,7 +32,7 @@ export function PersonaDetailBody({
   onFormChange,
 }: PersonaDetailBodyProps) {
   return (
-    <div className="flex flex-row gap-6">
+    <div className="flex flex-row gap-5">
       <LeftColumn
         personaId={personaId}
         thumbnailUrl={thumbnailUrl}
@@ -65,7 +65,7 @@ function LeftColumn({
   onAutoSpawnToggle: () => void;
 }) {
   return (
-    <div className="flex w-32 shrink-0 flex-col gap-3">
+    <div className="flex w-[140px] shrink-0 flex-col gap-3">
       <ThumbnailCard thumbnailUrl={thumbnailUrl} onThumbnailChange={onThumbnailChange} />
 
       <VrmSelect personaId={personaId} value={vrmAssetId} onChange={onVrmChange} />
@@ -81,6 +81,7 @@ function LeftColumn({
           checked={autoSpawn}
           onCheckedChange={() => onAutoSpawnToggle()}
           aria-label="Toggle auto spawn"
+          className="h-4 w-8 [&>span]:size-3 [&>span]:data-[state=checked]:translate-x-4"
         />
       </div>
     </div>
@@ -97,10 +98,15 @@ function RightColumn({
   onFormChange: (values: PersonaFormValues) => void;
 }) {
   return (
-    <div className="flex flex-1 flex-col gap-3">
+    <div className="flex min-w-0 flex-1 flex-col gap-3">
       <div className="flex flex-col gap-1.5">
         <div className="text-xs uppercase tracking-[0.1em] text-primary/70">ID</div>
-        <Input value={personaId} readOnly className="cursor-not-allowed opacity-50" />
+        <Input
+          size="sm"
+          value={personaId}
+          readOnly
+          className="cursor-not-allowed opacity-50"
+        />
       </div>
       <PersonaFields values={formValues} onChange={onFormChange} />
     </div>

@@ -97,7 +97,11 @@ function SettingsContent({ personaId }: { personaId: string }) {
     <div className={panelClasses}>
       <Decorations />
 
-      <Toolbar title="Settings" onClose={handleClose}>
+      <Toolbar
+        title="Settings"
+        onClose={handleClose}
+        className="border-b-0 bg-transparent px-5 pt-4 pb-0"
+      >
         {name && (
           <span className="font-mono text-[10px] tracking-[0.04em] text-primary/50">{name}</span>
         )}
@@ -106,14 +110,24 @@ function SettingsContent({ personaId }: { personaId: string }) {
       <Tabs
         value={tab}
         onValueChange={(v) => setTab(v as Tab)}
-        className="relative z-[7] flex min-h-0 flex-1 flex-col"
+        className="relative z-[7] flex min-h-0 flex-1 flex-col gap-0"
       >
-        <TabsList className="mx-5 mt-3 self-start">
-          <TabsTrigger value="persona">Persona</TabsTrigger>
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
+        <TabsList className="mx-5 mt-2 h-auto justify-start gap-1 rounded-none border-0 border-b border-primary/12 bg-transparent p-0">
+          <TabsTrigger
+            value="persona"
+            className="rounded-none border-0 px-4 py-2 text-xs font-medium uppercase tracking-[0.08em] data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:[box-shadow:inset_0_-2px_0_var(--primary)]"
+          >
+            Persona
+          </TabsTrigger>
+          <TabsTrigger
+            value="appearance"
+            className="rounded-none border-0 px-4 py-2 text-xs font-medium uppercase tracking-[0.08em] data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:[box-shadow:inset_0_-2px_0_var(--primary)]"
+          >
+            Appearance
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="persona" className="no-scrollbar flex-1 overflow-y-auto p-5">
+        <TabsContent value="persona" className="no-scrollbar flex-1 overflow-y-auto px-[18px] py-[14px]">
           <PersonaDetailBody
             personaId={personaId}
             thumbnailUrl={persona.thumbnailUrl(detail.thumbnail)}
@@ -127,7 +141,7 @@ function SettingsContent({ personaId }: { personaId: string }) {
           />
         </TabsContent>
 
-        <TabsContent value="appearance" className="no-scrollbar flex-1 overflow-y-auto p-5">
+        <TabsContent value="appearance" className="no-scrollbar flex-1 overflow-y-auto px-[18px] py-[14px]">
           <AppearanceTab
             scale={scaleState.scale}
             onScaleChange={scaleState.setScale}
