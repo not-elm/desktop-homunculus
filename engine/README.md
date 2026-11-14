@@ -1,6 +1,6 @@
 # Desktop Homunculus Engine
 
-The Rust workspace powering Desktop Homunculus — a transparent-window [Bevy 0.18](https://bevyengine.org/) application that renders VRM 3D characters with [CEF](https://bitbucket.org/chromiumembedded/cef)-based WebView overlays.
+The Rust workspace powering Desktop Homunculus — a transparent-window [Bevy 0.20](https://bevyengine.org/) application that renders VRM 3D characters with [CEF](https://bitbucket.org/chromiumembedded/cef)-based WebView overlays.
 
 ## Architecture
 

@@ -22,7 +22,7 @@ cargo test -p homunculus_http_server test_health # Single test by name
 
 ## Architecture
 
-This is the Rust workspace portion of the Desktop Homunculus monorepo — a transparent-window Bevy 0.18 application with VRM 3D characters and CEF-based WebViews.
+This is the Rust workspace portion of the Desktop Homunculus monorepo — a transparent-window Bevy 0.20 application with VRM 3D characters and CEF-based WebViews.
 
 ### Three-Layer Architecture
 
