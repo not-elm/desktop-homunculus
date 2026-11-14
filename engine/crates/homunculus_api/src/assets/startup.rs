@@ -81,12 +81,12 @@ mod tests {
         let mut app = App::new();
         app.add_plugins(MinimalPlugins)
             .init_resource::<AssetRegistry>()
-            .insert_non_send_resource(PrefsDatabase::open_in_memory())
+            .insert_non_send(PrefsDatabase::open_in_memory())
             .add_systems(Startup, restore_imported_assets);
 
         // Insert an imported asset into the database before startup
         {
-            let prefs = app.world().non_send_resource::<PrefsDatabase>();
+            let prefs = app.world().non_send::<PrefsDatabase>();
             prefs
                 .upsert_imported_asset(
                     "vrm:local:test",
@@ -115,11 +115,11 @@ mod tests {
         let mut app = App::new();
         app.add_plugins(MinimalPlugins)
             .init_resource::<AssetRegistry>()
-            .insert_non_send_resource(PrefsDatabase::open_in_memory())
+            .insert_non_send(PrefsDatabase::open_in_memory())
             .add_systems(Startup, restore_imported_assets);
 
         {
-            let prefs = app.world().non_send_resource::<PrefsDatabase>();
+            let prefs = app.world().non_send::<PrefsDatabase>();
             prefs
                 .upsert_imported_asset("bad:type", None, "/some/path", "unknown", None, None)
                 .unwrap();

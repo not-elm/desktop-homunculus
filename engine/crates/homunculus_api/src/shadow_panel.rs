@@ -50,7 +50,7 @@ fn load_preference(
         .and_then(|v| v.as_f64())
         .map(|v| v as f32)
         && let Ok(handle) = shadow_panel.single()
-        && let Some(material) = materials.get_mut(handle)
+        && let Some(mut material) = materials.get_mut(handle)
     {
         material.alpha_factor = alpha;
     };
@@ -74,7 +74,7 @@ fn set_shadow_panel_alpha(
     let Ok(handle) = shadow_panel.single() else {
         return;
     };
-    if let Some(material) = materials.get_mut(handle) {
+    if let Some(mut material) = materials.get_mut(handle) {
         material.alpha_factor = alpha;
     }
     let _ = prefs.save_as(PrefsKeys::SHADOW_PANEL_ALPHA, &alpha);
