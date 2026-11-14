@@ -54,9 +54,9 @@ def command_exists(name: str) -> bool:
 HOME = Path.home()
 
 # macOS
-CEF_FRAMEWORK_DIR = HOME / ".local" / "share" / "Chromium Embedded Framework.framework"
+CEF_FRAMEWORK_DIR = HOME / ".local" / "share" / "cef" / "Chromium Embedded Framework.framework"
 CEF_SENTINEL_MACOS = CEF_FRAMEWORK_DIR / "Chromium Embedded Framework"
-CEF_EXPORT_DIR_MACOS = HOME / ".local" / "share"
+CEF_EXPORT_DIR_MACOS = HOME / ".local" / "share" / "cef"
 CEF_DEBUG_RENDER_SRC = HOME / ".cargo" / "bin" / "bevy_cef_debug_render_process"
 CEF_DEBUG_RENDER_DST = CEF_FRAMEWORK_DIR / "Libraries" / "bevy_cef_debug_render_process"
 

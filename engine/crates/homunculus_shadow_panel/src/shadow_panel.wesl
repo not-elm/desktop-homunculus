@@ -1,13 +1,12 @@
-#import bevy_pbr::{
+import bevy_pbr::render::{
     mesh_view_types::DIRECTIONAL_LIGHT_FLAGS_SHADOWS_ENABLED_BIT,
     mesh_view_bindings::{view, lights},
     shadows::fetch_directional_shadow,
-    mesh_types::{MESH_FLAGS_SHADOW_RECEIVER_BIT, MESH_FLAGS_TRANSMITTED_SHADOW_RECEIVER_BIT},
     forward_io::VertexOutput,
     pbr_fragment::pbr_input_from_vertex_output,
-}
+};
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(100) var<uniform> alpha_factor: f32;
+@group(constants::MATERIAL_BIND_GROUP) @binding(100) var<uniform> alpha_factor: f32;
 
 @fragment
 fn fragment(
@@ -27,7 +26,7 @@ fn fragment(
         if((lights.directional_lights[i].flags & DIRECTIONAL_LIGHT_FLAGS_SHADOWS_ENABLED_BIT) == 0u ){
             continue;
         }
-        shadow += fetch_directional_shadow(i, in.world_position, in.world_normal, view_z);
+        shadow += fetch_directional_shadow(i, in.world_position, in.world_normal, view_z, in.frag_coord.xy);
     }
     return vec4(vec3(0.), (1. - shadow) * alpha_factor);
 }

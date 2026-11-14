@@ -1,4 +1,4 @@
-use bevy::math::curve::easing::EaseFunction;
+use bevy::curve::EaseFunction;
 use bevy::prelude::{Quat, Vec2, Vec3};
 use serde::{Deserialize, Serialize};
 

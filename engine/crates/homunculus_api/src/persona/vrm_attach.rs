@@ -4,7 +4,7 @@ use crate::persona::{PersonaApi, PersonaSnapshot};
 use crate::prelude::initialized;
 use bevy::prelude::*;
 use bevy_flurx::prelude::*;
-use bevy_vrm1::prelude::{BodyTracking, Cameras, LookAt, Vrm, VrmHandle};
+use bevy_vrm1::prelude::{BodyTracking, Cameras, LookAt, VrmHandle};
 use homunculus_core::prelude::{
     AssetResolver, Persona, PersonaChangeEvent, PersonaId, PersonaIndex, PersonaState,
     VrmAttachedEvent, VrmDetachedEvent, VrmEvent, VrmEventSender,
@@ -67,7 +67,7 @@ fn detach_phase(
     mut commands: Commands,
     index: Res<PersonaIndex>,
     mut personas: Query<(&mut Persona, &PersonaState)>,
-    vrm_check: Query<(), With<Vrm>>,
+    vrm_check: Query<(), With<VrmHandle>>,
     prefs: NonSend<PrefsDatabase>,
     tx_detached: Option<Res<VrmEventSender<VrmDetachedEvent>>>,
     tx_change: Option<Res<VrmEventSender<PersonaChangeEvent>>>,
@@ -79,8 +79,8 @@ fn detach_phase(
         .map_err(|_| ApiError::EntityNotFound)?;
 
     // Detach old VRM if present (no intermediate persist/broadcast).
-    // Check for `Vrm` (not `VrmHandle`) because `VrmHandle` is consumed
-    // during initialization by bevy_vrm1's `spawn_vrm` system.
+    // Check for `VrmHandle`: since bevy_vrm1 0.11 it stays on the entity after
+    // loading, so a VRM that is still loading is detached as well.
     let old_asset_id = if vrm_check.get(entity).is_ok() {
         detach_core(&mut commands, &mut persona, entity)
     } else {
@@ -154,10 +154,22 @@ fn persist_and_broadcast_change(
 }
 
 /// Broadcasts [`VrmAttachedEvent`] after the VRM entity is fully initialized.
+///
+/// Skipped when a newer attach replaced `asset_id` while it was still loading: the
+/// newer model's initialization also satisfies this request's wait, and the replaced
+/// model has already been reported as detached.
 fn broadcast_attached(
     In((entity, asset_id)): In<(Entity, String)>,
+    personas: Query<&Persona>,
     tx: Option<Res<VrmEventSender<VrmAttachedEvent>>>,
 ) {
+    let current = personas
+        .get(entity)
+        .ok()
+        .and_then(|p| p.vrm_asset_id.as_deref());
+    if current != Some(asset_id.as_str()) {
+        return;
+    }
     if let Some(tx) = tx {
         let _ = tx.try_broadcast(VrmEvent {
             vrm: entity,

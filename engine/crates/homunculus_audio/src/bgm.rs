@@ -216,7 +216,7 @@ fn update_bgm(
     if let Some(volume) = event.volume {
         channel
             .set_volume(volume_to_decibels(volume))
-            .fade_in(tween.clone());
+            .fade_in(tween);
         state.target_volume = volume;
     }
 

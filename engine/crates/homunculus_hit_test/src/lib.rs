@@ -44,7 +44,6 @@ use bevy::window::{CursorOptions, Window};
 use bevy_cef::prelude::WebviewExtendStandardMaterial;
 use bevy_vrm1::prelude::{Cameras, MToonMaterial};
 use homunculus_core::texture::{TRANSPARENT_ALPHA_THRESHOLD, sample_texture_alpha};
-use std::fmt::Debug;
 
 #[derive(Debug, Clone, PartialEq, Reflect, Message)]
 struct RequestDetermineHitTest;
@@ -97,7 +96,7 @@ fn update_hit_test(
     #[cfg(feature = "develop")] mut ctx: bevy_egui::EguiContexts,
 ) {
     #[cfg(feature = "develop")]
-    let on_egui = ctx.ctx_mut().is_ok_and(|c| c.is_pointer_over_area());
+    let on_egui = ctx.ctx_mut().is_ok_and(|c| c.is_pointer_over_egui());
 
     for (window_entity, window, mut cursor) in windows.iter_mut() {
         let cursor_pos = match window.cursor_position() {
@@ -157,15 +156,12 @@ fn observe_hit_test(mut commands: Commands, vrms: Query<Entity, Added<Mesh3d>>) 
     for vrm in vrms.iter() {
         commands
             .entity(vrm)
-            .observe(apply_pointer::<Over>)
-            .observe(apply_pointer::<Out>);
+            .observe(apply_pointer::<PointerOver>)
+            .observe(apply_pointer::<PointerOut>);
     }
 }
 
-fn apply_pointer<P: Debug + Clone + Reflect>(
-    _: On<Pointer<P>>,
-    mut ew: MessageWriter<RequestDetermineHitTest>,
-) {
+fn apply_pointer<P: PointerEvent>(_: On<P>, mut ew: MessageWriter<RequestDetermineHitTest>) {
     ew.write(RequestDetermineHitTest);
 }
 

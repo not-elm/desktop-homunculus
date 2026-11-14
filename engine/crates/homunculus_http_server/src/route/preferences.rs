@@ -71,7 +71,7 @@ mod tests {
         let (mut app, router) = test_app();
         let value = serde_json::json!({"key": "value"});
         app.world_mut()
-            .non_send_resource::<PrefsDatabase>()
+            .non_send::<PrefsDatabase>()
             .save_json("test", &value)
             .unwrap();
         let request = Request::get("/preferences/test")
@@ -93,11 +93,11 @@ mod tests {
     async fn test_list_preferences_with_entries() {
         let (mut app, router) = test_app();
         app.world_mut()
-            .non_send_resource::<PrefsDatabase>()
+            .non_send::<PrefsDatabase>()
             .save_json("test-key", &serde_json::json!("value"))
             .unwrap();
         app.world_mut()
-            .non_send_resource::<PrefsDatabase>()
+            .non_send::<PrefsDatabase>()
             .save_json("another-key", &serde_json::json!(42))
             .unwrap();
         let request = Request::get("/preferences")
@@ -124,7 +124,7 @@ mod tests {
         call(&mut app, router, request).await;
         let loaded_value = app
             .world_mut()
-            .non_send_resource::<PrefsDatabase>()
+            .non_send::<PrefsDatabase>()
             .load_json("test")
             .unwrap()
             .unwrap();

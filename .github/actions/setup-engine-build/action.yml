@@ -40,7 +40,7 @@ runs:
     - name: Cache CEF framework
       uses: actions/cache@v4
       with:
-        path: ${{ runner.os == 'Windows' && '~/.local/share/cef' || '~/.local/share/Chromium Embedded Framework.framework' }}
+        path: ~/.local/share/cef
         key: ${{ inputs.cef-cache-key }}-${{ hashFiles('engine/scripts/*.py') }}
 
     - name: Install cargo-binstall

@@ -1,6 +1,6 @@
 use crate::error::ApiResult;
 use crate::vrm::VrmApi;
-use crate::vrm::expressions::{ExpressionInfo, ExpressionsResponse};
+use crate::vrm::expressions::{ExpressionComponents, ExpressionsResponse, expressions_response};
 use crate::vrma::VrmaInfo;
 use bevy::prelude::*;
 use bevy_flurx::prelude::*;
@@ -63,17 +63,11 @@ fn snapshot_all_vrms(
             &Transform,
             Option<&LookAt>,
             Option<&Persona>,
-            Option<&ExpressionEntityMap>,
+            ExpressionComponents,
             Option<&AssetIdComponent>,
         ),
         With<Vrm>,
     >,
-    expr_components: Query<(
-        &Transform,
-        Option<&ExpressionOverride>,
-        Option<&BinaryExpression>,
-        Option<&ExpressionOverrideSettings>,
-    )>,
     children_query: Query<&Children>,
     vrma_query: Query<(Entity, &Name, &VrmaAnimationPlayers), With<Vrma>>,
     players: Query<&AnimationPlayer>,
@@ -82,8 +76,17 @@ fn snapshot_all_vrms(
 ) -> Vec<VrmSnapshot> {
     vrms.iter()
         .map(
-            |(entity, name, state, transform, look_at, persona, expr_map, asset_id_comp)| {
-                let expressions = collect_expressions(expr_map, &expr_components);
+            |(
+                entity,
+                name,
+                state,
+                transform,
+                look_at,
+                persona,
+                (expr_settings, expr_overrides, expr_weights),
+                asset_id_comp,
+            )| {
+                let expressions = expressions_response(expr_settings, expr_overrides, expr_weights);
                 let animations =
                     collect_playing_animations(entity, &children_query, &vrma_query, &players);
                 let global_viewport = coordinate.to_global_by_world(transform.translation);
@@ -121,58 +124,8 @@ fn snapshot_all_vrms(
         .collect()
 }
 
-fn collect_expressions(
-    expr_map: Option<&ExpressionEntityMap>,
-    expr_components: &Query<(
-        &Transform,
-        Option<&ExpressionOverride>,
-        Option<&BinaryExpression>,
-        Option<&ExpressionOverrideSettings>,
-    )>,
-) -> ExpressionsResponse {
-    let Some(map) = expr_map else {
-        return ExpressionsResponse {
-            expressions: Vec::new(),
-        };
-    };
-
-    let mut expressions: Vec<ExpressionInfo> = map
-        .iter()
-        .filter_map(|(expr_name, &expr_entity)| {
-            let (tf, maybe_override, maybe_binary, maybe_settings) =
-                expr_components.get(expr_entity).ok()?;
-
-            let weight = match maybe_override {
-                Some(ExpressionOverride(w)) => *w,
-                None => tf.translation.x,
-            };
-
-            let (override_blink, override_look_at, override_mouth) = match maybe_settings {
-                Some(settings) => (
-                    super::expressions::override_type_to_string(&settings.override_blink).into(),
-                    super::expressions::override_type_to_string(&settings.override_look_at).into(),
-                    super::expressions::override_type_to_string(&settings.override_mouth).into(),
-                ),
-                None => ("none".into(), "none".into(), "none".into()),
-            };
-
-            Some(ExpressionInfo {
-                name: expr_name.to_string(),
-                weight: weight.clamp(0.0, 1.0),
-                is_binary: maybe_binary.is_some(),
-                override_blink,
-                override_look_at,
-                override_mouth,
-            })
-        })
-        .collect();
-
-    expressions.sort_by(|a, b| a.name.cmp(&b.name));
-
-    ExpressionsResponse { expressions }
-}
-
-fn collect_playing_animations(
+/// Lists the `.vrma` children of `vrm` that have at least one unfinished animation player.
+pub(crate) fn collect_playing_animations(
     vrm: Entity,
     children: &Query<&Children>,
     vrma_query: &Query<(Entity, &Name, &VrmaAnimationPlayers), With<Vrma>>,

@@ -68,7 +68,7 @@ pub struct HomunculusPrefsPlugin;
 impl Plugin for HomunculusPrefsPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(PrefsVrmTransformPlugin)
-            .insert_non_send_resource(PrefsDatabase::default());
+            .insert_non_send(PrefsDatabase::default());
     }
 }
 

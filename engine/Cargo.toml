@@ -56,18 +56,18 @@ async-channel = "2.5.0"
 tokio = { workspace = true }
 
 [workspace.dependencies]
-bevy_cef = { version = "0.8.1" }
-bevy_cef_core = { version = "0.8.1" }
-bevy_flurx = { version = "0.14.1", features = [
+bevy_cef = { version = "0.15.0" }
+bevy_cef_core = { version = "0.15.0" }
+bevy_flurx = { version = "0.16.0", features = [
     "side-effect",
     "state",
     "tokio",
 ] }
-bevy_vrm1 = { version = "0.7.1", features = ["serde", "log"] }
-bevy_tray_icon = { version = "0.3" }
+bevy_vrm1 = { version = "0.11.0", features = ["serde", "log"] }
+bevy_tray_icon = { version = "0.4.0" }
 url = { version = "2", features = ["serde"] }
 uuid = { version = "1", features = ["v4", "serde"] }
-bevy = { version = "0.18", features = [
+bevy = { version = "0.20", features = [
     "wav",
     "serialize",
     "file_watcher",
@@ -104,10 +104,10 @@ anyhow = { version = "1", features = ["std"] }
 base64 = "0.22"
 reqwest = { version = "0.12", features = ["json"] }
 rfd = "0.15"
-bevy_egui = { version = "0.39.0" }
-bevy-inspector-egui = { version = "0.36.0" }
-bevy_tweening = "0.15"
-bevy_framepace = "0.21"
+bevy_egui = { version = "0.43" }
+bevy-inspector-egui = { version = "0.38" }
+bevy_tweening = "0.17"
+bevy_framepace = "0.23"
 tracing = "0.1"
 thiserror = "2"
 tokio-util = "0.7"

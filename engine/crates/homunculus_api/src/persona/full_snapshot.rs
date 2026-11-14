@@ -1,7 +1,7 @@
 use crate::error::ApiResult;
 use crate::persona::PersonaApi;
-use crate::vrm::expressions::{ExpressionInfo, ExpressionsResponse};
-use crate::vrm::snapshot::LookAtState;
+use crate::vrm::expressions::{ExpressionComponents, ExpressionsResponse, expressions_of};
+use crate::vrm::snapshot::{LookAtState, collect_playing_animations};
 use crate::vrma::VrmaInfo;
 use bevy::prelude::*;
 use bevy_flurx::prelude::*;
@@ -58,13 +58,7 @@ fn snapshot_all(
     vrm_handles: Query<&VrmHandle>,
     asset_ids: Query<&AssetIdComponent>,
     look_ats: Query<&LookAt>,
-    expr_maps: Query<&ExpressionEntityMap>,
-    expr_components: Query<(
-        &Transform,
-        Option<&ExpressionOverride>,
-        Option<&BinaryExpression>,
-        Option<&ExpressionOverrideSettings>,
-    )>,
+    expressions: Query<ExpressionComponents>,
     children_query: Query<&Children>,
     vrma_query: Query<(Entity, &Name, &VrmaAnimationPlayers), With<Vrma>>,
     players: Query<&AnimationPlayer>,
@@ -79,8 +73,7 @@ fn snapshot_all(
                 &vrm_handles,
                 &asset_ids,
                 &look_ats,
-                &expr_maps,
-                &expr_components,
+                &expressions,
                 &children_query,
                 &vrma_query,
                 &players,
@@ -116,13 +109,7 @@ fn build_vrm_info(
     vrm_handles: &Query<&VrmHandle>,
     asset_ids: &Query<&AssetIdComponent>,
     look_ats: &Query<&LookAt>,
-    expr_maps: &Query<&ExpressionEntityMap>,
-    expr_components: &Query<(
-        &Transform,
-        Option<&ExpressionOverride>,
-        Option<&BinaryExpression>,
-        Option<&ExpressionOverrideSettings>,
-    )>,
+    expressions: &Query<ExpressionComponents>,
     children_query: &Query<&Children>,
     vrma_query: &Query<(Entity, &Name, &VrmaAnimationPlayers), With<Vrma>>,
     players: &Query<&AnimationPlayer>,
@@ -134,7 +121,7 @@ fn build_vrm_info(
         .map(|c| c.0.to_string())
         .unwrap_or_default();
 
-    let expressions = collect_expressions(expr_maps.get(entity).ok(), expr_components);
+    let expressions = expressions_of(expressions, entity);
     let animations = collect_playing_animations(entity, children_query, vrma_query, players);
     let look_at = look_ats.get(entity).ok().map(|la| match la {
         LookAt::Cursor => LookAtState::Cursor,
@@ -148,85 +135,4 @@ fn build_vrm_info(
         look_at,
         spring_bones: serde_json::Value::Object(Default::default()),
     })
-}
-
-fn collect_expressions(
-    expr_map: Option<&ExpressionEntityMap>,
-    expr_components: &Query<(
-        &Transform,
-        Option<&ExpressionOverride>,
-        Option<&BinaryExpression>,
-        Option<&ExpressionOverrideSettings>,
-    )>,
-) -> ExpressionsResponse {
-    let Some(map) = expr_map else {
-        return ExpressionsResponse {
-            expressions: Vec::new(),
-        };
-    };
-
-    let mut expressions: Vec<ExpressionInfo> = map
-        .iter()
-        .filter_map(|(expr_name, &expr_entity)| {
-            let (tf, maybe_override, maybe_binary, maybe_settings) =
-                expr_components.get(expr_entity).ok()?;
-
-            let weight = match maybe_override {
-                Some(ExpressionOverride(w)) => *w,
-                None => tf.translation.x,
-            };
-
-            let (override_blink, override_look_at, override_mouth) = match maybe_settings {
-                Some(settings) => (
-                    crate::vrm::expressions::override_type_to_string(&settings.override_blink)
-                        .into(),
-                    crate::vrm::expressions::override_type_to_string(&settings.override_look_at)
-                        .into(),
-                    crate::vrm::expressions::override_type_to_string(&settings.override_mouth)
-                        .into(),
-                ),
-                None => ("none".into(), "none".into(), "none".into()),
-            };
-
-            Some(ExpressionInfo {
-                name: expr_name.to_string(),
-                weight: weight.clamp(0.0, 1.0),
-                is_binary: maybe_binary.is_some(),
-                override_blink,
-                override_look_at,
-                override_mouth,
-            })
-        })
-        .collect();
-
-    expressions.sort_by(|a, b| a.name.cmp(&b.name));
-    ExpressionsResponse { expressions }
-}
-
-fn collect_playing_animations(
-    vrm: Entity,
-    children: &Query<&Children>,
-    vrma_query: &Query<(Entity, &Name, &VrmaAnimationPlayers), With<Vrma>>,
-    players: &Query<&AnimationPlayer>,
-) -> Vec<VrmaInfo> {
-    let mut result = Vec::new();
-    let Ok(vrm_children) = children.get(vrm) else {
-        return result;
-    };
-    for child in vrm_children.iter() {
-        if let Ok((entity, name, animation_players)) = vrma_query.get(child) {
-            let playing = animation_players
-                .0
-                .iter()
-                .any(|&pe| players.get(pe).map(|p| !p.all_finished()).unwrap_or(false));
-            if playing {
-                result.push(VrmaInfo {
-                    entity,
-                    name: name.to_string(),
-                    playing: true,
-                });
-            }
-        }
-    }
-    result
 }

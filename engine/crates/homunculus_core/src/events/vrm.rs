@@ -11,8 +11,10 @@ pub struct OnDragStartEvent {
     pub bone: Option<VrmBone>,
 }
 
-impl From<(GlobalViewport, Option<VrmBone>, DragStart)> for OnDragStartEvent {
-    fn from((global_viewport, bone, _): (GlobalViewport, Option<VrmBone>, DragStart)) -> Self {
+impl From<(GlobalViewport, Option<VrmBone>, PointerDragStart)> for OnDragStartEvent {
+    fn from(
+        (global_viewport, bone, _): (GlobalViewport, Option<VrmBone>, PointerDragStart),
+    ) -> Self {
         Self {
             global_viewport,
             bone,
@@ -28,8 +30,10 @@ pub struct OnDragEvent {
     pub bone: Option<VrmBone>,
 }
 
-impl From<(GlobalViewport, Option<VrmBone>, Drag)> for OnDragEvent {
-    fn from((global_viewport, bone, event): (GlobalViewport, Option<VrmBone>, Drag)) -> Self {
+impl From<(GlobalViewport, Option<VrmBone>, PointerDrag)> for OnDragEvent {
+    fn from(
+        (global_viewport, bone, event): (GlobalViewport, Option<VrmBone>, PointerDrag),
+    ) -> Self {
         Self {
             delta: event.delta,
             global_viewport,
@@ -45,8 +49,8 @@ pub struct OnDragEndEvent {
     pub bone: Option<VrmBone>,
 }
 
-impl From<(GlobalViewport, Option<VrmBone>, DragEnd)> for OnDragEndEvent {
-    fn from((global_viewport, bone, _): (GlobalViewport, Option<VrmBone>, DragEnd)) -> Self {
+impl From<(GlobalViewport, Option<VrmBone>, PointerDragEnd)> for OnDragEndEvent {
+    fn from((global_viewport, bone, _): (GlobalViewport, Option<VrmBone>, PointerDragEnd)) -> Self {
         Self {
             global_viewport,
             bone,
@@ -81,8 +85,10 @@ pub struct OnPointerPressedEvent {
     pub bone: Option<VrmBone>,
 }
 
-impl From<(GlobalViewport, Option<VrmBone>, Press)> for OnPointerPressedEvent {
-    fn from((global_viewport, bone, event): (GlobalViewport, Option<VrmBone>, Press)) -> Self {
+impl From<(GlobalViewport, Option<VrmBone>, PointerPress)> for OnPointerPressedEvent {
+    fn from(
+        (global_viewport, bone, event): (GlobalViewport, Option<VrmBone>, PointerPress),
+    ) -> Self {
         Self {
             global_viewport,
             button: event.button.into(),
@@ -99,8 +105,10 @@ pub struct OnPointerMoveEvent {
     pub bone: Option<VrmBone>,
 }
 
-impl From<(GlobalViewport, Option<VrmBone>, Move)> for OnPointerMoveEvent {
-    fn from((global_viewport, bone, event): (GlobalViewport, Option<VrmBone>, Move)) -> Self {
+impl From<(GlobalViewport, Option<VrmBone>, PointerMove)> for OnPointerMoveEvent {
+    fn from(
+        (global_viewport, bone, event): (GlobalViewport, Option<VrmBone>, PointerMove),
+    ) -> Self {
         Self {
             global_viewport,
             delta: event.delta,
@@ -117,8 +125,10 @@ pub struct OnPointerReleasedEvent {
     pub bone: Option<VrmBone>,
 }
 
-impl From<(GlobalViewport, Option<VrmBone>, Release)> for OnPointerReleasedEvent {
-    fn from((global_viewport, bone, event): (GlobalViewport, Option<VrmBone>, Release)) -> Self {
+impl From<(GlobalViewport, Option<VrmBone>, PointerRelease)> for OnPointerReleasedEvent {
+    fn from(
+        (global_viewport, bone, event): (GlobalViewport, Option<VrmBone>, PointerRelease),
+    ) -> Self {
         Self {
             global_viewport,
             button: event.button.into(),
@@ -134,8 +144,8 @@ pub struct OnPointerOverEvent {
     pub bone: Option<VrmBone>,
 }
 
-impl From<(GlobalViewport, Option<VrmBone>, Over)> for OnPointerOverEvent {
-    fn from((global_viewport, bone, _): (GlobalViewport, Option<VrmBone>, Over)) -> Self {
+impl From<(GlobalViewport, Option<VrmBone>, PointerOver)> for OnPointerOverEvent {
+    fn from((global_viewport, bone, _): (GlobalViewport, Option<VrmBone>, PointerOver)) -> Self {
         Self {
             global_viewport,
             bone,
@@ -150,8 +160,8 @@ pub struct OnPointerOutEvent {
     pub bone: Option<VrmBone>,
 }
 
-impl From<(GlobalViewport, Option<VrmBone>, Out)> for OnPointerOutEvent {
-    fn from((global_viewport, bone, _): (GlobalViewport, Option<VrmBone>, Out)) -> Self {
+impl From<(GlobalViewport, Option<VrmBone>, PointerOut)> for OnPointerOutEvent {
+    fn from((global_viewport, bone, _): (GlobalViewport, Option<VrmBone>, PointerOut)) -> Self {
         Self {
             global_viewport,
             bone,
@@ -166,8 +176,8 @@ pub struct OnPointerCancelEvent {
     pub bone: Option<VrmBone>,
 }
 
-impl From<(GlobalViewport, Option<VrmBone>, Cancel)> for OnPointerCancelEvent {
-    fn from((global_viewport, bone, _): (GlobalViewport, Option<VrmBone>, Cancel)) -> Self {
+impl From<(GlobalViewport, Option<VrmBone>, PointerCancel)> for OnPointerCancelEvent {
+    fn from((global_viewport, bone, _): (GlobalViewport, Option<VrmBone>, PointerCancel)) -> Self {
         Self {
             global_viewport,
             bone,
@@ -183,8 +193,10 @@ pub struct OnClickEvent {
     pub bone: Option<VrmBone>,
 }
 
-impl From<(GlobalViewport, Option<VrmBone>, Click)> for OnClickEvent {
-    fn from((global_viewport, bone, event): (GlobalViewport, Option<VrmBone>, Click)) -> Self {
+impl From<(GlobalViewport, Option<VrmBone>, PointerClick)> for OnClickEvent {
+    fn from(
+        (global_viewport, bone, event): (GlobalViewport, Option<VrmBone>, PointerClick),
+    ) -> Self {
         Self {
             global_viewport,
             button: event.button.into(),

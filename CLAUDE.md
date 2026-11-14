@@ -125,7 +125,7 @@ full integration design.
 
 ### WebView Integration (bevy_cef)
 
-UI components (settings, right-click menu) are React apps embedded via Chromium Embedded Framework (`bevy_cef`). They communicate with the Rust backend through the HTTP API and SSE-based pub/sub (`signals` module in the SDK). CEF runs with `disable-web-security` to allow cross-origin requests from WebViews to `localhost:3100`. A `CefFetchPlugin` proxies JavaScript `fetch` calls from WebViews through native `reqwest`. Transparent areas of a WebView do not capture mouse events — clicks pass through to the 3D scene beneath. This means CSS-only visibility changes (e.g., collapsing UI to a small icon) do not require resizing the WebView itself.
+UI components (settings, right-click menu) are React apps embedded via Chromium Embedded Framework (`bevy_cef`). They communicate with the Rust backend through the HTTP API and SSE-based pub/sub (`signals` module in the SDK). CEF runs with `disable-web-security` to allow cross-origin requests from WebViews to `localhost:3100`. A `CefFetchPlugin` proxies JavaScript `fetch` calls from WebViews through native `reqwest`. Transparent areas of a WebView do not capture mouse events — clicks pass through to the 3D scene beneath. This means CSS-only visibility changes (e.g., collapsing UI to a small icon) do not require resizing the WebView itself. **Known issue (macOS):** with bevy_cef 0.15's GPU rendering, transparent WebView areas currently do not pass clicks through, and characters behind a WebView cannot be dragged.
 
 WebView keyboard shortcuts: `F1`/`F2` open/close DevTools, `Cmd+[`/`Cmd+]` navigate back/forward.
 
@@ -190,7 +190,7 @@ The `hmcs` binary is a Rust CLI built with `clap`. Current subcommands:
 
 ## Key Dependencies
 
-- **Bevy 0.18** — ECS game engine (Rust edition 2024)
+- **Bevy 0.20** — ECS game engine (Rust edition 2024)
 - **bevy_cef** — Chromium Embedded Framework for WebViews (local path dependency at `../../bevys/bevy_cef`)
 - **bevy_vrm1** — VRM/VRMA model loader (local path dependency at `../../bevys/bevy_vrm1`)
 - **bevy_flurx** — Async task scheduling for Bevy (used by the ApiReactor pattern)

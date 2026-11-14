@@ -90,6 +90,9 @@ fn main() {
                         transparent: true,
                         skip_taskbar: true,
                         window_level: WindowLevel::AlwaysOnTop,
+                        // bevy_winit 0.20 activates the app on macOS at startup if any window is focused.
+                        #[cfg(target_os = "macos")]
+                        focused: false,
                         ..default()
                     }),
                     exit_condition: ExitCondition::OnAllClosed,
@@ -132,6 +135,7 @@ fn main() {
                         .to_string_lossy()
                         .into_owned(),
                 ),
+                ..default()
             },
             CefFetchPlugin,
         ))
@@ -176,12 +180,17 @@ fn main() {
         .add_systems(
             Update,
             (
-                webview_navigate_back.run_if(input_just_pressed(MouseButton::Back).or(
-                    input_pressed(KeyCode::SuperLeft).and(input_just_pressed(KeyCode::BracketLeft)),
-                )),
+                webview_navigate_back.run_if(
+                    input_just_pressed(MouseButton::Back).or_else(
+                        input_pressed(KeyCode::SuperLeft)
+                            .and_then(input_just_pressed(KeyCode::BracketLeft)),
+                    ),
+                ),
                 webview_navigate_forward.run_if(
-                    input_just_pressed(MouseButton::Forward).or(input_pressed(KeyCode::SuperLeft)
-                        .and(input_just_pressed(KeyCode::BracketRight))),
+                    input_just_pressed(MouseButton::Forward).or_else(
+                        input_pressed(KeyCode::SuperLeft)
+                            .and_then(input_just_pressed(KeyCode::BracketRight)),
+                    ),
                 ),
                 show_devtool.run_if(input_just_pressed(KeyCode::F1)),
                 close_devtool.run_if(input_just_pressed(KeyCode::F2)),
