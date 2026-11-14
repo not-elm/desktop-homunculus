@@ -13,7 +13,7 @@
 //!
 //! ## Key Features
 //!
-//! - **Custom Shadow Shader**: Specialized WGSL shader for shadow-only rendering
+//! - **Custom Shadow Shader**: Specialized WESL shader for shadow-only rendering
 //! - **Directional Lighting**: Configurable directional light for shadow casting
 //! - **Alpha Blending**: Smooth shadow transparency with configurable alpha values
 //! - **Large Shadow Plane**: Invisible plane that catches shadows from VRM models
@@ -36,7 +36,7 @@
 //! ## Rendering Pipeline
 //!
 //! The shadow system integrates with Bevy's standard rendering pipeline and uses:
-//! - Custom WGSL shader for shadow projection
+//! - Custom WESL shader for shadow projection
 //! - Material plugin for proper render integration
 //! - Directional light shadows for realistic shadow casting
 //! - Alpha blending for smooth transparency effects
@@ -80,7 +80,7 @@ impl Material for ShadowPanelMaterial {
 /// # Components
 ///
 /// The plugin automatically sets up:
-/// - **Custom Shadow Shader**: Loads the internal shadow_panel.wgsl shader
+/// - **Custom Shadow Shader**: Loads the internal shadow_panel.wesl shader
 /// - **Shadow Material**: Registers the ShadowPanelMaterial for rendering
 /// - **Directional Light**: Creates a directional light for shadow casting
 /// - **Shadow Plane**: Spawns a large plane to catch and display shadows
@@ -94,7 +94,7 @@ impl Material for ShadowPanelMaterial {
 ///
 /// # Shader Integration
 ///
-/// The plugin loads an internal WGSL shader that handles shadow-only rendering,
+/// The plugin loads an internal WESL shader that handles shadow-only rendering,
 /// ensuring that only the shadow portions of the scene are visible on the
 /// shadow panel plane while maintaining proper alpha blending.
 pub struct HomunculusShadowPanelPlugin;
@@ -104,8 +104,8 @@ impl Plugin for HomunculusShadowPanelPlugin {
         load_internal_asset!(
             app,
             SHADOW_PANEL_SHADER_HANDLE,
-            "shadow_panel.wgsl",
-            Shader::from_wgsl
+            "shadow_panel.wesl",
+            Shader::from_wesl
         );
 
         app.add_plugins(MaterialPlugin::<ShadowPanelMaterial>::default())
