@@ -340,6 +340,10 @@ mod tests {
 
     #[test]
     fn no_settings_yields_empty_list() {
-        assert!(expressions_response(None, None, None).expressions.is_empty());
+        assert!(
+            expressions_response(None, None, None)
+                .expressions
+                .is_empty()
+        );
     }
 }

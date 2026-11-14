@@ -161,10 +161,7 @@ fn observe_hit_test(mut commands: Commands, vrms: Query<Entity, Added<Mesh3d>>) 
     }
 }
 
-fn apply_pointer<P: PointerEvent>(
-    _: On<P>,
-    mut ew: MessageWriter<RequestDetermineHitTest>,
-) {
+fn apply_pointer<P: PointerEvent>(_: On<P>, mut ew: MessageWriter<RequestDetermineHitTest>) {
     ew.write(RequestDetermineHitTest);
 }
 

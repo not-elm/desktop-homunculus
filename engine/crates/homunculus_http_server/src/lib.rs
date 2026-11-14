@@ -546,7 +546,7 @@ mod tests {
                 .disable::<WebviewApiPlugin>(),
         ));
 
-        app.insert_non_send_resource(PrefsDatabase::open_in_memory());
+        app.insert_non_send(PrefsDatabase::open_in_memory());
         app.init_resource::<AssetRegistry>();
         app.init_resource::<ModRegistry>();
         app.init_resource::<ModMenuMetadataList>();
