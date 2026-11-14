@@ -120,10 +120,21 @@ impl DragHipsOffset {
     }
 }
 
-fn observe_vrm(mut commands: Commands, vrms: Query<Entity, (With<Vrm>, Added<Initialized>)>) {
+/// Marks a VRM whose drag observers are already registered.
+///
+/// [`Initialized`] is re-added on every re-attach (model swap, hot reload) while the
+/// observers registered on the entity survive, so this keeps them from being registered twice.
+#[derive(Component)]
+struct DragObserved;
+
+fn observe_vrm(
+    mut commands: Commands,
+    vrms: Query<Entity, (With<Vrm>, Added<Initialized>, Without<DragObserved>)>,
+) {
     for vrm in vrms.iter() {
         commands
             .entity(vrm)
+            .try_insert(DragObserved)
             .observe(on_drag_start)
             .observe(on_drag_move)
             .observe(on_drag_end);
@@ -196,17 +207,17 @@ fn on_drag_move(
     if !matches!(trigger.button, PointerButton::Primary) {
         return;
     }
-    let location = &trigger.pointer;
+    let pointer = &trigger.pointer;
     let vrm_entity = trigger.event_target();
     let Ok((transform, drag)) = drag_offsets.get(vrm_entity) else {
         return;
     };
     let vrm_pos = transform.translation;
-    let NormalizedRenderTarget::Window(window_ref) = location.target else {
+    let NormalizedRenderTarget::Window(window_ref) = pointer.target else {
         return;
     };
     let Some(current) =
-        coordinate.to_world_pos_from_window(window_ref.entity(), location.position, vrm_pos)
+        coordinate.to_world_pos_from_window(window_ref.entity(), pointer.position, vrm_pos)
     else {
         return;
     };

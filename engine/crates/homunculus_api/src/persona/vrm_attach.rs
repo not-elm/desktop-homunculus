@@ -154,10 +154,22 @@ fn persist_and_broadcast_change(
 }
 
 /// Broadcasts [`VrmAttachedEvent`] after the VRM entity is fully initialized.
+///
+/// Skipped when a newer attach replaced `asset_id` while it was still loading: the
+/// newer model's initialization also satisfies this request's wait, and the replaced
+/// model has already been reported as detached.
 fn broadcast_attached(
     In((entity, asset_id)): In<(Entity, String)>,
+    personas: Query<&Persona>,
     tx: Option<Res<VrmEventSender<VrmAttachedEvent>>>,
 ) {
+    let current = personas
+        .get(entity)
+        .ok()
+        .and_then(|p| p.vrm_asset_id.as_deref());
+    if current != Some(asset_id.as_str()) {
+        return;
+    }
     if let Some(tx) = tx {
         let _ = tx.try_broadcast(VrmEvent {
             vrm: entity,

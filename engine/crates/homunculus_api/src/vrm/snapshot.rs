@@ -1,6 +1,6 @@
 use crate::error::ApiResult;
 use crate::vrm::VrmApi;
-use crate::vrm::expressions::{ExpressionsResponse, expressions_response};
+use crate::vrm::expressions::{ExpressionComponents, ExpressionsResponse, expressions_response};
 use crate::vrma::VrmaInfo;
 use bevy::prelude::*;
 use bevy_flurx::prelude::*;
@@ -63,9 +63,7 @@ fn snapshot_all_vrms(
             &Transform,
             Option<&LookAt>,
             Option<&Persona>,
-            Option<&ExpressionSettings>,
-            Option<&ExpressionOverrides>,
-            Option<&VrmExpressionWeights>,
+            ExpressionComponents,
             Option<&AssetIdComponent>,
         ),
         With<Vrm>,
@@ -85,9 +83,7 @@ fn snapshot_all_vrms(
                 transform,
                 look_at,
                 persona,
-                expr_settings,
-                expr_overrides,
-                expr_weights,
+                (expr_settings, expr_overrides, expr_weights),
                 asset_id_comp,
             )| {
                 let expressions = expressions_response(expr_settings, expr_overrides, expr_weights);
@@ -128,7 +124,8 @@ fn snapshot_all_vrms(
         .collect()
 }
 
-fn collect_playing_animations(
+/// Lists the `.vrma` children of `vrm` that have at least one unfinished animation player.
+pub(crate) fn collect_playing_animations(
     vrm: Entity,
     children: &Query<&Children>,
     vrma_query: &Query<(Entity, &Name, &VrmaAnimationPlayers), With<Vrma>>,

@@ -88,6 +88,13 @@ pub struct VrmMetadata {
     pub entity: Entity,
 }
 
+/// Marks a VRM whose pointer events are already forwarded to the event channels.
+///
+/// [`Initialized`] is re-added on every re-attach (model swap, hot reload) while the
+/// observers registered on the entity survive, so this keeps them from being registered twice.
+#[derive(Component)]
+struct PointerEventsObserved;
+
 pub struct HomunculusEventsPlugin;
 
 impl Plugin for HomunculusEventsPlugin {
@@ -125,10 +132,21 @@ fn setup_channel<E: Send + Sync + 'static>(app: &mut App) {
         .insert_resource(VrmEventReceiver(receiver));
 }
 
-fn start_observe_vrm(mut commands: Commands, vrms: Query<Entity, (With<Vrm>, Added<Initialized>)>) {
+fn start_observe_vrm(
+    mut commands: Commands,
+    vrms: Query<
+        Entity,
+        (
+            With<Vrm>,
+            Added<Initialized>,
+            Without<PointerEventsObserved>,
+        ),
+    >,
+) {
     for vrm in vrms.iter() {
         commands
             .entity(vrm)
+            .try_insert(PointerEventsObserved)
             .observe(pointer::<PointerDragStart, OnDragStartEvent>)
             .observe(pointer::<PointerDrag, OnDragEvent>)
             .observe(pointer::<PointerDragEnd, OnDragEndEvent>)

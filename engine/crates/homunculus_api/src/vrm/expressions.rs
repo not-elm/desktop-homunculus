@@ -25,6 +25,13 @@ pub struct ExpressionsResponse {
     pub expressions: Vec<ExpressionInfo>,
 }
 
+/// The VRM root components [`expressions_response`] builds the expression list from.
+pub(crate) type ExpressionComponents = (
+    Option<&'static ExpressionSettings>,
+    Option<&'static ExpressionOverrides>,
+    Option<&'static VrmExpressionWeights>,
+);
+
 impl VrmApi {
     pub async fn list_expressions(&self, vrm: Entity) -> ApiResult<ExpressionsResponse> {
         self.0
@@ -79,6 +86,15 @@ impl VrmApi {
     }
 }
 
+/// Builds the expression list of `vrm`, or an empty list when it is not a queried entity.
+pub(crate) fn expressions_of(
+    query: &Query<ExpressionComponents>,
+    vrm: Entity,
+) -> ExpressionsResponse {
+    let (settings, overrides, weights) = query.get(vrm).unwrap_or((None, None, None));
+    expressions_response(settings, overrides, weights)
+}
+
 /// Builds a VRM root's expression list from its load-time expression components.
 ///
 /// Each declared expression's weight is its override if one is set, otherwise its
@@ -105,14 +121,9 @@ pub(crate) fn expressions_response(
 
 fn list_expressions(
     In(vrm): In<Entity>,
-    expressions: Query<(
-        Option<&ExpressionSettings>,
-        Option<&ExpressionOverrides>,
-        Option<&VrmExpressionWeights>,
-    )>,
+    expressions: Query<ExpressionComponents>,
 ) -> ExpressionsResponse {
-    let (settings, overrides, weights) = expressions.get(vrm).unwrap_or((None, None, None));
-    expressions_response(settings, overrides, weights)
+    expressions_of(&expressions, vrm)
 }
 
 fn expression_info(
