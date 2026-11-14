@@ -160,7 +160,7 @@ fn setup_windows(
 }
 
 /// Stores the target window position for camera initialization.
-/// This is used because WINIT_WINDOWS is not reliably accessible from ECS systems in Bevy 0.18.
+/// This is used because WINIT_WINDOWS is not reliably accessible from ECS systems in Bevy 0.20.
 #[derive(Component, Debug, Reflect)]
 #[reflect(Component)]
 struct CameraWindowPosition(Vec2);
@@ -268,6 +268,9 @@ fn create_window(layer: usize, size: Vec2) -> Window {
         mode: WindowMode::Windowed,
         #[cfg(target_os = "windows")]
         skip_taskbar: true,
+        // bevy_winit 0.20 calls `focus_window()` on macOS for every newly created focused window.
+        #[cfg(target_os = "macos")]
+        focused: false,
         ..default()
     }
 }

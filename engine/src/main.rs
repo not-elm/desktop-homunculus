@@ -90,6 +90,9 @@ fn main() {
                         transparent: true,
                         skip_taskbar: true,
                         window_level: WindowLevel::AlwaysOnTop,
+                        // bevy_winit 0.20 activates the app on macOS at startup if any window is focused.
+                        #[cfg(target_os = "macos")]
+                        focused: false,
                         ..default()
                     }),
                     exit_condition: ExitCondition::OnAllClosed,
