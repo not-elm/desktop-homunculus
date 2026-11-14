@@ -343,7 +343,7 @@ mod tests {
     #[test]
     fn resource_definitions_have_correct_uris() {
         let resources = resources::resource_definitions();
-        let uris: Vec<&str> = resources.iter().map(|r| r.raw.uri.as_str()).collect();
+        let uris: Vec<&str> = resources.iter().map(|r| r.uri.as_str()).collect();
 
         assert!(uris.contains(&"homunculus://info"), "missing info resource");
         assert!(
@@ -362,10 +362,10 @@ mod tests {
         let resources = resources::resource_definitions();
         for resource in &resources {
             assert_eq!(
-                resource.raw.mime_type.as_deref(),
+                resource.mime_type.as_deref(),
                 Some("application/json"),
                 "resource '{}' should have application/json mime type",
-                resource.raw.uri
+                resource.uri
             );
         }
     }
@@ -375,9 +375,9 @@ mod tests {
         let resources = resources::resource_definitions();
         for resource in &resources {
             assert!(
-                resource.raw.description.is_some(),
+                resource.description.is_some(),
                 "resource '{}' should have a description",
-                resource.raw.uri
+                resource.uri
             );
         }
     }

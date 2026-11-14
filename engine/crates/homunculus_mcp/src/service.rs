@@ -27,10 +27,7 @@ pub fn create_mcp_service(
     runtime: RuntimeResolver,
 ) -> StreamableHttpService<HomunculusMcpHandler, LocalSessionManager> {
     let server_config = StreamableHttpServerConfig::default();
-    let session_manager = Arc::new(LocalSessionManager {
-        sessions: Default::default(),
-        session_config: Default::default(),
-    });
+    let session_manager = Arc::new(LocalSessionManager::default());
     StreamableHttpService::new(
         move || {
             Ok(HomunculusMcpHandler::new(
