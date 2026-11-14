@@ -10,17 +10,17 @@ from utils import Platform, current_platform, run
 
 
 def setup_ci() -> None:
-    packages = ["export-cef-dir@145.6.1+145.0.28"]
+    packages = ["export-cef-dir@154.5.0+154.0.34"]
 
     plat = current_platform()
     if plat == Platform.MACOS:
         packages.extend([
-            "bevy_cef_debug_render_process@0.8.1",
-            "bevy_cef_render_process@0.8.1",
-            "bevy_cef_bundle_app@0.8.1",
+            "bevy_cef_debug_render_process@0.15.0",
+            "bevy_cef_render_process@0.15.0",
+            "bevy_cef_bundle_app@0.15.0",
         ])
     elif plat == Platform.WINDOWS:
-        packages.append("bevy_cef_render_process@0.8.1")
+        packages.append("bevy_cef_render_process@0.15.0")
 
     run(["cargo", "binstall", "--no-confirm", "--force"] + packages)
 
