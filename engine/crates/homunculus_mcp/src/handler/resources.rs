@@ -1,32 +1,25 @@
 //! MCP resource definitions and read logic.
 
 use homunculus_api::assets::AssetFilter;
-use rmcp::model::{
-    AnnotateAble, RawResource, ReadResourceRequestParams, ReadResourceResult, Resource,
-    ResourceContents,
-};
+use rmcp::model::{ReadResourceRequestParams, ReadResourceResult, Resource, ResourceContents};
 
 use super::{FEATURES, HomunculusMcpHandler, api_err, to_json_string};
 
 /// Returns the list of resources exposed by this MCP server.
 pub(super) fn resource_definitions() -> Vec<Resource> {
     vec![
-        RawResource::new("homunculus://info", "homunculus-info")
+        Resource::new("homunculus://info", "homunculus-info")
             .with_description("Application info including version, platform, features, and mods")
-            .with_mime_type("application/json")
-            .no_annotation(),
-        RawResource::new("homunculus://characters", "homunculus-characters")
+            .with_mime_type("application/json"),
+        Resource::new("homunculus://characters", "homunculus-characters")
             .with_description("List of all personas (characters) with their profile, personality, VRM asset, and metadata")
-            .with_mime_type("application/json")
-            .no_annotation(),
-        RawResource::new("homunculus://mods", "homunculus-mods")
+            .with_mime_type("application/json"),
+        Resource::new("homunculus://mods", "homunculus-mods")
             .with_description("List of installed mods")
-            .with_mime_type("application/json")
-            .no_annotation(),
-        RawResource::new("homunculus://assets", "homunculus-assets")
+            .with_mime_type("application/json"),
+        Resource::new("homunculus://assets", "homunculus-assets")
             .with_description("List of available assets across all mods")
-            .with_mime_type("application/json")
-            .no_annotation(),
+            .with_mime_type("application/json"),
     ]
 }
 

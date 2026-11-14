@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.11/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.7/schema.json",
   "files": {
     "includes": [
       "packages/**",
@@ -29,6 +29,11 @@
       "trailingCommas": "all"
     }
   },
+  "markdown": {
+    "formatter": {
+      "enabled": false
+    }
+  },
   "css": {
     "parser": {
       "cssModules": false,
@@ -44,7 +49,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "style": {
         "useImportType": "error",
         "noNonNullAssertion": "warn",

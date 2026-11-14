@@ -1,6 +1,6 @@
 //! MCP prompt definitions.
 
-use rmcp::model::{GetPromptResult, Prompt, PromptArgument, PromptMessage, PromptMessageRole};
+use rmcp::model::{GetPromptResult, Prompt, PromptArgument, PromptMessage, Role};
 
 /// Returns the list of prompts exposed by this MCP server.
 pub(super) fn prompt_definitions() -> Vec<Prompt> {
@@ -94,7 +94,7 @@ pub(super) fn get_prompt(
     };
 
     Ok(GetPromptResult::new(vec![PromptMessage::new_text(
-        PromptMessageRole::User,
+        Role::User,
         text,
     )]))
 }
