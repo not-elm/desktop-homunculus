@@ -131,7 +131,7 @@ fn observe_vrm(mut commands: Commands, vrms: Query<Entity, (With<Vrm>, Added<Ini
 }
 
 fn on_drag_start(
-    trigger: On<Pointer<DragStart>>,
+    trigger: On<PointerDragStart>,
     mut commands: Commands,
     mut vrm_ray_cast: VrmMeshRayCast,
     bone_offsets: BoneOffsets,
@@ -139,16 +139,16 @@ fn on_drag_start(
     webview_assets: Res<Assets<WebviewExtendStandardMaterial>>,
     images: Res<Assets<Image>>,
 ) {
-    if !matches!(trigger.event.button, PointerButton::Primary) {
+    if !matches!(trigger.button, PointerButton::Primary) {
         return;
     }
     let should_skip = |entity: Entity, hit: &RayMeshHit| -> bool {
         is_webview_transparent(entity, hit, &webview_materials, &webview_assets, &images)
     };
-    if !vrm_ray_cast.is_frontmost_hit(&trigger.pointer_location, should_skip) {
+    if !vrm_ray_cast.is_frontmost_hit(&trigger.pointer.location(), should_skip) {
         return;
     }
-    let vrm_entity = trigger.entity;
+    let vrm_entity = trigger.event_target();
     let initial_offset = bone_offsets
         .hips_offset(vrm_entity)
         .map(|h| h.xy())
@@ -186,18 +186,18 @@ fn is_webview_transparent(
 }
 
 fn on_drag_move(
-    trigger: On<Pointer<Drag>>,
+    trigger: On<PointerDrag>,
     mut commands: Commands,
     coordinate: Coordinate,
     drag_offsets: Query<(&Transform, &DragHipsOffset)>,
     bone_offsets: BoneOffsets,
     time: Res<Time>,
 ) {
-    if !matches!(trigger.event.button, PointerButton::Primary) {
+    if !matches!(trigger.button, PointerButton::Primary) {
         return;
     }
-    let location = &trigger.pointer_location;
-    let vrm_entity = trigger.entity;
+    let location = &trigger.pointer;
+    let vrm_entity = trigger.event_target();
     let Ok((transform, drag)) = drag_offsets.get(vrm_entity) else {
         return;
     };
@@ -228,18 +228,18 @@ fn on_drag_move(
 }
 
 fn on_drag_end(
-    trigger: On<Pointer<DragEnd>>,
+    trigger: On<PointerDragEnd>,
     mut commands: Commands,
     windows: AppWindows,
     tracker: MascotTracker,
     bone_offsets: BoneOffsets,
 ) {
-    if !matches!(trigger.event.button, PointerButton::Primary) {
+    if !matches!(trigger.button, PointerButton::Primary) {
         return;
     }
-    let vrm = trigger.entity;
+    let vrm = trigger.event_target();
     commands.entity(vrm).remove::<DragHipsOffset>();
-    let Some(global_cursor_pos) = global_cursor_pos(&trigger, &windows) else {
+    let Some(global_cursor_pos) = global_cursor_pos(&trigger.pointer, &windows) else {
         return;
     };
     match GlobalWindows::find_all().and_then(|gw| gw.find_sitting_window(global_cursor_pos)) {
