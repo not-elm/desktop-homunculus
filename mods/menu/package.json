@@ -29,12 +29,12 @@
     "eventsource": "catalog:"
   },
   "devDependencies": {
-    "@storybook/react-vite": "^10.2.14",
+    "@storybook/react-vite": "^10.6.7",
     "@tailwindcss/vite": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react-swc": "catalog:",
-    "storybook": "^10.2.14",
+    "storybook": "^10.6.7",
     "tailwindcss": "catalog:",
     "typescript": "^5.9.3",
     "vite": "catalog:",

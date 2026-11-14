@@ -37,7 +37,6 @@ type BasicFormValues = z.infer<typeof basicSchema>;
 
 function BasicFormExample() {
   const form = useForm<BasicFormValues>({
-    // @ts-expect-error — @hookform/resolvers@5.2.2 types incompatible with zod v4.3.x
     resolver: zodResolver(basicSchema),
     defaultValues: {
       username: '',
@@ -100,7 +99,6 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 function ProfileFormExample() {
   const form = useForm<ProfileFormValues>({
-    // @ts-expect-error — @hookform/resolvers@5.2.2 types incompatible with zod v4.3.x
     resolver: zodResolver(profileSchema),
     defaultValues: {
       displayName: '',
@@ -199,7 +197,6 @@ type PrefilledFormValues = z.infer<typeof prefilledSchema>;
 
 function PrefilledFormExample() {
   const form = useForm<PrefilledFormValues>({
-    // @ts-expect-error — @hookform/resolvers@5.2.2 types incompatible with zod v4.3.x
     resolver: zodResolver(prefilledSchema),
     defaultValues: {
       name: 'Jane Doe',

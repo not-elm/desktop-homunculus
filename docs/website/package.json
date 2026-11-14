@@ -19,23 +19,23 @@
     "gen-api": "docusaurus gen-api-docs all && node scripts/strip-sidebar-labels.mjs"
   },
   "dependencies": {
-    "@docusaurus/core": "3.9.2",
-    "@docusaurus/plugin-client-redirects": "3.9.2",
-    "@docusaurus/preset-classic": "3.9.2",
-    "@docusaurus/theme-mermaid": "3.9.2",
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/plugin-client-redirects": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/theme-mermaid": "3.10.2",
     "@easyops-cn/docusaurus-search-local": "^0.55.1",
     "@mdx-js/react": "^3.1.1",
     "clsx": "^2.1.1",
-    "docusaurus-plugin-openapi-docs": "^4.7.1",
-    "docusaurus-theme-openapi-docs": "^4.7.1",
+    "docusaurus-plugin-openapi-docs": "^5.2.0",
+    "docusaurus-theme-openapi-docs": "^5.2.0",
     "prism-react-renderer": "^2.4.1",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.9.2",
-    "@docusaurus/tsconfig": "3.9.2",
-    "@docusaurus/types": "3.9.2",
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/tsconfig": "3.10.2",
+    "@docusaurus/types": "3.10.2",
     "typescript": "~5.6.3"
   },
   "browserslist": {

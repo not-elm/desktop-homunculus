@@ -9,7 +9,7 @@ onlyBuiltDependencies:
 linkWorkspacePackages: deep
 catalog:
   # Build tooling
-  vite: ^7.3.2
+  vite: ^7.3.8
   '@vitejs/plugin-react-swc': ^4.2.3
   vite-plugin-singlefile: ^2.3.0
   tailwindcss: ^4.2.1
