@@ -17,7 +17,7 @@ catalog:
   # SDK dependencies
   eventsource: ^4.1.0
   ws: ^8.18.0
-  zod: ^3.25.76
+  zod: ^4.6.6
   # React
   react: ^19.2.4
   react-dom: ^19.2.4
