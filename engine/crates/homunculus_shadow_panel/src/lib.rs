@@ -119,7 +119,7 @@ impl Plugin for HomunculusShadowPanelPlugin {
 fn spawn_directional_light(mut commands: Commands, cameras: Cameras) {
     commands.spawn((
         DirectionalLight {
-            shadows_enabled: true,
+            shadow_maps_enabled: true,
             ..default()
         },
         // Transform::from_rotation(Quat::from_array([-0.1, 0.1, 0., 1.])),

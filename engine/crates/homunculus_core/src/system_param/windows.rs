@@ -5,7 +5,6 @@ use bevy::ecs::system::SystemParam;
 use bevy::math::{Rect, Vec2};
 use bevy::prelude::*;
 use bevy::window::{Window, WindowPosition};
-use std::fmt::Debug;
 
 #[derive(SystemParam)]
 pub struct AppWindows<'w, 's> {
@@ -58,14 +57,12 @@ impl AppWindows<'_, '_> {
     }
 }
 
-pub fn global_cursor_pos<E: Debug + Clone + Reflect>(
-    trigger: &On<Pointer<E>>,
-    windows: &AppWindows,
-) -> Option<GlobalViewport> {
-    let NormalizedRenderTarget::Window(window_ref) = trigger.pointer_location.target else {
+/// Converts a picking [`Pointer`]'s window-local position into a global viewport position.
+pub fn global_cursor_pos(pointer: &Pointer, windows: &AppWindows) -> Option<GlobalViewport> {
+    let NormalizedRenderTarget::Window(window_ref) = pointer.target else {
         return None;
     };
-    windows.to_global_viewport(window_ref.entity(), trigger.pointer_location.position)
+    windows.to_global_viewport(window_ref.entity(), pointer.position)
 }
 
 #[inline]

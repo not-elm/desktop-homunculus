@@ -61,7 +61,7 @@ mod tests {
     fn saves_vrm_transform_when_exit_message_is_emitted_in_post_update() {
         let mut app = App::new();
         app.add_plugins(MinimalPlugins)
-            .insert_non_send_resource(PrefsDatabase::open_in_memory())
+            .insert_non_send(PrefsDatabase::open_in_memory())
             .add_plugins(PrefsVrmTransformPlugin)
             .add_systems(PostUpdate, emit_app_exit_once);
 
@@ -76,7 +76,7 @@ mod tests {
         app.update();
 
         let key = PrefsKeys::asset_transform(asset_id.as_ref());
-        let db = app.world().non_send_resource::<PrefsDatabase>();
+        let db = app.world().non_send::<PrefsDatabase>();
         let saved = db
             .load_as::<Transform>(&key)
             .expect("loading transform should not fail");

@@ -29,7 +29,7 @@ thiserror = { workspace = true }
 axum = { workspace = true, optional = true }
 bevy_cef = { workspace = true }
 bevy_cef_core = { workspace = true }
-bevy_tweening = "0.15"
+bevy_tweening = { workspace = true }
 homunculus_utils = { workspace = true }
 tokio = { workspace = true }
 tokio-util = { workspace = true }

@@ -129,38 +129,38 @@ fn start_observe_vrm(mut commands: Commands, vrms: Query<Entity, (With<Vrm>, Add
     for vrm in vrms.iter() {
         commands
             .entity(vrm)
-            .observe(pointer::<DragStart, OnDragStartEvent>)
-            .observe(pointer::<Drag, OnDragEvent>)
-            .observe(pointer::<DragEnd, OnDragEndEvent>)
-            .observe(pointer::<Press, OnPointerPressedEvent>)
-            .observe(pointer::<Click, OnClickEvent>)
-            .observe(pointer::<Move, OnPointerMoveEvent>)
-            .observe(pointer::<Release, OnPointerReleasedEvent>)
-            .observe(pointer::<Over, OnPointerOverEvent>)
-            .observe(pointer::<Out, OnPointerOutEvent>)
-            .observe(pointer::<Cancel, OnPointerCancelEvent>);
+            .observe(pointer::<PointerDragStart, OnDragStartEvent>)
+            .observe(pointer::<PointerDrag, OnDragEvent>)
+            .observe(pointer::<PointerDragEnd, OnDragEndEvent>)
+            .observe(pointer::<PointerPress, OnPointerPressedEvent>)
+            .observe(pointer::<PointerClick, OnClickEvent>)
+            .observe(pointer::<PointerMove, OnPointerMoveEvent>)
+            .observe(pointer::<PointerRelease, OnPointerReleasedEvent>)
+            .observe(pointer::<PointerOver, OnPointerOverEvent>)
+            .observe(pointer::<PointerOut, OnPointerOutEvent>)
+            .observe(pointer::<PointerCancel, OnPointerCancelEvent>);
     }
 }
 
 fn pointer<E1, E2>(
-    trigger: On<Pointer<E1>>,
+    trigger: On<E1>,
     tx: Res<VrmEventSender<E2>>,
     parent_searcher: ParentSearcher,
     windows: AppWindows,
 ) where
-    E1: Clone + Reflect + Debug,
+    E1: PointerEvent + Clone,
     E2: From<(GlobalViewport, Option<VrmBone>, E1)> + Send + Sync + 'static,
     E2: Clone,
 {
-    let Some(vrm) = parent_searcher.find_vrm(trigger.entity) else {
+    let Some(vrm) = parent_searcher.find_vrm(trigger.event_target()) else {
         return;
     };
-    let Some(global_viewport) = global_cursor_pos(&trigger, &windows) else {
+    let Some(global_viewport) = global_cursor_pos(trigger.pointer(), &windows) else {
         return;
     };
     let _ = tx.try_broadcast(VrmEvent {
         vrm,
-        payload: E2::from((global_viewport, None, trigger.event.clone())),
+        payload: E2::from((global_viewport, None, trigger.event().clone())),
     });
 }
 

@@ -150,7 +150,7 @@ fn spawn_audio_player(
         },
     ));
     if let Some(signal) = finish_signal {
-        audio_player.observe(move |_: On<Remove, AudioPlayer>| {
+        audio_player.observe(move |_: On<Remove<AudioPlayer>>| {
             signal
                 .send_blocking(())
                 .output_log_if_error("spawn_audio_player:send");
