@@ -59,7 +59,7 @@ def write_credits(repo_root: Path) -> Path:
     """Write `JS_THIRD_PARTY.md` under `repo_root` and return its path."""
     output = repo_root / OUTPUT
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(render(collect(repo_root)), encoding="utf-8")
+    output.write_bytes(render(collect(repo_root)).encode("utf-8"))
     return output
 
 

@@ -190,7 +190,10 @@ def release_windows() -> None:
             "--output-file", str(RUST_LICENSES_OUTPUT),
             "about.hbs",
         ])
-        write_credits(Path(__file__).resolve().parents[2])
+        try:
+            write_credits(Path(__file__).resolve().parents[2])
+        except FileNotFoundError as missing:
+            error(str(missing))
 
     # 5. Stage CEF runtime files for installer
     stage_cef_files()

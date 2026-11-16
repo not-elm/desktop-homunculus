@@ -65,7 +65,7 @@ release-macos-universal:
 	$(MAKE) -C engine release-macos-universal
 
 build-builtin-ui: ## Build the UIs the engine embeds at compile time
-	pnpm --filter '@hmcs/menu-ui...' run build
+	pnpm build --filter=@hmcs/menu-ui...
 
 install-cli: ## Install hmcs CLI via cargo install
 	$(MAKE) -C engine install-cli
