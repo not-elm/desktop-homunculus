@@ -5,6 +5,7 @@ on:
     paths:
       - "packages/**"
       - "mods/**"
+      - "engine/ui/**"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "biome.json"

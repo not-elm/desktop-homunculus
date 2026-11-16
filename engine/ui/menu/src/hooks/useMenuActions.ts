@@ -1,4 +1,4 @@
-import { mods, signals, Webview } from '@hmcs/sdk';
+import { mods, Webview } from '@hmcs/sdk';
 import { useCallback, useRef, useState } from 'react';
 import type { MenuItemData } from './useMenuData';
 
@@ -9,13 +9,10 @@ export function useMenuActions(personaId: string | null) {
     if (closing) return;
     setClosing(true);
     setTimeout(async () => {
-      const webviewEntity = Webview.current()?.entity;
-      if (webviewEntity != null) {
-        try {
-          await signals.send('menu:close', { entity: webviewEntity });
-        } catch (err) {
-          console.error('Failed to send close signal:', err);
-        }
+      try {
+        await Webview.current()?.close();
+      } catch (err) {
+        console.error('Failed to close the menu:', err);
       }
     }, 180);
   }, [closing]);

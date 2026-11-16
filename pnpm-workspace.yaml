@@ -1,6 +1,7 @@
 packages:
   - packages/*
   - mods/*
+  - engine/ui/*
   - docs/website
   - sandbox
 onlyBuiltDependencies:
