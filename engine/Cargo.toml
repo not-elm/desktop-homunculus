@@ -47,6 +47,7 @@ homunculus_api = { workspace = true }
 homunculus_audio = { workspace = true }
 homunculus_tray = { workspace = true }
 homunculus_mcp = { workspace = true }
+homunculus_migration = { workspace = true }
 bevy_egui = { workspace = true, optional = true }
 bevy-inspector-egui = { workspace = true, optional = true }
 bevy_tweening = { workspace = true }
@@ -97,6 +98,7 @@ homunculus_audio = { path = "crates/homunculus_audio" }
 homunculus_tray = { path = "crates/homunculus_tray" }
 homunculus_mcp = { path = "crates/homunculus_mcp" }
 homunculus_microphone = { path = "crates/homunculus_microphone" }
+homunculus_migration = { path = "crates/homunculus_migration" }
 homunculus_utils = { path = "crates/homunculus_utils", default-features = false }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }

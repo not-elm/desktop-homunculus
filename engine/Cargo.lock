@@ -3616,6 +3616,7 @@ dependencies = [
  "homunculus_hit_test",
  "homunculus_http_server",
  "homunculus_mcp",
+ "homunculus_migration",
  "homunculus_mod",
  "homunculus_power_saver",
  "homunculus_prefs",
@@ -5116,6 +5117,16 @@ dependencies = [
  "utoipa",
  "webrtc-vad",
  "whisper-rs",
+]
+
+[[package]]
+name = "homunculus_migration"
+version = "0.1.0-alpha.7-dev"
+dependencies = [
+ "bevy",
+ "homunculus_utils",
+ "serde_json",
+ "thiserror 2.0.18",
 ]
 
 [[package]]
