@@ -89,6 +89,10 @@ const config: Config = {
             from: "/mods/elmer",
             to: "/mods/persona",
           },
+          {
+            from: "/mods/menu",
+            to: "/getting-started/quick-start#right-click-menu",
+          },
         ],
       },
     ],

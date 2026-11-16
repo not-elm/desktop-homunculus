@@ -18,6 +18,10 @@ MODs extend Desktop Homunculus with characters, animations, sound effects, UI pa
 
 The right-click menu is built into the engine. MODs add their own items to it through the `homunculus.menus` field.
 
+:::info Migrating from `@hmcs/menu`
+The right-click menu used to come from the `@hmcs/menu` MOD. The engine now ignores that MOD, so it is no longer needed and can be removed with `hmcs mod uninstall @hmcs/menu`.
+:::
+
 ## Managing MODs
 
 ### List installed MODs
