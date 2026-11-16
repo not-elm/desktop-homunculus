@@ -118,6 +118,9 @@ mod tests {
         while let Some(dir) = pending.pop() {
             for entry in std::fs::read_dir(&dir).expect("the directory is readable") {
                 let path = entry.expect("the directory entry is readable").path();
+                if is_hidden(&path) {
+                    continue;
+                }
                 if path.is_dir() {
                     pending.push(path);
                 } else {
@@ -127,6 +130,12 @@ mod tests {
             }
         }
         files
+    }
+
+    fn is_hidden(path: &Path) -> bool {
+        path.file_name()
+            .and_then(|name| name.to_str())
+            .is_some_and(|name| name.starts_with('.'))
     }
 
     fn empty_temp_dir(name: &str) -> PathBuf {
