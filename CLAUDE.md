@@ -18,7 +18,7 @@ desktop-homunculus/
 │   ├── ui/              # @hmcs/ui — Shared React component library (Radix + Tailwind)
 │   ├── cli/             # @hmcs/cli — Node CLI wrapper (distributes platform-specific Rust binary)
 │   └── openclaw-plugin/ # @hmcs/openclaw-plugin — OpenClaw plugin bridging external agents
-├── mods/                # Mods (NPM packages): persona/, character-settings/, settings/, menu/, assets/, elmer/, voicevox/, app-exit/, stt/, rpc-test/
+├── mods/                # Mods (NPM packages): persona/, character-settings/, settings/, menu/, assets/, elmer/, voicevox/, stt/, rpc-test/
 ├── docs/website/        # Docusaurus documentation site
 └── sandbox/             # Dev sandbox — aggregates all mods for workspace linking validation
 ```

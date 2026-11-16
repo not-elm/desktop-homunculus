@@ -66,7 +66,7 @@ Desktop Homunculus を初めて起動すると、画面にキャラクターは�
 3. **Exit** を選択
 
 :::tip
-`@hmcs/app-exit` MOD がシステムトレイに Exit オプションを提供します。特に Windows ではアプリがタスクバーや Alt+Tab に表示されないため、この MOD がインストールされていることを確認してください。
+Exit はトレイメニューに標準で入っており、MOD が1つも入っていなくても常に使えます。Windows ではアプリがタスクバーや Alt+Tab に表示されないため、終了にはトレイを使ってください。
 :::
 
 ## 公式 MOD の紹介
@@ -78,7 +78,6 @@ Desktop Homunculus には `@hmcs` スコープの公式 MOD セットが同梱�
 | `@hmcs/assets` | デフォルトの VRMA アニメーション（`idle-maid`、`grabbed`、`idle-sitting`）と効果音 |
 | `@hmcs/persona` | Persona 管理 UI とデフォルト動作サービス — アイデンティティ、性格、外見を設定 |
 | `@hmcs/settings` | システムトレイからアクセスできるアプリケーション設定パネル |
-| `@hmcs/app-exit` | システムトレイの終了メニュー（Windows では必須） |
 | `@hmcs/menu` | 右クリックコンテキストメニューオーバーレイ |
 
 ## 追加 MOD

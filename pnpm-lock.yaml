@@ -127,19 +127,6 @@ importers:
         specifier: ~5.6.3
         version: 5.6.3
 
-  mods/app-exit:
-    dependencies:
-      '@hmcs/sdk':
-        specifier: workspace:*
-        version: link:../../packages/sdk
-    devDependencies:
-      '@types/node':
-        specifier: ^25.3.3
-        version: 25.9.9
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
   mods/assets: {}
 
   mods/menu:
@@ -705,9 +692,6 @@ importers:
 
   sandbox:
     dependencies:
-      '@hmcs/app-exit':
-        specifier: workspace:*
-        version: link:../mods/app-exit
       '@hmcs/assets':
         specifier: workspace:*
         version: link:../mods/assets
