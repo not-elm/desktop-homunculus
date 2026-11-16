@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-`@hmcs/ui` — the shared React component library for Desktop Homunculus. Published to `dist/`. Consumed by the mod UI apps (`mods/settings/ui/`, `mods/menu/ui/`).
+`@hmcs/ui` — the shared React component library for Desktop Homunculus. Published to `dist/`. Consumed by the mod UI apps (`mods/settings/ui/`, `engine/ui/menu/`).
 
 ## Commands
 

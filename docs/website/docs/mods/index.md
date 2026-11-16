@@ -11,11 +11,12 @@ MODs extend Desktop Homunculus with characters, animations, sound effects, UI pa
 
 | MOD | Description | Install |
 |---|---|---|
-| [@hmcs/menu](./menu) | Right-click context menu with a WebView-based HUD overlay | Recommended |
 | [@hmcs/persona](./persona) | Persona management UI and default behavior service (identity, personality, appearance) | Recommended |
 | [@hmcs/settings](./settings) | Application settings panel (frame rate, shadow opacity) via system tray | Recommended |
 | [@hmcs/voicevox](./voicevox) | Text-to-speech integration using the VoiceVox engine | Optional |
 | [@hmcs/stt](./stt) | Speech-to-text control panel with Whisper model management | Optional |
+
+The right-click menu is built into the engine. MODs add their own items to it through the `homunculus.menus` field.
 
 ## Managing MODs
 
@@ -30,7 +31,7 @@ Example output:
 ```text
  NAME            VERSION  DESCRIPTION
  @hmcs/persona   1.0.0    Persona management
- @hmcs/menu      1.0.0    Context menu
+ @hmcs/settings  1.0.0    Settings panel
 ```
 
 ### Install a MOD

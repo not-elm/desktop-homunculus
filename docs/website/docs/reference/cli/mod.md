@@ -34,7 +34,7 @@ Success:
 ```text
  NAME            VERSION  DESCRIPTION
  @hmcs/persona   1.0.0    Persona management
- @hmcs/menu      1.0.0    Context menu
+ @hmcs/settings  1.0.0    Settings panel
 ```
 
 No installed MODs:

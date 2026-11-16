@@ -14,6 +14,8 @@ make setup-cef            # Download CEF framework only (macOS; skips if already
 make release-windows     # Build MSI installer via WiX 4.x (Windows only)
 ```
 
+Built-in UIs (`../engine/ui/<name>/`, e.g. the right-click menu) are embedded into the binary at compile time, so cargo needs them built first: run `make build-builtin-ui` at the repository root (or `pnpm --filter '@hmcs/menu-ui...' run build`). The root `make debug` / `make test` / release targets do this already; a missing build stops cargo with that instruction.
+
 Single test:
 ```bash
 cargo test -p homunculus_http_server            # All tests in one crate
@@ -93,9 +95,10 @@ Custom `SystemParam` types available in `homunculus_core::system_param::prelude`
 ### Crates
 
 - `homunculus_core` — Components (`Loading`, `AppWindow`, `PersonaState`, `LinkedPersona`, `Persona`, `PersonaId`), events, resources, system parameters
-- `homunculus_api` — `ApiReactor`, `api!` macro, domain APIs: `VrmApi`, `PersonaApi`, `VrmAnimationApi`, `AudioSeApi`, `AudioBgmApi`, `PrefsApi`, `CameraApi`, `WebviewApi`, `EffectsApi`, `SpeechApi`, `SignalsApi`, `EntitiesApi`, `AssetsApi`, `ModsApi`, `ShadowPanelApi`, `AppApi`
+- `homunculus_api` — `ApiReactor`, `api!` macro, `WebviewSpawner` (SystemParam for opening webviews from Bevy systems), domain APIs: `VrmApi`, `PersonaApi`, `VrmAnimationApi`, `AudioSeApi`, `AudioBgmApi`, `PrefsApi`, `CameraApi`, `WebviewApi`, `EffectsApi`, `SpeechApi`, `SignalsApi`, `EntitiesApi`, `AssetsApi`, `ModsApi`, `ShadowPanelApi`, `AppApi`
 - `homunculus_http_server` — Axum routes organized by domain in `src/route/`. `HttpState` holds all API resources. Test utilities: `test_app()`, `call()`, `assert_response()`. Includes command execution endpoint (`POST /commands/execute`) with NDJSON streaming output.
-- `homunculus_mod` — MOD system: NPM package discovery, Node.js child processes
+- `homunculus_mod` — MOD system: NPM package discovery, Node.js child processes. MODs whose features are built into the engine (`@hmcs/menu`) are skipped at discovery.
+- `homunculus_menu` — The right-click menu built into the engine: reads `PointerClick` messages, opens or closes the menu webview (HTML embedded from `engine/ui/menu/dist/index.html` by `build.rs`), and plays `se:open` / `se:close`. At most one secondary click is acted on per frame.
 - `homunculus_migration` — Startup migrations that bring a user environment created by an older version up to date. They run in the `MigrationStartup` schedule, which is inserted before `PreStartup` (before MOD discovery). To add one, create a plugin in `src/migrations/` that adds its system to `MigrationStartup`, and add that plugin in `HomunculusMigrationPlugin::build`. Each migration system must be idempotent (detect whether it is needed and otherwise do nothing), must be a no-op against the `sandbox/` mods dir that `make debug` uses, and must log failures with `error!` instead of panicking.
 - `homunculus_speech` — Mora-based lip-sync for VRM models. Provides speech queue, vowel animation, and expression keyframe control. TTS audio is provided externally (e.g. via the Timeline API or MODs).
 - `homunculus_prefs` — SQLite-backed preferences and persona persistence (`~/.homunculus/preferences.db`). Manages `personas` and `persona_metadata` tables with CRUD methods. Transform persistence uses `persona_metadata` key `"transform"`.

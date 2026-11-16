@@ -27,7 +27,7 @@ MODs combine any mix of the following capabilities. A single MOD can do one of t
 
 - **Spawn characters** — Load a VRM 3D model and control its animations, expressions, and behavior. The `@hmcs/persona` MOD manages characters that idle on your desktop and react to dragging.
 
-- **Run a service** — Run a long-running TypeScript process when the app launches (declared via the `homunculus.service` field). Services typically set up characters and event listeners. The `@hmcs/menu` MOD uses a service to initialize the right-click menu overlay.
+- **Run a service** — Run a long-running TypeScript process when the app launches (declared via the `homunculus.service` field). Services typically set up characters and event listeners. The `@hmcs/persona` MOD uses a service to run each character's default behavior.
 
 - **Expose MOD commands** — Provide commands other MODs or AI agents can invoke through the HTTP API (declared via the `bin` field). For example, the `@hmcs/voicevox` MOD exposes `voicevox:speak` and `voicevox:speakers` commands for text-to-speech.
 
