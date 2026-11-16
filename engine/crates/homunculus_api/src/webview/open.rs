@@ -1,5 +1,8 @@
+//! Opening webviews in world space, from the HTTP API or from a Bevy system.
+
 use crate::error::{ApiError, ApiResult};
 use crate::prelude::WebviewApi;
+use bevy::ecs::system::SystemParam;
 use bevy::light::NotShadowCaster;
 use bevy::prelude::*;
 use bevy_cef::prelude::{
@@ -17,6 +20,17 @@ use homunculus_effects::{Entity, Update};
 #[derive(Component, Debug, Clone)]
 pub(crate) struct OriginalWebviewSource(pub WebviewSource);
 
+/// Opens webviews in world space from a Bevy system.
+#[derive(SystemParam)]
+pub struct WebviewSpawner<'w, 's> {
+    commands: Commands<'w, 's>,
+    meshes: ResMut<'w, Assets<Mesh>>,
+    materials: ResMut<'w, Assets<WebviewExtendStandardMaterial>>,
+    cameras: Cameras<'w, 's>,
+    asset_resolver: AssetResolver<'w>,
+    index: Res<'w, PersonaIndex>,
+}
+
 impl WebviewApi {
     /// Opens a global webview in world space.
     pub async fn open(&self, options: WebviewOpenOptions) -> ApiResult<Entity> {
@@ -26,6 +40,53 @@ impl WebviewApi {
                     .await
             })
             .await?
+    }
+}
+
+impl WebviewSpawner<'_, '_> {
+    /// Spawns a webview described by `options` and returns its commands.
+    ///
+    /// The webview gets its mesh and material, the preload script that tells
+    /// the page its own entity, and a resize handle when `options.resizable`
+    /// is set. A linked persona is recorded as [`LinkedPersona`]; when that
+    /// persona is spawned, the webview also becomes its child and follows it.
+    /// Components inserted through the returned commands are applied on the
+    /// same command queue as the spawn.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError::AssetNotFound`] when a local source names an
+    /// unknown asset, and [`ApiError::AssetTypeMismatch`] when it names an
+    /// asset that is not HTML.
+    pub fn open(&mut self, options: WebviewOpenOptions) -> ApiResult<EntityCommands<'_>> {
+        let webview_source = source_to_webview_source(&options.source, &self.asset_resolver)?;
+        let webview = spawn_webview_entity(
+            &mut self.commands,
+            &mut self.meshes,
+            &mut self.materials,
+            &self.cameras,
+            webview_source,
+            &options,
+        );
+        let persona_entity = options
+            .linked_persona
+            .as_ref()
+            .and_then(|persona_id| self.index.get(persona_id));
+        let mut entity = self.commands.entity(webview);
+        entity.try_insert((
+            OriginalWebviewSource(options.source),
+            preload_scripts(webview),
+        ));
+        if let Some(resizable) = options.resizable {
+            entity.try_insert(to_webview_resizable(resizable));
+        }
+        if let Some(persona_id) = options.linked_persona {
+            entity.try_insert(LinkedPersona(persona_id));
+        }
+        if let Some(persona_entity) = persona_entity {
+            entity.insert(ChildOf(persona_entity));
+        }
+        Ok(entity)
     }
 }
 
@@ -54,47 +115,11 @@ fn visible(
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 fn create_global_webview(
     In(options): In<WebviewOpenOptions>,
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<WebviewExtendStandardMaterial>>,
-    cameras: Cameras,
-    asset_resolver: AssetResolver,
-    index: Res<PersonaIndex>,
+    mut spawner: WebviewSpawner,
 ) -> ApiResult<Entity> {
-    let webview_source = source_to_webview_source(&options.source, &asset_resolver)?;
-
-    let webview = spawn_webview_entity(
-        &mut commands,
-        &mut meshes,
-        &mut materials,
-        &cameras,
-        webview_source,
-        &options,
-    );
-
-    commands
-        .entity(webview)
-        .try_insert(OriginalWebviewSource(options.source.clone()));
-    insert_preload_scripts(&mut commands, webview);
-
-    if let Some(resizable) = options.resizable {
-        commands
-            .entity(webview)
-            .try_insert(to_webview_resizable(resizable));
-    }
-
-    if let Some(persona_id) = options.linked_persona {
-        commands
-            .entity(webview)
-            .try_insert(LinkedPersona(persona_id.clone()));
-        if let Some(persona_entity) = index.get(&persona_id) {
-            commands.entity(webview).insert(ChildOf(persona_entity));
-        }
-    }
-    Ok(webview)
+    spawner.open(options).map(|webview| webview.id())
 }
 
 /// Converts our API-level `WebviewSource` to bevy_cef's `WebviewSource` component.
@@ -205,13 +230,9 @@ fn build_transform_constraint(options: &WebviewOpenOptions) -> TransformConstrai
     constraint
 }
 
-fn insert_preload_scripts(commands: &mut Commands, webview: Entity) {
-    commands
-        .entity(webview)
-        .try_insert(PreloadScripts::from([&include_str!(
-            "../webview/webviewEntity.js"
-        )
-        .replace("undefined", &webview.to_bits().to_string())]));
+fn preload_scripts(webview: Entity) -> PreloadScripts {
+    PreloadScripts::from([&include_str!("../webview/webviewEntity.js")
+        .replace("undefined", &webview.to_bits().to_string())])
 }
 
 fn to_aspect_lock_mode(mode: AspectLockMode) -> bevy_cef::prelude::AspectLockMode {
@@ -228,5 +249,148 @@ fn to_webview_resizable(opts: WebviewResizableOptions) -> WebviewResizable {
         min_size: opts.min_size,
         max_size: opts.max_size,
         aspect_lock: to_aspect_lock_mode(opts.aspect_lock),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bevy::ecs::system::RunSystemOnce;
+    use homunculus_core::prelude::{AssetEntry, AssetId, AssetOrigin, AssetRegistry, PersonaId};
+    use std::path::PathBuf;
+
+    fn spawner_app() -> App {
+        let mut app = App::new();
+        app.add_plugins((MinimalPlugins, AssetPlugin::default()))
+            .init_asset::<Mesh>()
+            .init_asset::<WebviewExtendStandardMaterial>()
+            .init_resource::<AssetRegistry>()
+            .init_resource::<PersonaIndex>();
+        app
+    }
+
+    fn options(source: WebviewSource, linked_persona: Option<PersonaId>) -> WebviewOpenOptions {
+        WebviewOpenOptions {
+            source,
+            size: None,
+            viewport_size: None,
+            transform: None,
+            constraints: None,
+            linked_persona,
+            resizable: None,
+        }
+    }
+
+    fn open(app: &mut App, options: WebviewOpenOptions) -> ApiResult<Entity> {
+        app.world_mut()
+            .run_system_once_with(
+                |In(options): In<WebviewOpenOptions>, mut spawner: WebviewSpawner| {
+                    spawner.open(options).map(|webview| webview.id())
+                },
+                options,
+            )
+            .expect("the system runs")
+    }
+
+    /// Asserts that an inline HTML source opens a webview that serves the
+    /// HTML inline and carries the preload script naming its own entity.
+    ///
+    /// Case: the engine opens its built-in right-click menu from HTML embedded
+    /// in the binary.
+    #[test]
+    fn html_source_opens_an_inline_webview() {
+        let mut app = spawner_app();
+
+        let webview = open(
+            &mut app,
+            options(
+                WebviewSource::Html {
+                    content: "<p>menu</p>".to_string(),
+                },
+                None,
+            ),
+        )
+        .expect("the webview opens");
+
+        let entity = app.world().entity(webview);
+        assert!(matches!(
+            entity.get::<bevy_cef::prelude::WebviewSource>(),
+            Some(bevy_cef::prelude::WebviewSource::InlineHtml(html)) if html == "<p>menu</p>"
+        ));
+        assert!(matches!(
+            entity.get::<OriginalWebviewSource>(),
+            Some(OriginalWebviewSource(WebviewSource::Html { .. }))
+        ));
+        let scripts = entity
+            .get::<PreloadScripts>()
+            .expect("preload scripts are attached");
+        let entity_bits = webview.to_bits().to_string();
+        assert!(
+            scripts.0.iter().any(|script| script.contains(&entity_bits)),
+            "no preload script names entity {entity_bits}"
+        );
+    }
+
+    /// Asserts that a webview linked to a spawned persona is linked to it and
+    /// parented to its entity.
+    ///
+    /// Case: a menu opened for a character follows that character on screen.
+    #[test]
+    fn linked_persona_is_parented_to_the_persona() {
+        let mut app = spawner_app();
+        let persona = app.world_mut().spawn_empty().id();
+        let persona_id = PersonaId("p1".to_string());
+        app.world_mut()
+            .resource_mut::<PersonaIndex>()
+            .insert(persona_id.clone(), persona);
+
+        let webview = open(
+            &mut app,
+            options(
+                WebviewSource::Html {
+                    content: "<p>menu</p>".to_string(),
+                },
+                Some(persona_id.clone()),
+            ),
+        )
+        .expect("the webview opens");
+
+        let entity = app.world().entity(webview);
+        assert_eq!(
+            entity.get::<LinkedPersona>().map(|linked| &linked.0),
+            Some(&persona_id)
+        );
+        assert_eq!(entity.get::<ChildOf>().map(ChildOf::parent), Some(persona));
+    }
+
+    /// Asserts that a local source naming a non-HTML asset is rejected.
+    ///
+    /// Case: a MOD asks to open a webview from the ID of a VRM model by
+    /// mistake.
+    #[test]
+    fn local_source_must_be_an_html_asset() {
+        let mut app = spawner_app();
+        app.world_mut()
+            .resource_mut::<AssetRegistry>()
+            .register(AssetEntry {
+                id: AssetId::new("vrm:x"),
+                path: PathBuf::from("x.vrm"),
+                absolute_path: PathBuf::from("/mods/x/x.vrm"),
+                asset_type: AssetType::Vrm,
+                description: None,
+                origin: AssetOrigin::Mod("x".to_string()),
+            });
+
+        let result = open(
+            &mut app,
+            options(
+                WebviewSource::Local {
+                    id: AssetId::new("vrm:x"),
+                },
+                None,
+            ),
+        );
+
+        assert!(matches!(result, Err(ApiError::AssetTypeMismatch { .. })));
     }
 }
