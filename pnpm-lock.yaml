@@ -127,8 +127,6 @@ importers:
         specifier: ~5.6.3
         version: 5.6.3
 
-  mods/assets: {}
-
   mods/menu:
     dependencies:
       '@hmcs/sdk':
@@ -692,9 +690,6 @@ importers:
 
   sandbox:
     dependencies:
-      '@hmcs/assets':
-        specifier: workspace:*
-        version: link:../mods/assets
       '@hmcs/menu':
         specifier: workspace:*
         version: link:../mods/menu
