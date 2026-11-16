@@ -25,10 +25,11 @@ fn run(context: &MigrationContext) -> Result<(), MigrationError> {
     if output.status.success() {
         Ok(())
     } else {
-        Err(MigrationError::Pnpm {
-            code: output.status.code(),
-            stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
-        })
+        Err(MigrationError::pnpm_failure(
+            output.status.code(),
+            &output.stdout,
+            &output.stderr,
+        ))
     }
 }
 

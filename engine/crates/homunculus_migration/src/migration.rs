@@ -37,12 +37,13 @@ pub(crate) enum MigrationError {
     #[error("failed to spawn pnpm: {0}")]
     Spawn(#[from] io::Error),
     /// pnpm ran and exited unsuccessfully.
-    #[error("pnpm exited with code {code:?}: {stderr}")]
+    #[error("pnpm exited with code {code:?}: {output}")]
     Pnpm {
         /// The exit code, or `None` when pnpm was terminated by a signal.
         code: Option<i32>,
-        /// What pnpm wrote to its standard error.
-        stderr: String,
+        /// What pnpm reported about the failure: its standard error, or its
+        /// standard output when standard error is empty.
+        output: String,
     },
 }
 
@@ -50,6 +51,23 @@ impl MigrationContext {
     /// Returns a context for the given mods directory and runtime.
     pub(crate) fn new(mods_dir: PathBuf, runtime: RuntimeResolver) -> Self {
         Self { mods_dir, runtime }
+    }
+}
+
+impl MigrationError {
+    /// Returns the error for a pnpm run that exited unsuccessfully with the
+    /// given exit code and captured output.
+    ///
+    /// The reported output is standard error, or standard output when
+    /// standard error is empty, with surrounding whitespace trimmed.
+    pub(crate) fn pnpm_failure(code: Option<i32>, stdout: &[u8], stderr: &[u8]) -> Self {
+        let stderr = String::from_utf8_lossy(stderr).trim().to_string();
+        let output = if stderr.is_empty() {
+            String::from_utf8_lossy(stdout).trim().to_string()
+        } else {
+            stderr
+        };
+        Self::Pnpm { code, output }
     }
 }
 
@@ -99,7 +117,7 @@ mod tests {
     fn always_fails(_: &MigrationContext) -> Result<(), MigrationError> {
         Err(MigrationError::Pnpm {
             code: Some(1),
-            stderr: "boom".to_string(),
+            output: "boom".to_string(),
         })
     }
 
@@ -125,6 +143,42 @@ mod tests {
             },
         ];
         assert_eq!(run_all(&migrations, &context()), vec!["first", "second"]);
+    }
+
+    /// Asserts that a pnpm failure reports standard output when standard
+    /// error is empty, with surrounding whitespace trimmed.
+    ///
+    /// Case: the bundled pnpm 10 cannot remove a package offline and prints
+    /// `ERR_PNPM_NO_OFFLINE_TARBALL` on standard output only.
+    #[test]
+    fn pnpm_failure_reports_stdout_when_stderr_is_empty() {
+        let error = MigrationError::pnpm_failure(
+            Some(1),
+            b" ERR_PNPM_NO_OFFLINE_TARBALL  A package is missing from the store\n",
+            b"",
+        );
+        assert_eq!(
+            error.to_string(),
+            "pnpm exited with code Some(1): ERR_PNPM_NO_OFFLINE_TARBALL  A package is missing from the store"
+        );
+    }
+
+    /// Asserts that a pnpm failure reports standard error rather than
+    /// standard output when standard error is not empty.
+    ///
+    /// Case: pnpm prints progress on standard output and its error on
+    /// standard error.
+    #[test]
+    fn pnpm_failure_prefers_stderr() {
+        let error = MigrationError::pnpm_failure(
+            Some(1),
+            b"Progress: resolved 1\n",
+            b"ERR_PNPM_NO_OFFLINE_META\n",
+        );
+        assert_eq!(
+            error.to_string(),
+            "pnpm exited with code Some(1): ERR_PNPM_NO_OFFLINE_META"
+        );
     }
 
     /// Asserts that migrations that succeed are not reported as failures.
