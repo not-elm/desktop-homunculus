@@ -7,6 +7,11 @@ repository.workspace = true
 license.workspace = true
 publish.workspace = true
 
+[lib]
+# No unit tests: skipping the empty test binary saves a full link of the
+# Bevy dependency graph in `cargo test --workspace`. Remove when adding tests.
+test = false
+
 [dependencies]
 bevy = { workspace = true }
 bevy_cef = { workspace = true }
