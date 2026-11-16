@@ -968,8 +968,8 @@ mod tests {
         let tmp = std::env::temp_dir().join("test_imported_asset.jpg");
         std::fs::write(&tmp, b"fake-jpg-data").unwrap();
 
-        // Use register_imported (same path as POST /assets/import)
-        app.world_mut()
+        let registered = app
+            .world_mut()
             .resource_mut::<AssetRegistry>()
             .register_imported(homunculus_core::prelude::AssetEntry {
                 id: homunculus_utils::prelude::AssetId::new("vrm:local:my-persona"),
@@ -979,6 +979,7 @@ mod tests {
                 description: None,
                 origin: AssetOrigin::Local,
             });
+        assert!(registered);
 
         let request = Request::get("/assets/file?id=vrm:local:my-persona")
             .body(Body::empty())

@@ -42,7 +42,7 @@ pub fn restore_imported_assets(mut registry: ResMut<AssetRegistry>, prefs: NonSe
             asset_type,
             asset.description,
         );
-        registry.register_imported(entry);
+        let _ = registry.register_imported(entry);
     }
 
     info!(

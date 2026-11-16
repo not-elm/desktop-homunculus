@@ -123,7 +123,7 @@ fn register_and_persist(
         args.asset_type.clone(),
         args.description.clone(),
     );
-    registry.register_imported(entry);
+    let _ = registry.register_imported(entry);
 
     let type_str = serialize_asset_type(&args.asset_type);
     prefs
