@@ -34,13 +34,28 @@ fn discover_mods(
             return;
         }
     };
-    for m in mods {
+    for m in loadable_mods(mods) {
         schedule_service(&m, &mut commands, &mods_root);
         load_assets(&m, &mut registry);
         load_menus(&m, &mut menus);
         info!("Loaded mod: [{}]", m.name);
         mod_registry.register(m);
     }
+}
+
+fn loadable_mods(mods: Vec<ModInfo>) -> Vec<ModInfo> {
+    mods.into_iter()
+        .filter(|m| {
+            let reserved = AssetOrigin::is_reserved_mod_name(&m.name);
+            if reserved {
+                warn!(
+                    "Skipping mod '{}': the name is reserved for the engine's own assets",
+                    m.name
+                );
+            }
+            !reserved
+        })
+        .collect()
 }
 
 fn schedule_service(info: &ModInfo, commands: &mut Commands, mods_dir: &Path) {
@@ -78,4 +93,46 @@ fn load_menus(info: &ModInfo, menus: &mut ResMut<ModMenuMetadataList>) {
         text: m.text.clone(),
         command: m.command.clone(),
     }));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+    use std::path::PathBuf;
+
+    fn mod_info(name: &str) -> ModInfo {
+        ModInfo {
+            name: name.to_string(),
+            version: "1.0.0".to_string(),
+            description: None,
+            author: None,
+            license: None,
+            service_script_path: None,
+            commands: vec![],
+            assets: HashMap::new(),
+            menus: vec![],
+            tray: None,
+            mod_dir: PathBuf::from("/mods").join(name),
+        }
+    }
+
+    /// Asserts that MODs named `local` or `builtin` are excluded from loading
+    /// while other MODs are kept.
+    ///
+    /// Case: a user installs packages named `local` and `builtin`, which would
+    /// collide with the labels the engine reports for imported and built-in
+    /// assets.
+    #[test]
+    fn reserved_mod_names_are_not_loaded() {
+        let mods = vec![
+            mod_info("local"),
+            mod_info("builtin"),
+            mod_info("@hmcs/persona"),
+        ];
+
+        let names: Vec<String> = loadable_mods(mods).into_iter().map(|m| m.name).collect();
+
+        assert_eq!(names, vec!["@hmcs/persona".to_string()]);
+    }
 }

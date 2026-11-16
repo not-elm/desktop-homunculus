@@ -519,6 +519,7 @@ mod tests {
     use homunculus_core::rpc_registry::RpcRegistry;
     use homunculus_prefs::PrefsDatabase;
     use homunculus_utils::config::HomunculusConfig;
+    use homunculus_utils::path::homunculus_dir;
     use homunculus_utils::prelude::{AssetDeclaration, AssetType};
     use homunculus_utils::runtime::RuntimeResolver;
     use http_body_util::BodyExt;
@@ -1020,6 +1021,136 @@ mod tests {
             .unwrap();
         let response = block_on(call_any_status(&mut app, router, request));
         assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    }
+
+    fn builtin_entry(id: &str, absolute_path: PathBuf) -> homunculus_core::prelude::AssetEntry {
+        homunculus_core::prelude::AssetEntry {
+            id: homunculus_utils::prelude::AssetId::new(id),
+            path: PathBuf::from("se/file.mp3"),
+            absolute_path,
+            asset_type: AssetType::Sound,
+            description: Some("Built-in test asset".to_string()),
+            origin: AssetOrigin::Builtin,
+        }
+    }
+
+    /// Asserts that `GET /assets` reports built-in assets with `mod: "builtin"`
+    /// and that `?mod=builtin` returns only them.
+    ///
+    /// Case: a client lists the assets the engine ships alongside an asset
+    /// that an installed MOD declares.
+    #[test]
+    fn test_list_assets_reports_builtin_origin() {
+        let (mut app, router) = test_app();
+        {
+            let mut registry = app.world_mut().resource_mut::<AssetRegistry>();
+            registry.register_builtin(builtin_entry("se:open", PathBuf::from("/a/se/open.mp3")));
+            registry.register(homunculus_core::prelude::AssetEntry {
+                id: homunculus_utils::prelude::AssetId::new("test-mod:click"),
+                path: PathBuf::from("click.mp3"),
+                absolute_path: PathBuf::from("/m/click.mp3"),
+                asset_type: AssetType::Sound,
+                description: None,
+                origin: AssetOrigin::Mod("test-mod".to_string()),
+            });
+        }
+
+        let request = Request::get("/assets").body(Body::empty()).unwrap();
+        let all: Vec<serde_json::Value> = block_on(read_json(&mut app, router.clone(), request));
+        let open = all
+            .iter()
+            .find(|asset| asset["id"] == "se:open")
+            .expect("se:open is listed");
+        assert_eq!(open["mod"], "builtin");
+
+        let request = Request::get("/assets?mod=builtin")
+            .body(Body::empty())
+            .unwrap();
+        let builtin: Vec<serde_json::Value> = block_on(read_json(&mut app, router, request));
+        let ids: Vec<&str> = builtin.iter().filter_map(|a| a["id"].as_str()).collect();
+        assert_eq!(ids, vec!["se:open"]);
+    }
+
+    /// Asserts that importing a file under a built-in asset ID is rejected with
+    /// 409 before the file is copied or recorded.
+    ///
+    /// Case: a user imports their own file under an ID that the engine ships as
+    /// a built-in asset.
+    #[test]
+    fn test_import_rejects_builtin_id_before_copying() {
+        let (mut app, router) = test_app();
+        app.world_mut()
+            .resource_mut::<AssetRegistry>()
+            .register_builtin(builtin_entry(
+                "vrm:builtin-import-test",
+                PathBuf::from("/a/vrm/test.vrm"),
+            ));
+        let source = std::env::temp_dir().join("builtin-import-test-source.vrm");
+        std::fs::write(&source, b"fake-vrm").unwrap();
+        let body = serde_json::json!({
+            "sourcePath": source.to_string_lossy(),
+            "assetId": "vrm:builtin-import-test",
+            "assetType": "vrm",
+        });
+
+        let request = Request::post("/assets/import")
+            .header("content-type", "application/json")
+            .body(Body::from(body.to_string()))
+            .unwrap();
+        let response = block_on(call_any_status(&mut app, router, request));
+
+        assert_eq!(response.status(), StatusCode::CONFLICT);
+        assert!(
+            !homunculus_dir()
+                .join("assets/vrm_builtin-import-test.vrm")
+                .exists()
+        );
+        let rows = app
+            .world()
+            .non_send::<PrefsDatabase>()
+            .list_imported_assets()
+            .unwrap();
+        assert!(rows.is_empty());
+        std::fs::remove_file(&source).ok();
+    }
+
+    /// Asserts that a built-in asset file is served even when its absolute
+    /// path contains a `..` segment.
+    ///
+    /// Case: the packaged macOS app resolves its asset directory as
+    /// `Contents/MacOS/../Resources/assets`.
+    #[test]
+    fn test_get_asset_file_builtin_with_parent_dir_segment() {
+        let (mut app, router) = test_app();
+        let dir = std::env::temp_dir().join("builtin-parent-dir-test");
+        std::fs::create_dir_all(dir.join("sub")).unwrap();
+        std::fs::write(dir.join("file.mp3"), b"fake-mp3").unwrap();
+        app.world_mut()
+            .resource_mut::<AssetRegistry>()
+            .register_builtin(builtin_entry(
+                "se:parent-dir-test",
+                dir.join("sub").join("..").join("file.mp3"),
+            ));
+
+        let request = Request::get("/assets/file?id=se:parent-dir-test")
+            .body(Body::empty())
+            .unwrap();
+        let response = block_on(call(&mut app, router, request));
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = block_on(response.into_body().collect()).unwrap().to_bytes();
+        assert_eq!(&body[..], b"fake-mp3");
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    async fn read_json<T: DeserializeOwned>(
+        app: &mut App,
+        router: Router,
+        request: Request<Body>,
+    ) -> T {
+        let response = call(app, router, request).await;
+        let bytes = response.into_body().collect().await.unwrap().to_bytes();
+        serde_json::from_slice(&bytes).unwrap()
     }
 
     #[test]
