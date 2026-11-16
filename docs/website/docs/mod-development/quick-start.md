@@ -34,7 +34,7 @@ Install the SDK:
 pnpm add @hmcs/sdk
 ```
 
-`@hmcs/sdk` provides the TypeScript API for controlling characters, playing sounds, and more. If your MOD uses built-in animations (like `vrma:idle-maid`), you must also install `@hmcs/assets`: `hmcs mod install @hmcs/assets`.
+`@hmcs/sdk` provides the TypeScript API for controlling characters, playing sounds, and more. Built-in animations such as `vrma:idle-maid` ship with the engine, so there is nothing else to install.
 
 ## Step 2: Configure package.json
 

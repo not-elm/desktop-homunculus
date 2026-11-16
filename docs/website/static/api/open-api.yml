@@ -53,7 +53,7 @@ paths:
     get:
       tags:
       - assets
-      summary: List available assets, optionally filtered by type or mod name.
+      summary: List available assets, optionally filtered by type or origin.
       operationId: list_assets
       parameters:
       - name: type
@@ -64,7 +64,7 @@ paths:
           type: string
       - name: mod
         in: query
-        description: Filter by mod name
+        description: 'Filter by origin: a mod name, `builtin` for assets shipped with the engine, or `local` for imported files'
         required: false
         schema:
           type: string
@@ -2527,7 +2527,9 @@ components:
           description: Human-readable description (used by LLM agents for asset selection).
         path:
           type: string
-          description: File path relative to the MOD root directory.
+          description: |-
+            File path relative to the declaring MOD's root directory, or to the
+            engine's asset directory for a built-in asset.
         type:
           $ref: '#/components/schemas/AssetType'
           description: Asset type.

@@ -19,13 +19,13 @@ The engine treats asset IDs as opaque strings — it does not validate or parse 
 
 | Part | Source | Example |
 |---|---|---|
-| `mod-name` | Derived from the `name` field in `package.json` | `@hmcs/assets` becomes `assets` |
+| `mod-name` | Derived from the `name` field in `package.json` | `@hmcs/settings` becomes `settings` |
 | `asset-name` | The key in the `homunculus.assets` object | `vrm`, `open`, `ui` |
 
 The **mod name** is extracted from the package name by stripping the scope prefix. For example:
 
-- `@hmcs/assets` -- mod name is `assets`
 - `@hmcs/settings` -- mod name is `settings`
+- `@hmcs/persona` -- mod name is `persona`
 - `my-character` -- mod name is `my-character` (no scope to strip)
 
 The **asset name** is whatever you chose as the key when declaring the asset in `package.json`.
@@ -58,17 +58,31 @@ The asset IDs are `my-character:vrm` and `my-character:open`. You use these stri
 
 ## Built-in Assets
 
-The `@hmcs/assets` MOD provides a set of default animations and sound effects that all MODs can use. These are available out of the box when `@hmcs/assets` is installed:
+The engine ships a default character model, animations, and sound effects that all MODs can use. They are always available; there is nothing to install:
 
 | Asset ID | Type | Description |
 |---|---|---|
+| `vrm:elmer` | `vrm` | VRM model named Elmer |
 | `vrma:idle-maid` | `vrma` | Maid-style standing idle with hands clasped in front |
 | `vrma:grabbed` | `vrma` | Reactive pose while being dragged by the user |
 | `vrma:idle-sitting` | `vrma` | Seated idle loop with legs together |
 | `se:open` | `sound` | Sound effect for opening a HUD panel |
+| `se:close` | `sound` | Sound effect for closing a HUD panel |
+
+Built-in assets are listed by `GET /assets` (and `assets.list()` in the SDK) with `mod` set to `"builtin"`, so `assets.list({ mod: "builtin" })` returns exactly these. Imported files are listed with `mod` set to `"local"`.
+
+Built-in asset IDs are reserved:
+
+- A MOD that declares one of these IDs in its `package.json` is ignored for that ID, with a warning in the log.
+- Importing a file under one of these IDs (`POST /assets/import`) fails with `409 Conflict`.
+- MOD packages named `builtin` or `local` are not loaded.
+
+:::info Migrating from `@hmcs/assets`
+These assets used to come from the `@hmcs/assets` MOD. They keep the same IDs, so existing code keeps working. Filtering by the old MOD name (`assets.list({ mod: "@hmcs/assets" })`) no longer returns them — filter by `"builtin"` instead. The old MOD is no longer needed and can be removed with `hmcs mod uninstall @hmcs/assets`.
+:::
 
 :::tip
-The built-in assets use the mod name `vrma` and `se` (from the `@hmcs/assets` package). You do not need to create your own idle animations unless you want custom ones.
+You do not need to create your own idle animations unless you want custom ones.
 :::
 
 ## Using Asset IDs in Code
@@ -124,12 +138,12 @@ The same asset ID string is used consistently across the SDK and the HTTP API.
 
 ## Referencing Assets from Other MODs
 
-A MOD can reference assets from any other installed MOD. For example, a MOD that creates a character commonly uses animations from `@hmcs/assets`:
+A MOD can reference built-in assets and assets from any other installed MOD. For example, a MOD that creates a character commonly uses the built-in animations:
 
 ```typescript
-// This MOD uses an animation from @hmcs/assets
+// This MOD uses a built-in animation
 await vrm.playVrma({
-  asset: "vrma:idle-maid", // Defined in @hmcs/assets, not in this MOD
+  asset: "vrma:idle-maid", // Built into the engine, not declared by this MOD
 });
 ```
 

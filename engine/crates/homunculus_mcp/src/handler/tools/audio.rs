@@ -41,7 +41,7 @@ impl HomunculusMcpHandler {
     /// Play a sound effect.
     #[tool(
         name = "play_sound",
-        description = "Play a sound effect. Use a MOD asset ID (e.g., 'se:open') or a preset name.",
+        description = "Play a sound effect. Use a sound asset ID (e.g., the built-in 'se:open') or a preset name.",
         annotations(destructive_hint = false, open_world_hint = false)
     )]
     async fn play_sound(&self, params: Parameters<PlaySoundParams>) -> String {

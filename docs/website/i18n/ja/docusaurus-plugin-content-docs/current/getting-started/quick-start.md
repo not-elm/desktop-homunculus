@@ -20,10 +20,10 @@ Desktop Homunculus を初めて起動すると、画面にキャラクターは�
 1. **システムトレイ**（通知領域）の **Desktop Homunculus** アイコンをクリック
 2. **"Persona"** を選択して Persona Management ダッシュボードを開く
 3. **ID**（例：`elmer`）と **Name** を入力し、**Create** をクリック
-4. VRM モデルを選択 — 公式 `@hmcs/assets` MOD が `vrm:elmer` をすぐに使えるモデルとして提供しています
+4. VRM モデルを選択 — 組み込みの `vrm:elmer` をすぐに使えます
 5. **Auto-Spawn** を有効にして、次回以降の起動時にキャラクターが自動的に表示されるようにし、**Save** をクリック
 
-デスクトップにキャラクターが表示されるはずです。待機状態でアイドルし、つかむと反応し、カーソルを追従します — `@hmcs/assets` と `@hmcs/persona` MOD によって動作しています。
+デスクトップにキャラクターが表示されるはずです。待機状態でアイドルし、つかむと反応し、カーソルを追従します — 組み込みのアセットと `@hmcs/persona` MOD によって動作しています。
 
 ## キャラクターとのインタラクション
 
@@ -75,7 +75,6 @@ Desktop Homunculus には `@hmcs` スコープの公式 MOD セットが同梱�
 
 | MOD | 説明 |
 |---|---|
-| `@hmcs/assets` | デフォルトの VRMA アニメーション（`idle-maid`、`grabbed`、`idle-sitting`）と効果音 |
 | `@hmcs/persona` | Persona 管理 UI とデフォルト動作サービス — アイデンティティ、性格、外見を設定 |
 | `@hmcs/settings` | システムトレイからアクセスできるアプリケーション設定パネル |
 | `@hmcs/menu` | 右クリックコンテキストメニューオーバーレイ |

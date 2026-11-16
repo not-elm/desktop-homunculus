@@ -118,7 +118,7 @@ If the window background appears black instead of transparent on Windows, you li
 If official MODs failed to install during setup (e.g., due to network issues), install them manually:
 
 ```shell
-hmcs mod install @hmcs/assets @hmcs/persona @hmcs/menu @hmcs/settings
+hmcs mod install @hmcs/persona @hmcs/menu @hmcs/settings
 ```
 
 Then restart Desktop Homunculus.

@@ -34,7 +34,7 @@ Desktop Homunculus is currently missing many features and actively seeking contr
 
 ### Providing Assets
 
-The `@hmcs/assets` mod provides official assets, but the collection is still small. We welcome contributions of:
+The engine ships a small set of built-in assets, and the collection is still small. We welcome contributions of:
 
 - **Sound effects** — UI sounds, reactions, ambient effects
 - **BGM** — Background music tracks

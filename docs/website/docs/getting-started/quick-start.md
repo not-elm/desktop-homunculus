@@ -20,10 +20,10 @@ When you first launch Desktop Homunculus, no character appears on screen — you
 1. Click the **Desktop Homunculus** icon in the **system tray** (notification area)
 2. Select **"Persona"** to open the Persona Management dashboard
 3. Enter an **ID** (e.g. `elmer`) and a **Name**, then click **Create**
-4. Select a VRM model — the official `@hmcs/assets` MOD provides `vrm:elmer` as a ready-to-use model
+4. Select a VRM model — the built-in `vrm:elmer` model is ready to use
 5. Enable **Auto-Spawn** so the character appears automatically on future launches, then click **Save**
 
-Your character should now appear on the desktop. It will idle, react when grabbed, and follow your cursor — powered by the `@hmcs/assets` and `@hmcs/persona` MODs.
+Your character should now appear on the desktop. It will idle, react when grabbed, and follow your cursor — powered by the built-in assets and the `@hmcs/persona` MOD.
 
 ## Interact with Your Character
 
@@ -75,7 +75,6 @@ Desktop Homunculus ships with a set of official MODs under the `@hmcs` scope:
 
 | MOD | Description |
 |---|---|
-| `@hmcs/assets` | Default VRMA animations (`idle-maid`, `grabbed`, `idle-sitting`) and sound effects |
 | `@hmcs/persona` | Persona management UI and default behavior service — configure identity, personality, and appearance |
 | `@hmcs/settings` | Application settings panel accessible from the system tray |
 | `@hmcs/menu` | Right-click context menu overlay |

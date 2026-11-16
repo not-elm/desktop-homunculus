@@ -11,9 +11,12 @@ pub use homunculus_utils::schema::asset::{
 #[derive(Component, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct AssetIdComponent(pub AssetId);
 
-/// Registry of all declared assets, built at startup from MOD package.json files.
+/// Registry of every asset that can be referenced by ID: built-in assets, MOD
+/// assets, and imported files.
 ///
-/// Maps asset ID to AssetEntry. Asset IDs are globally unique (MOD developers' responsibility).
+/// # Invariants
+///
+/// A built-in asset's ID is never taken over by a MOD asset or an imported file.
 #[derive(Resource, Debug, Default)]
 pub struct AssetRegistry {
     entries: HashMap<AssetId, AssetEntry>,

@@ -11,7 +11,6 @@ MODs extend Desktop Homunculus with characters, animations, sound effects, UI pa
 
 | MOD | Description | Install |
 |---|---|---|
-| [@hmcs/assets](./assets) | Default VRM character model, VRMA animations, and sound effects | Recommended |
 | [@hmcs/menu](./menu) | Right-click context menu with a WebView-based HUD overlay | Recommended |
 | [@hmcs/persona](./persona) | Persona management UI and default behavior service (identity, personality, appearance) | Recommended |
 | [@hmcs/settings](./settings) | Application settings panel (frame rate, shadow opacity) via system tray | Recommended |

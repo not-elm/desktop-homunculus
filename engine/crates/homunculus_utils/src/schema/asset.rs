@@ -17,7 +17,8 @@ pub enum AssetType {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "openapi", derive(utoipa::ToSchema))]
 pub struct AssetDeclaration {
-    /// File path relative to the MOD root directory.
+    /// File path relative to the declaring MOD's root directory, or to the
+    /// engine's asset directory for a built-in asset.
     pub path: String,
     /// Asset type.
     #[serde(rename = "type")]
@@ -64,9 +65,9 @@ impl AssetOrigin {
 /// A resolved asset entry with full path information.
 #[derive(Debug, Clone)]
 pub struct AssetEntry {
-    /// The asset ID (key from package.json homunculus.assets).
+    /// The asset ID.
     pub id: AssetId,
-    /// File path relative to the MOD root directory.
+    /// File path relative to the directory the asset's origin loads from.
     pub path: PathBuf,
     /// Absolute asset path.
     pub absolute_path: PathBuf,
