@@ -15,7 +15,6 @@ MODs extend Desktop Homunculus with characters, animations, sound effects, UI pa
 | [@hmcs/menu](./menu) | Right-click context menu with a WebView-based HUD overlay | Recommended |
 | [@hmcs/persona](./persona) | Persona management UI and default behavior service (identity, personality, appearance) | Recommended |
 | [@hmcs/settings](./settings) | Application settings panel (frame rate, shadow opacity) via system tray | Recommended |
-| [@hmcs/app-exit](./app-exit) | Exit menu in the system tray | Recommended |
 | [@hmcs/voicevox](./voicevox) | Text-to-speech integration using the VoiceVox engine | Optional |
 | [@hmcs/stt](./stt) | Speech-to-text control panel with Whisper model management | Optional |
 

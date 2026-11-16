@@ -31,7 +31,6 @@ Persona はシステムトレイからアクセスできる **Persona Management
 | `@hmcs/assets` | 組み込み VRM モデル、アニメーション、効果音 |
 | `@hmcs/menu` | 右クリックコンテキストメニュー |
 | `@hmcs/settings` | アプリケーション設定パネル |
-| `@hmcs/app-exit` | システムトレイの終了オプション |
 
 テキスト読み上げ（`@hmcs/voicevox`）や音声認識（`@hmcs/stt`）などの追加 MOD は、`hmcs` CLI でいつでもインストールできます。AI 連携については、[AI 連携](../ai-integration)を参照してください（外部で [OpenClaw](https://docs.openclaw.ai) を起動する必要があります）。
 

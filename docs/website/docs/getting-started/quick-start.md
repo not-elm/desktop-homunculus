@@ -66,7 +66,7 @@ If you have the `@hmcs/stt` MOD installed, open the **system tray** → **"Speec
 3. Select **Exit**
 
 :::tip
-The `@hmcs/app-exit` MOD provides the Exit option in the system tray. Make sure it is installed — especially on Windows, where the app is hidden from the taskbar and Alt+Tab.
+Exit is built into the tray menu and is always available, even when no MODs are installed. On Windows, the app is hidden from the taskbar and Alt+Tab, so use the tray to quit.
 :::
 
 ## Explore Official MODs
@@ -78,7 +78,6 @@ Desktop Homunculus ships with a set of official MODs under the `@hmcs` scope:
 | `@hmcs/assets` | Default VRMA animations (`idle-maid`, `grabbed`, `idle-sitting`) and sound effects |
 | `@hmcs/persona` | Persona management UI and default behavior service — configure identity, personality, and appearance |
 | `@hmcs/settings` | Application settings panel accessible from the system tray |
-| `@hmcs/app-exit` | Exit menu in the system tray (required on Windows) |
 | `@hmcs/menu` | Right-click context menu overlay |
 
 ## Additional MODs

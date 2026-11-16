@@ -1,11 +1,7 @@
 //! # Homunculus Tray
 //!
-//! System tray integration for Desktop Homunculus. Builds a tray icon with
-//! per-mod menu items sourced from `ModRegistry` and dispatches clicks to
-//! mod commands via `pnpm exec`.
-
-use std::collections::HashMap;
-use std::path::PathBuf;
+//! System tray integration for Desktop Homunculus: builds the tray menu from
+//! MOD declarations plus the built-in Exit item, and handles clicks on it.
 
 use bevy::prelude::*;
 use bevy::tasks::IoTaskPool;
@@ -14,7 +10,12 @@ use bevy_tray_icon::plugin::menu_event::MenuMessage;
 use bevy_tray_icon::resource::{Menu, MenuItem, TrayIcon};
 use homunculus_core::prelude::{HomunculusConfig, ModRegistry, TrayMenuItem};
 use homunculus_utils::runtime::RuntimeResolver;
-use tracing::{error, info};
+use std::collections::HashMap;
+use std::path::PathBuf;
+use tracing::{error, info, warn};
+
+const BUILTIN_EXIT_ID: &str = "::builtin::exit";
+const BUILTIN_EXIT_TEXT: &str = "Exit";
 
 /// Maps prefixed menu IDs (`"{mod_name}::{item_id}"`) to the mod name and
 /// command string that should be executed when the item is clicked.
@@ -48,17 +49,19 @@ impl TrayMenuRegistry {
     }
 }
 
-/// Plugin that provides system tray integration for Desktop Homunculus.
+/// Plugin that shows the Desktop Homunculus tray icon and its menu.
 ///
-/// Adds the `TrayIconPlugin`, builds a tray menu from mod declarations,
-/// and dispatches menu clicks to mod commands.
+/// The menu lists the tray items declared by MODs and always ends with the
+/// built-in Exit item. Clicking a MOD item runs its command, and clicking
+/// Exit requests an app exit.
 pub struct HomunculusTrayPlugin;
 
 impl Plugin for HomunculusTrayPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(TrayIconPlugin)
             .add_systems(Startup, setup_tray)
-            .add_systems(Update, handle_tray_clicks);
+            .add_systems(Update, handle_tray_clicks)
+            .add_systems(PostUpdate, exit_on_builtin_exit_click);
     }
 }
 
@@ -94,6 +97,9 @@ fn handle_tray_clicks(
     let mods_dir = config.mods_dir.clone();
     for message in mr.read() {
         let id = &message.id.0;
+        if id == BUILTIN_EXIT_ID {
+            continue;
+        }
         if let Some((_mod_name, command)) = registry.lookup(id) {
             let mods_dir = mods_dir.clone();
             let command = command.clone();
@@ -105,7 +111,7 @@ fn handle_tray_clicks(
                 })
                 .detach();
         } else {
-            tracing::warn!("Unknown tray menu id: {id}");
+            warn!("Unknown tray menu id: {id}");
         }
     }
 }
@@ -147,6 +153,18 @@ async fn execute_command(mods_dir: PathBuf, command: String, runtime: &RuntimeRe
     }
 }
 
+/// Requests a successful app exit when the built-in Exit item is clicked.
+fn exit_on_builtin_exit_click(
+    mut clicks: MessageReader<MenuMessage>,
+    mut app_exit: MessageWriter<AppExit>,
+) {
+    for click in clicks.read() {
+        if click.id.0 == BUILTIN_EXIT_ID {
+            app_exit.write(AppExit::Success);
+        }
+    }
+}
+
 /// Resolve the tray position string to a sort-order group index.
 ///
 /// Returns 0 for `"top"`, 1 for `"middle"` (default), 2 for `"bottom"`.
@@ -165,19 +183,34 @@ fn resolve_position(position: Option<&str>, mod_name: &str) -> u8 {
     }
 }
 
-/// Build the tray menu and registry from all mods in the `ModRegistry`.
+/// Builds the tray menu and the MOD command registry from all mods in the
+/// `ModRegistry`.
 ///
-/// Items are grouped by position (`top` → `middle` → `bottom`) and sorted
-/// alphabetically by mod name within each group. Groups are separated by
-/// `MenuItem::Separator`.
+/// MOD items are grouped by position (`top` → `middle` → `bottom`) and sorted
+/// alphabetically by mod name within each group, with a separator between
+/// groups. The built-in Exit item always comes last, after a separator when
+/// any MOD item precedes it, and is not registered as a MOD command.
 fn build_menu(mod_registry: &ModRegistry) -> (Menu, TrayMenuRegistry) {
     let mut registry = TrayMenuRegistry::default();
 
     let mut entries = collect_tray_entries(mod_registry);
     entries.sort_by(|a, b| a.0.cmp(&b.0).then_with(|| a.1.cmp(&b.1)));
 
-    let menu_items = build_grouped_menu_items(&entries, &mut registry);
+    let mut menu_items = build_grouped_menu_items(&entries, &mut registry);
+    append_builtin_exit(&mut menu_items);
     (Menu::new(menu_items), registry)
+}
+
+fn append_builtin_exit(menu_items: &mut Vec<MenuItem>) {
+    if !menu_items.is_empty() {
+        menu_items.push(MenuItem::separator());
+    }
+    menu_items.push(MenuItem::common(
+        BUILTIN_EXIT_ID,
+        BUILTIN_EXIT_TEXT,
+        true,
+        None,
+    ));
 }
 
 /// Collect (position_key, mod_name, tray_item) tuples from all mods.
@@ -237,6 +270,8 @@ fn to_bevy_menu_item(mod_name: &str, item: &TrayMenuItem) -> MenuItem {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bevy_tray_icon::menu::MenuId;
+    use homunculus_core::prelude::ModInfo;
     use homunculus_utils::prelude::TrayMenuItem;
 
     #[test]
@@ -365,74 +400,105 @@ mod tests {
         }
     }
 
+    /// Asserts that MOD items are grouped top, middle, then bottom with a
+    /// separator between groups, and that the built-in Exit item comes last.
+    ///
+    /// Case: the user opens the tray menu with MODs installed at every
+    /// position.
     #[test]
     fn build_menu_orders_by_position_then_mod_name() {
-        use homunculus_core::prelude::ModInfo;
-        use std::collections::HashMap;
-        use std::path::PathBuf;
-
-        let mut mod_registry = ModRegistry::default();
-
-        let mods = vec![
-            ("@hmcs/voicevox", Some("middle")),
-            ("@hmcs/app-exit", Some("bottom")),
-            ("@hmcs/settings", Some("top")),
-        ];
-        for (name, position) in mods {
-            mod_registry.register(ModInfo {
-                name: name.to_string(),
-                version: "0.1.0".to_string(),
-                description: None,
-                author: None,
-                license: None,
-                service_script_path: None,
-                commands: vec![],
-                assets: HashMap::new(),
-                menus: vec![],
-                tray: Some(TrayMenuItem {
-                    id: format!("{name}-tray"),
-                    text: name.to_string(),
-                    command: Some(format!("{name}-cmd")),
-                    items: None,
-                    position: position.map(|s| s.to_string()),
-                }),
-                mod_dir: PathBuf::from("/tmp"),
-            });
-        }
-
-        let (menu, _registry) = build_menu(&mod_registry);
-
-        let texts: Vec<&str> = menu
-            .iter()
-            .filter_map(|item| match item {
-                MenuItem::Common { text, .. } => Some(text.as_str()),
-                MenuItem::SubMenu { text, .. } => Some(text.as_str()),
-                _ => None,
-            })
-            .collect();
+        let (menu, _) = build_menu(&registry_with_tray_mods(&[
+            ("@hmcs/voicevox", "middle"),
+            ("@hmcs/bottom-example", "bottom"),
+            ("@hmcs/settings", "top"),
+        ]));
 
         assert_eq!(
-            texts,
-            vec!["@hmcs/settings", "@hmcs/voicevox", "@hmcs/app-exit"]
+            menu_texts(&menu),
+            vec![
+                "@hmcs/settings",
+                "@hmcs/voicevox",
+                "@hmcs/bottom-example",
+                "Exit"
+            ]
         );
-
-        let separator_count = menu
-            .iter()
-            .filter(|item| matches!(item, MenuItem::Separator))
-            .count();
-        assert_eq!(separator_count, 2);
+        assert_eq!(separator_count(&menu), 3);
     }
 
+    /// Asserts that a position group with no MOD items gets no separator of
+    /// its own.
+    ///
+    /// Case: the user has MODs only at the top and bottom positions, so the
+    /// middle group is empty.
     #[test]
     fn build_menu_skips_separator_for_empty_groups() {
-        use homunculus_core::prelude::ModInfo;
-        use std::collections::HashMap;
-        use std::path::PathBuf;
+        let (menu, _) = build_menu(&registry_with_tray_mods(&[
+            ("@hmcs/settings", "top"),
+            ("@hmcs/bottom-example", "bottom"),
+        ]));
 
-        let mut mod_registry = ModRegistry::default();
+        assert_eq!(
+            menu_texts(&menu),
+            vec!["@hmcs/settings", "@hmcs/bottom-example", "Exit"]
+        );
+        assert_eq!(separator_count(&menu), 2);
+    }
 
-        for (name, position) in [("@hmcs/settings", "top"), ("@hmcs/app-exit", "bottom")] {
-            mod_registry.register(ModInfo {
+    /// Asserts that the built-in Exit item comes last, right after a separator
+    /// that follows the MOD items.
+    ///
+    /// Case: the user opens the tray menu with the settings MOD installed.
+    #[test]
+    fn build_menu_appends_builtin_exit_after_mod_items() {
+        let (menu, _) = build_menu(&registry_with_tray_mods(&[("@hmcs/settings", "top")]));
+        assert_eq!(menu.len(), 3);
+        assert!(matches!(menu[1], MenuItem::Separator));
+        assert_builtin_exit(&menu[2]);
+    }
+
+    /// Asserts that the menu holds only the built-in Exit item, without a
+    /// separator, when no MOD declares a tray entry.
+    ///
+    /// Case: MOD discovery fails at startup, so the registry is empty.
+    #[test]
+    fn build_menu_shows_only_exit_without_mod_items() {
+        let (menu, _) = build_menu(&ModRegistry::default());
+        assert_eq!(menu.len(), 1);
+        assert_builtin_exit(&menu[0]);
+    }
+
+    /// Asserts that the built-in Exit item is not registered as a MOD command.
+    ///
+    /// Case: the tray click handler looks the clicked ID up among MOD commands.
+    #[test]
+    fn builtin_exit_is_not_registered_as_mod_command() {
+        let (_, registry) = build_menu(&registry_with_tray_mods(&[("@hmcs/settings", "top")]));
+        assert!(registry.lookup(BUILTIN_EXIT_ID).is_none());
+    }
+
+    /// Asserts that clicking the built-in Exit item requests a successful app
+    /// exit within the same frame.
+    ///
+    /// Case: the user picks Exit from the tray menu.
+    #[test]
+    fn builtin_exit_click_requests_app_exit() {
+        assert_eq!(click(BUILTIN_EXIT_ID).should_exit(), Some(AppExit::Success));
+    }
+
+    /// Asserts that clicking a MOD item does not request an app exit, even when
+    /// its prefixed ID ends like the built-in one.
+    ///
+    /// Case: a MOD named `homunculus` declares a tray item whose ID is
+    /// `builtin::exit`.
+    #[test]
+    fn mod_item_click_does_not_request_app_exit() {
+        assert_eq!(click("homunculus::builtin::exit").should_exit(), None);
+    }
+
+    fn registry_with_tray_mods(mods: &[(&str, &str)]) -> ModRegistry {
+        let mut registry = ModRegistry::default();
+        for (name, position) in mods {
+            registry.register(ModInfo {
                 name: name.to_string(),
                 version: "0.1.0".to_string(),
                 description: None,
@@ -452,22 +518,44 @@ mod tests {
                 mod_dir: PathBuf::from("/tmp"),
             });
         }
+        registry
+    }
 
-        let (menu, _) = build_menu(&mod_registry);
-
-        let separator_count = menu
-            .iter()
-            .filter(|item| matches!(item, MenuItem::Separator))
-            .count();
-        assert_eq!(separator_count, 1);
-
-        let texts: Vec<&str> = menu
-            .iter()
+    fn menu_texts(menu: &Menu) -> Vec<&str> {
+        menu.iter()
             .filter_map(|item| match item {
                 MenuItem::Common { text, .. } => Some(text.as_str()),
+                MenuItem::SubMenu { text, .. } => Some(text.as_str()),
                 _ => None,
             })
-            .collect();
-        assert_eq!(texts, vec!["@hmcs/settings", "@hmcs/app-exit"]);
+            .collect()
+    }
+
+    fn separator_count(menu: &Menu) -> usize {
+        menu.iter()
+            .filter(|item| matches!(item, MenuItem::Separator))
+            .count()
+    }
+
+    fn assert_builtin_exit(item: &MenuItem) {
+        match item {
+            MenuItem::Common { id, text, .. } => {
+                assert_eq!(id.0, BUILTIN_EXIT_ID);
+                assert_eq!(text, BUILTIN_EXIT_TEXT);
+            }
+            other => panic!("expected the built-in Exit item, got {other:?}"),
+        }
+    }
+
+    fn click(menu_id: &str) -> App {
+        let mut app = App::new();
+        app.add_plugins(MinimalPlugins)
+            .add_message::<MenuMessage>()
+            .add_systems(PostUpdate, exit_on_builtin_exit_click);
+        app.world_mut().write_message(MenuMessage {
+            id: MenuId::new(menu_id),
+        });
+        app.update();
+        app
     }
 }

@@ -33,6 +33,7 @@ use homunculus_core::prelude::homunculus_dir;
 use homunculus_drag::HomunculusDragPlugin;
 use homunculus_hit_test::HomunculusHitTestPlugin;
 use homunculus_http_server::HomunculusHttpServerPlugin;
+use homunculus_migration::HomunculusMigrationPlugin;
 use homunculus_mod::HomunculusModPlugin;
 use homunculus_power_saver::HomunculusPowerSaverPlugin;
 use homunculus_prefs::HomunculusPrefsPlugin;
@@ -110,7 +111,7 @@ fn main() {
             bevy_inspector_egui::quick::WorldInspectorPlugin::default(),
         ))
         .add_plugins((FlurxPlugin, TweeningPlugin, VrmPlugin, VrmaPlugin))
-        .add_plugins(HomunculusTrayPlugin)
+        .add_plugins((HomunculusMigrationPlugin, HomunculusTrayPlugin))
         .add_plugins((
             HomunculusCorePlugin,
             HomunculusAudioPlugin,

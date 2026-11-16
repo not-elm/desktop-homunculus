@@ -31,7 +31,6 @@ Official MODs use the `@hmcs/` prefix:
 | `@hmcs/assets` | Built-in VRM model, animations, and sound effects |
 | `@hmcs/menu` | Right-click context menu |
 | `@hmcs/settings` | Application settings panel |
-| `@hmcs/app-exit` | Exit option in the system tray |
 
 Additional MODs — such as text-to-speech (`@hmcs/voicevox`) and speech recognition (`@hmcs/stt`) — can be installed at any time using the `hmcs` CLI. For AI-powered interaction, see [AI Integration](../ai-integration) (requires running [OpenClaw](https://docs.openclaw.ai) externally).
 

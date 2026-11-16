@@ -79,7 +79,7 @@ If the same arbitrary value appears in 3+ places, promote it to the theme (a CSS
 
 ## Project Design Language
 
-Mod WebView UIs follow the **glassmorphism** look documented in the root `CLAUDE.md`:
+Mod WebView UIs follow the **glassmorphism** look:
 - Semi-transparent backgrounds: `bg-primary/30`, `bg-white/10`
 - Backdrop blur: `backdrop-blur-sm`
 - Subtle borders: `border border-white/20`
