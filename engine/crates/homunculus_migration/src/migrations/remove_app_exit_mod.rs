@@ -1,31 +1,79 @@
 //! Uninstalls the legacy `@hmcs/app-exit` MOD, whose Exit item is now built
 //! into the engine's tray menu.
 
-use crate::migration::{Migration, MigrationContext, MigrationError};
+use crate::MigrationStartup;
+use bevy::prelude::*;
+use homunculus_utils::config::HomunculusConfig;
 use homunculus_utils::process::CommandNoWindow;
+use homunculus_utils::runtime::RuntimeResolver;
 use serde_json::Value;
 use std::fs;
+use std::io;
 use std::path::Path;
 use std::process::Command;
+use thiserror::Error;
 
 const PACKAGE_NAME: &str = "@hmcs/app-exit";
 
-/// Removes `@hmcs/app-exit` from the mods directory when its `package.json`
-/// still declares it.
-pub(crate) const MIGRATION: Migration = Migration {
-    name: "remove-app-exit-mod",
-    run,
-};
+/// A failure to remove the package.
+#[derive(Debug, Error)]
+enum RemovalError {
+    /// pnpm could not be started.
+    #[error("failed to spawn pnpm: {0}")]
+    Spawn(#[from] io::Error),
+    /// pnpm ran and exited unsuccessfully.
+    #[error("pnpm exited with code {code:?}: {output}")]
+    Pnpm {
+        /// The exit code, or `None` when pnpm was terminated by a signal.
+        code: Option<i32>,
+        /// What pnpm reported about the failure: its standard error, or its
+        /// standard output when standard error is empty.
+        output: String,
+    },
+}
 
-fn run(context: &MigrationContext) -> Result<(), MigrationError> {
-    let Some(mut command) = removal_command(context) else {
+/// Plugin that removes `@hmcs/app-exit` from the mods directory at startup
+/// when the directory's `package.json` still declares it.
+pub(crate) struct RemoveAppExitModPlugin;
+
+impl Plugin for RemoveAppExitModPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(MigrationStartup, remove_app_exit_mod);
+    }
+}
+
+impl RemovalError {
+    /// Returns the error for a pnpm run that exited unsuccessfully with the
+    /// given exit code and captured output.
+    ///
+    /// The reported output is standard error, or standard output when
+    /// standard error is empty, with surrounding whitespace trimmed.
+    fn pnpm_failure(code: Option<i32>, stdout: &[u8], stderr: &[u8]) -> Self {
+        let stderr = String::from_utf8_lossy(stderr).trim().to_string();
+        let output = if stderr.is_empty() {
+            String::from_utf8_lossy(stdout).trim().to_string()
+        } else {
+            stderr
+        };
+        Self::Pnpm { code, output }
+    }
+}
+
+fn remove_app_exit_mod(config: Res<HomunculusConfig>, runtime: Res<RuntimeResolver>) {
+    if let Err(error) = remove(&config.mods_dir, &runtime) {
+        error!("Failed to remove the legacy {PACKAGE_NAME} MOD: {error}");
+    }
+}
+
+fn remove(mods_dir: &Path, runtime: &RuntimeResolver) -> Result<(), RemovalError> {
+    let Some(mut command) = removal_command(mods_dir, runtime) else {
         return Ok(());
     };
     let output = command.output()?;
     if output.status.success() {
         Ok(())
     } else {
-        Err(MigrationError::pnpm_failure(
+        Err(RemovalError::pnpm_failure(
             output.status.code(),
             &output.stdout,
             &output.stderr,
@@ -33,14 +81,14 @@ fn run(context: &MigrationContext) -> Result<(), MigrationError> {
     }
 }
 
-fn removal_command(context: &MigrationContext) -> Option<Command> {
-    if !is_declared(&context.mods_dir) {
+fn removal_command(mods_dir: &Path, runtime: &RuntimeResolver) -> Option<Command> {
+    if !is_declared(mods_dir) {
         return None;
     }
-    let mut command = context.runtime.pnpm_command();
+    let mut command = runtime.pnpm_command();
     command
         .arg("-C")
-        .arg(&context.mods_dir)
+        .arg(mods_dir)
         .args(["remove", "--config.offline=true", PACKAGE_NAME])
         .no_window();
     Some(command)
@@ -62,8 +110,7 @@ fn is_declared(mods_dir: &Path) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::migration::MigrationContext;
-    use crate::migration::test_support::{fallback_runtime, scratch_dir};
+    use crate::test_support::{fallback_runtime, scratch_dir};
     use std::ffi::OsStr;
     use std::path::PathBuf;
 
@@ -163,8 +210,7 @@ mod tests {
     #[test]
     fn removal_command_runs_offline_in_mods_dir() {
         let dir = mods_dir_with("command", r#"{"dependencies":{"@hmcs/app-exit":"0.1.0"}}"#);
-        let command = removal_command(&MigrationContext::new(dir.clone(), fallback_runtime()))
-            .expect("the package is declared");
+        let command = removal_command(&dir, &fallback_runtime()).expect("the package is declared");
         let args: Vec<&OsStr> = command.get_args().collect();
         assert_eq!(
             args,
@@ -185,6 +231,42 @@ mod tests {
     #[test]
     fn removal_command_is_none_when_not_declared() {
         let dir = mods_dir_with("not-declared", r#"{"dependencies":{"@hmcs/menu":"0.1.0"}}"#);
-        assert!(removal_command(&MigrationContext::new(dir, fallback_runtime())).is_none());
+        assert!(removal_command(&dir, &fallback_runtime()).is_none());
+    }
+
+    /// Asserts that a pnpm failure reports standard output when standard
+    /// error is empty, with surrounding whitespace trimmed.
+    ///
+    /// Case: the bundled pnpm 10 cannot remove a package offline and prints
+    /// `ERR_PNPM_NO_OFFLINE_TARBALL` on standard output only.
+    #[test]
+    fn pnpm_failure_reports_stdout_when_stderr_is_empty() {
+        let error = RemovalError::pnpm_failure(
+            Some(1),
+            b" ERR_PNPM_NO_OFFLINE_TARBALL  A package is missing from the store\n",
+            b"",
+        );
+        assert_eq!(
+            error.to_string(),
+            "pnpm exited with code Some(1): ERR_PNPM_NO_OFFLINE_TARBALL  A package is missing from the store"
+        );
+    }
+
+    /// Asserts that a pnpm failure reports standard error rather than
+    /// standard output when standard error is not empty.
+    ///
+    /// Case: pnpm prints progress on standard output and its error on
+    /// standard error.
+    #[test]
+    fn pnpm_failure_prefers_stderr() {
+        let error = RemovalError::pnpm_failure(
+            Some(1),
+            b"Progress: resolved 1\n",
+            b"ERR_PNPM_NO_OFFLINE_META\n",
+        );
+        assert_eq!(
+            error.to_string(),
+            "pnpm exited with code Some(1): ERR_PNPM_NO_OFFLINE_META"
+        );
     }
 }

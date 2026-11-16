@@ -3,21 +3,23 @@
 //! Startup migrations that bring a user environment created by an older
 //! version of Desktop Homunculus up to date with the current version.
 
-mod migration;
 mod migrations;
+#[cfg(test)]
+mod test_support;
 
-use crate::migration::{MigrationContext, run_all};
-use crate::migrations::MIGRATIONS;
+use crate::migrations::RemoveAppExitModPlugin;
 use bevy::app::MainScheduleOrder;
 use bevy::ecs::schedule::ScheduleLabel;
 use bevy::prelude::*;
-use homunculus_utils::config::HomunculusConfig;
-use homunculus_utils::runtime::RuntimeResolver;
 
 /// The startup schedule that runs the migrations.
 ///
 /// It runs once, before `PreStartup`, so the migrations finish before MOD
-/// discovery reads the mods directory.
+/// discovery reads the mods directory. A migration system added to it runs on
+/// every startup, so it must be idempotent: it detects whether the environment
+/// still needs the change and otherwise does nothing. It must also leave the
+/// `sandbox/` mods directory that `make debug` uses unchanged, and it logs a
+/// failure with `error!` instead of panicking.
 #[derive(ScheduleLabel, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct MigrationStartup;
 
@@ -29,23 +31,20 @@ pub struct HomunculusMigrationPlugin;
 
 impl Plugin for HomunculusMigrationPlugin {
     fn build(&self, app: &mut App) {
+        app.init_schedule(MigrationStartup);
         app.world_mut()
             .resource_mut::<MainScheduleOrder>()
             .insert_startup_before(PreStartup, MigrationStartup);
-        app.add_systems(MigrationStartup, run_migrations);
+        app.add_plugins(RemoveAppExitModPlugin);
     }
-}
-
-fn run_migrations(config: Res<HomunculusConfig>, runtime: Res<RuntimeResolver>) {
-    let context = MigrationContext::new(config.mods_dir.clone(), runtime.clone());
-    run_all(MIGRATIONS, &context);
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::migration::test_support::{fallback_runtime, scratch_dir};
+    use crate::test_support::{fallback_runtime, scratch_dir};
     use bevy::ecs::schedule::InternedScheduleLabel;
+    use homunculus_utils::config::HomunculusConfig;
 
     /// Asserts that the migration schedule runs before `PreStartup`.
     ///
@@ -79,5 +78,16 @@ mod tests {
             .insert_resource(fallback_runtime())
             .add_plugins(HomunculusMigrationPlugin);
         app.update();
+    }
+
+    /// Asserts that the migration plugin adds the app-exit removal.
+    ///
+    /// Case: the engine starts after an upgrade from a version that shipped
+    /// the Exit MOD.
+    #[test]
+    fn migration_plugin_adds_app_exit_removal() {
+        let mut app = App::new();
+        app.add_plugins(HomunculusMigrationPlugin);
+        assert!(app.is_plugin_added::<RemoveAppExitModPlugin>());
     }
 }
