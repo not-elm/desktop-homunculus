@@ -75,7 +75,7 @@ async function main() {
             const pkgRes = await fetch('https://registry.npmjs.org/' + encodeURIComponent(name) + '/latest');
             if (pkgRes.status !== 200) continue;
             const pkg = JSON.parse(pkgRes.body);
-            if (pkg.homunculus) {
+            if (pkg.homunculus && !pkg.deprecated) {
                 mods.push(name);
             }
         } catch (_) {}
