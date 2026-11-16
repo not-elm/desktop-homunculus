@@ -34,7 +34,7 @@ fn stamp(
             return Ok(());
         }
     };
-    let path = format!("asset://{}/{}", entry.mod_name, entry.path.display());
+    let path = format!("asset://{}/{}", entry.origin.label(), entry.path.display());
     commands.trigger(RequestStampEffect {
         image_path: PathBuf::from(path),
         options,

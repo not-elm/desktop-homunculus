@@ -114,17 +114,15 @@ fn register_and_persist(
     prefs: NonSend<PrefsDatabase>,
 ) -> ApiResult<ImportAssetResponse> {
     let asset_id = AssetId::new(&args.asset_id);
-    let dest = PathBuf::from(&dest_path);
     let filename = derive_filename(&PathBuf::from(&source_path), &args.asset_id);
 
-    let entry = AssetEntry {
-        id: asset_id.clone(),
-        path: PathBuf::from(&filename),
-        absolute_path: dest,
-        asset_type: args.asset_type.clone(),
-        description: args.description.clone(),
-        mod_name: "local".to_string(),
-    };
+    let entry = AssetEntry::imported(
+        asset_id.clone(),
+        PathBuf::from(&filename),
+        &homunculus_dir().join("assets"),
+        args.asset_type.clone(),
+        args.description.clone(),
+    );
     registry.register_imported(entry);
 
     let type_str = serialize_asset_type(&args.asset_type);

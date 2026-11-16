@@ -45,7 +45,7 @@ impl AssetResolver<'_> {
             .registry
             .get(asset_id)
             .ok_or_else(|| AssetResolveError::NotFound(asset_id.to_string()))?;
-        let asset_url = format!("asset://{}/{}", entry.mod_name, entry.path.display());
+        let asset_url = format!("asset://{}/{}", entry.origin.label(), entry.path.display());
         Ok(asset_url)
     }
 }

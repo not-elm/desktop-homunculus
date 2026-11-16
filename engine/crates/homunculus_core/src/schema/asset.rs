@@ -3,7 +3,9 @@ use std::collections::HashMap;
 
 // Re-export types that moved to homunculus_utils for backward compatibility.
 #[allow(unused_imports)]
-pub use homunculus_utils::schema::asset::{AssetDeclaration, AssetEntry, AssetId, AssetType};
+pub use homunculus_utils::schema::asset::{
+    AssetDeclaration, AssetEntry, AssetId, AssetOrigin, AssetType,
+};
 
 /// Component to track the asset ID loaded on an entity.
 #[derive(Component, Debug, Clone, PartialEq, Eq, Hash)]
@@ -23,7 +25,9 @@ impl AssetRegistry {
         if let Some(existing) = self.entries.get(&entry.id) {
             warn!(
                 "Duplicate asset ID '{}': already registered by mod '{}', skipping from mod '{}'",
-                entry.id, existing.mod_name, entry.mod_name
+                entry.id,
+                existing.origin.label(),
+                entry.origin.label()
             );
             return;
         }
@@ -59,6 +63,6 @@ impl AssetRegistry {
     pub fn by_mod(&self, mod_name: &str) -> impl Iterator<Item = &AssetEntry> {
         self.entries
             .values()
-            .filter(move |e| e.mod_name == mod_name)
+            .filter(move |e| e.origin.label() == mod_name)
     }
 }

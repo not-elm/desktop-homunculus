@@ -1,12 +1,11 @@
-use std::path::{Path, PathBuf};
-
 use crate::mod_service::ModService;
 use bevy::prelude::*;
 use homunculus_core::prelude::{
-    AssetEntry, AssetId, AssetRegistry, HomunculusConfig, ModInfo, ModMenuMetadata,
+    AssetEntry, AssetId, AssetOrigin, AssetRegistry, HomunculusConfig, ModInfo, ModMenuMetadata,
     ModMenuMetadataList, ModRegistry, create_dir_all_if_need,
 };
 use homunculus_utils::runtime::RuntimeResolver;
+use std::path::Path;
 
 pub(crate) struct ModLoadPlugin;
 
@@ -63,14 +62,12 @@ fn schedule_service(info: &ModInfo, commands: &mut Commands, mods_dir: &Path) {
 
 fn load_assets(info: &ModInfo, registry: &mut ResMut<AssetRegistry>) {
     for (asset_id, decl) in &info.assets {
-        registry.register(AssetEntry {
-            id: AssetId::new(asset_id.clone()),
-            path: PathBuf::from(&decl.path),
-            absolute_path: info.mod_dir.join(&decl.path),
-            asset_type: decl.asset_type.clone(),
-            description: decl.description.clone(),
-            mod_name: info.name.clone(),
-        });
+        registry.register(AssetEntry::from_declaration(
+            AssetId::new(asset_id.clone()),
+            decl,
+            &info.mod_dir,
+            AssetOrigin::Mod(info.name.clone()),
+        ));
     }
 }
 

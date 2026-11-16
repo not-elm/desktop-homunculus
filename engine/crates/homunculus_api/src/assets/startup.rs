@@ -35,15 +35,13 @@ pub fn restore_imported_assets(mut registry: ResMut<AssetRegistry>, prefs: NonSe
             .file_name()
             .map(PathBuf::from)
             .unwrap_or_else(|| stored_path.clone());
-        let absolute_path = homunculus_dir().join("assets").join(&filename);
-        let entry = AssetEntry {
-            id: AssetId::new(&asset.id),
-            path: filename,
-            absolute_path,
+        let entry = AssetEntry::imported(
+            AssetId::new(&asset.id),
+            filename,
+            &homunculus_dir().join("assets"),
             asset_type,
-            description: asset.description,
-            mod_name: "local".to_string(),
-        };
+            asset.description,
+        );
         registry.register_imported(entry);
     }
 
@@ -61,6 +59,7 @@ fn parse_asset_type(s: &str) -> Option<AssetType> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use homunculus_core::prelude::AssetOrigin;
 
     #[test]
     fn parse_known_types() {
@@ -106,7 +105,7 @@ mod tests {
         assert!(entry.is_some(), "Imported asset should be in the registry");
         let entry = entry.unwrap();
         assert_eq!(entry.asset_type, AssetType::Vrm);
-        assert_eq!(entry.mod_name, "local");
+        assert_eq!(entry.origin, AssetOrigin::Local);
         assert_eq!(entry.description.as_deref(), Some("Test model"));
     }
 

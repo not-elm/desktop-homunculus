@@ -514,7 +514,7 @@ mod tests {
     use homunculus_api::HomunculusApiPlugin;
     use homunculus_api::prelude::{ApiReactor, ShadowPanelApiPlugin, WebviewApiPlugin};
     use homunculus_core::prelude::{
-        AssetRegistry, ModInfo, ModMenuMetadata, ModMenuMetadataList, ModRegistry,
+        AssetOrigin, AssetRegistry, ModInfo, ModMenuMetadata, ModMenuMetadataList, ModRegistry,
     };
     use homunculus_core::rpc_registry::RpcRegistry;
     use homunculus_prefs::PrefsDatabase;
@@ -913,7 +913,7 @@ mod tests {
                 absolute_path: tmp.clone(),
                 asset_type: AssetType::Image,
                 description: None,
-                mod_name: "test-mod".to_string(),
+                origin: AssetOrigin::Mod("test-mod".to_string()),
             },
         );
 
@@ -977,7 +977,7 @@ mod tests {
                 absolute_path: tmp.clone(),
                 asset_type: AssetType::Image,
                 description: None,
-                mod_name: "local".to_string(),
+                origin: AssetOrigin::Local,
             });
 
         let request = Request::get("/assets/file?id=vrm:local:my-persona")
@@ -1010,7 +1010,7 @@ mod tests {
                 absolute_path: PathBuf::from("/tmp/does_not_exist_12345.png"),
                 asset_type: AssetType::Image,
                 description: None,
-                mod_name: "test-mod".to_string(),
+                origin: AssetOrigin::Mod("test-mod".to_string()),
             },
         );
 
