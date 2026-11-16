@@ -256,6 +256,7 @@ fn to_webview_resizable(opts: WebviewResizableOptions) -> WebviewResizable {
 mod tests {
     use super::*;
     use bevy::ecs::system::RunSystemOnce;
+    use bevy_cef::prelude::WebviewSource as CefWebviewSource;
     use homunculus_core::prelude::{AssetEntry, AssetId, AssetOrigin, AssetRegistry, PersonaId};
     use std::path::PathBuf;
 
@@ -283,12 +284,7 @@ mod tests {
 
     fn open(app: &mut App, options: WebviewOpenOptions) -> ApiResult<Entity> {
         app.world_mut()
-            .run_system_once_with(
-                |In(options): In<WebviewOpenOptions>, mut spawner: WebviewSpawner| {
-                    spawner.open(options).map(|webview| webview.id())
-                },
-                options,
-            )
+            .run_system_once_with(create_global_webview, options)
             .expect("the system runs")
     }
 
@@ -314,8 +310,8 @@ mod tests {
 
         let entity = app.world().entity(webview);
         assert!(matches!(
-            entity.get::<bevy_cef::prelude::WebviewSource>(),
-            Some(bevy_cef::prelude::WebviewSource::InlineHtml(html)) if html == "<p>menu</p>"
+            entity.get::<CefWebviewSource>(),
+            Some(CefWebviewSource::InlineHtml(html)) if html == "<p>menu</p>"
         ));
         assert!(matches!(
             entity.get::<OriginalWebviewSource>(),

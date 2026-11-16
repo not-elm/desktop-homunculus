@@ -40,15 +40,15 @@ pub(crate) fn toggle_menu(
     parent_searcher: ParentSearcher,
     personas: Query<&Persona>,
     menus: Query<Entity, With<MenuHud>>,
-    linked: Query<&LinkedPersona>,
+    linked_personas: Query<&LinkedPersona>,
     mut spawner: WebviewSpawner,
     resolver: AssetResolver,
     mut commands: Commands,
 ) {
-    let Some(persona_id) = first_clicked_persona(&mut clicks, &parent_searcher, &personas) else {
+    let Some(persona_id) = nearest_clicked_persona(&mut clicks, &parent_searcher, &personas) else {
         return;
     };
-    let has_linked_webview = linked.iter().any(|linked| linked.0 == persona_id);
+    let has_linked_webview = linked_personas.iter().any(|linked| linked.0 == persona_id);
     match MenuAction::decide(!menus.is_empty(), has_linked_webview) {
         MenuAction::Close => close_menus(&mut commands, &menus, &resolver),
         MenuAction::Open => open_menu(&mut spawner, &mut commands, &resolver, persona_id),
@@ -56,19 +56,27 @@ pub(crate) fn toggle_menu(
     }
 }
 
-fn first_clicked_persona(
+fn nearest_clicked_persona(
     clicks: &mut MessageReader<PointerClick>,
     parent_searcher: &ParentSearcher,
     personas: &Query<&Persona>,
 ) -> Option<PersonaId> {
-    let clicked: Vec<PersonaId> = clicks
+    clicks
         .read()
         .filter(|click| click.button == PointerButton::Secondary)
-        .filter_map(|click| parent_searcher.find_vrm(click.entity))
-        .filter_map(|vrm| personas.get(vrm).ok())
-        .map(|persona| persona.id.clone())
-        .collect();
-    clicked.into_iter().next()
+        .filter_map(|click| clicked_persona(click, parent_searcher, personas))
+        .min_by(|(near, _), (far, _)| near.total_cmp(far))
+        .map(|(_, persona)| persona.id.clone())
+}
+
+fn clicked_persona<'a>(
+    click: &PointerClick,
+    parent_searcher: &ParentSearcher,
+    personas: &'a Query<&Persona>,
+) -> Option<(f32, &'a Persona)> {
+    let vrm = parent_searcher.find_vrm(click.entity)?;
+    let persona = personas.get(vrm).ok()?;
+    Some((click.hit.depth, persona))
 }
 
 fn close_menus(
@@ -203,6 +211,10 @@ mod tests {
     }
 
     fn click(app: &mut App, entity: Entity, button: PointerButton) {
+        click_at_depth(app, entity, button, 0.0);
+    }
+
+    fn click_at_depth(app: &mut App, entity: Entity, button: PointerButton, depth: f32) {
         let location = Location {
             target: NormalizedRenderTarget::None {
                 width: 1,
@@ -214,7 +226,7 @@ mod tests {
             entity,
             pointer: Pointer::new(PointerId::Mouse, location),
             button,
-            hit: HitData::new(Entity::PLACEHOLDER, 0.0, None, None),
+            hit: HitData::new(Entity::PLACEHOLDER, depth, None, None),
             duration: Duration::ZERO,
             count: 1,
         });
@@ -380,24 +392,61 @@ mod tests {
         assert!(se_log(&app).is_empty());
     }
 
-    /// Asserts that, among the secondary clicks of one frame, the first one
-    /// that reaches a character is acted on.
+    /// Asserts that a nearer hit that belongs to no character does not stop
+    /// the same click from reaching the character behind it.
     ///
     /// Case: one right-click hits an unrelated webview in front of a
     /// character and the character behind it.
     #[test]
-    fn first_click_that_reaches_a_persona_is_used() {
+    fn click_behind_an_unrelated_hit_reaches_the_persona() {
         let mut app = menu_app();
         let unrelated = app.world_mut().spawn_empty().id();
         let (persona, _) = spawn_persona(&mut app, "p1");
 
-        click(&mut app, unrelated, PointerButton::Secondary);
-        click(&mut app, persona, PointerButton::Secondary);
+        click_at_depth(&mut app, unrelated, PointerButton::Secondary, 1.0);
+        click_at_depth(&mut app, persona, PointerButton::Secondary, 5.0);
         app.update();
 
         let menus = menus(&mut app);
         assert_eq!(menus.len(), 1);
         assert_eq!(linked_persona_of(&app, menus[0]).as_deref(), Some("p1"));
+    }
+
+    /// Asserts that when one click hits two characters, the nearer one gets
+    /// the menu, whatever order the hits arrive in.
+    ///
+    /// Case: the user right-clicks where one character stands in front of
+    /// another, and the click hits both of them.
+    #[test]
+    fn nearest_persona_gets_the_menu() {
+        let mut app = menu_app();
+        let (far, _) = spawn_persona(&mut app, "far");
+        let (near, _) = spawn_persona(&mut app, "near");
+
+        click_at_depth(&mut app, far, PointerButton::Secondary, 5.0);
+        click_at_depth(&mut app, near, PointerButton::Secondary, 1.0);
+        app.update();
+
+        let menus = menus(&mut app);
+        assert_eq!(menus.len(), 1);
+        assert_eq!(linked_persona_of(&app, menus[0]).as_deref(), Some("near"));
+    }
+
+    /// Asserts that a menu left without its character is closed.
+    ///
+    /// Case: a script deletes a character in the same frame in which the user
+    /// right-clicks it, so the menu is spawned after its character is gone.
+    #[test]
+    fn menu_without_its_persona_is_closed() {
+        let mut app = menu_app();
+        let orphan = app
+            .world_mut()
+            .spawn((MenuHud, LinkedPersona(PersonaId("gone".to_string()))))
+            .id();
+
+        app.update();
+
+        assert!(app.world().get_entity(orphan).is_err());
     }
 
     /// Asserts that a menu removed together with its character does not stop
