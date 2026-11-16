@@ -199,7 +199,7 @@ The `hmcs` binary is a Rust CLI built with `clap`. Current subcommands:
 ## Conventions
 
 Coding style rules are defined in `.claude/rules/`:
-- `rust-style.md` — Rust naming, formatting, serde (`camelCase` for all HTTP structs), error handling, imports, item ordering, workspace inheritance for new crates
+- `rust-style.md` — Rust naming, formatting, constructors, serde (`camelCase` for all HTTP structs), error handling, imports, item ordering, comments and doc-comment content, test doc comments, workspace inheritance for new crates
 - `bevy-patterns.md` — Plugin architecture, ApiReactor pattern, ECS patterns (prefer `try_insert` over `insert`)
 - `ts-style.md` — TypeScript function granularity and extraction rules
 
