@@ -1,8 +1,7 @@
-use bevy::asset::{Asset, AssetServer};
+use crate::prelude::{AssetEntry, AssetOrigin, AssetRegistry};
+use bevy::asset::{Asset, AssetPath, AssetServer};
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
-
-use crate::prelude::{AssetEntry, AssetRegistry};
 
 /// Resolves asset IDs to Bevy asset handles.
 ///
@@ -25,10 +24,13 @@ pub struct AssetResolver<'w> {
 impl AssetResolver<'_> {
     /// Resolve an asset ID and load it through the Bevy AssetServer.
     ///
-    /// Returns a typed Handle for the asset. The asset is loaded via the
-    /// `asset://` AssetSource (ModAssetReader).
+    /// Returns a typed Handle for the asset. A built-in asset loads from the
+    /// engine's asset directory; a MOD or imported asset loads from the
+    /// `asset://` source.
     pub fn load<A: Asset>(&self, asset_id: &str) -> Result<Handle<A>, AssetResolveError> {
-        Ok(self.asset_server.load(self.extract_asset_url(asset_id)?))
+        Ok(self
+            .asset_server
+            .load(asset_path_of(self.resolve(asset_id)?)))
     }
 
     /// Resolve an asset ID to its registry entry without loading.
@@ -38,15 +40,6 @@ impl AssetResolver<'_> {
         self.registry
             .get(asset_id)
             .ok_or_else(|| AssetResolveError::NotFound(asset_id.to_string()))
-    }
-
-    fn extract_asset_url(&self, asset_id: &str) -> Result<String, AssetResolveError> {
-        let entry = self
-            .registry
-            .get(asset_id)
-            .ok_or_else(|| AssetResolveError::NotFound(asset_id.to_string()))?;
-        let asset_url = format!("asset://{}/{}", entry.origin.label(), entry.path.display());
-        Ok(asset_url)
     }
 }
 
@@ -66,3 +59,70 @@ impl std::fmt::Display for AssetResolveError {
 }
 
 impl std::error::Error for AssetResolveError {}
+
+fn asset_path_of(entry: &AssetEntry) -> AssetPath<'static> {
+    match &entry.origin {
+        AssetOrigin::Builtin => AssetPath::from(entry.path.clone()),
+        AssetOrigin::Mod(_) | AssetOrigin::Local => AssetPath::from(format!(
+            "asset://{}/{}",
+            entry.origin.label(),
+            entry.path.display()
+        )),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::prelude::{AssetId, AssetType};
+    use bevy::asset::io::AssetSourceId;
+    use std::path::{Path, PathBuf};
+
+    fn entry(path: &str, origin: AssetOrigin) -> AssetEntry {
+        AssetEntry {
+            id: AssetId::new("test:asset"),
+            path: PathBuf::from(path),
+            absolute_path: PathBuf::from("/abs").join(path),
+            asset_type: AssetType::Vrm,
+            description: None,
+            origin,
+        }
+    }
+
+    /// Asserts that a built-in asset loads from Bevy's default source by its
+    /// path relative to the engine's asset directory.
+    ///
+    /// Case: the engine spawns the default character from the built-in
+    /// `vrm:elmer` asset.
+    #[test]
+    fn builtin_entries_load_from_the_default_source() {
+        let path = asset_path_of(&entry("vrm/Elmer.vrm", AssetOrigin::Builtin));
+
+        assert_eq!(path.source(), &AssetSourceId::Default);
+        assert_eq!(path.path(), Path::new("vrm/Elmer.vrm"));
+    }
+
+    /// Asserts that a MOD asset loads from the `asset` source under the MOD's
+    /// directory.
+    ///
+    /// Case: a MOD shows a stamp effect with an image it declares.
+    #[test]
+    fn mod_entries_load_from_the_mod_source() {
+        let path = asset_path_of(&entry("img/a.png", AssetOrigin::Mod("my-mod".into())));
+
+        assert_eq!(path.source(), &AssetSourceId::from("asset"));
+        assert_eq!(path.path(), Path::new("my-mod/img/a.png"));
+    }
+
+    /// Asserts that an imported asset loads from the `asset` source under the
+    /// `local` directory.
+    ///
+    /// Case: a persona uses a VRM file the user imported.
+    #[test]
+    fn local_entries_load_from_the_local_directory() {
+        let path = asset_path_of(&entry("vrm_local_x.vrm", AssetOrigin::Local));
+
+        assert_eq!(path.source(), &AssetSourceId::from("asset"));
+        assert_eq!(path.path(), Path::new("local/vrm_local_x.vrm"));
+    }
+}

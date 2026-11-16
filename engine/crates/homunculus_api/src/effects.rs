@@ -4,7 +4,6 @@ use bevy::prelude::*;
 use bevy_flurx::prelude::once;
 use homunculus_core::prelude::{AssetId, AssetResolver};
 use homunculus_effects::prelude::{RequestStampEffect, StampOptions};
-use std::path::PathBuf;
 
 api!(
     /// Provides effects API to play stamps, etc.
@@ -27,17 +26,13 @@ fn stamp(
     mut commands: Commands,
     asset_resolver: AssetResolver,
 ) -> ApiResult {
-    let entry = match asset_resolver.resolve(&asset_id) {
-        Ok(e) => e,
+    let image = match asset_resolver.load::<Image>(&asset_id) {
+        Ok(image) => image,
         Err(_) => {
             warn!("Asset not found: {asset_id}");
             return Ok(());
         }
     };
-    let path = format!("asset://{}/{}", entry.origin.label(), entry.path.display());
-    commands.trigger(RequestStampEffect {
-        image_path: PathBuf::from(path),
-        options,
-    });
+    commands.trigger(RequestStampEffect { image, options });
     Ok(())
 }
