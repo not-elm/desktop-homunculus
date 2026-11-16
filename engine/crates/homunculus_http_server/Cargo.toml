@@ -7,6 +7,13 @@ repository.workspace = true
 license.workspace = true
 publish.workspace = true
 
+[[bin]]
+name = "gen_openapi"
+path = "src/bin/gen_openapi.rs"
+# No unit tests: skipping the empty test binary saves a full link of the
+# Bevy dependency graph in `cargo test --workspace`. Remove when adding tests.
+test = false
+
 [dependencies]
 bevy = { workspace = true }
 axum = { workspace = true, features = ["tokio", "macros"] }
