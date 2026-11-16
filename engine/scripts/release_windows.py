@@ -7,12 +7,14 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
+from gen_js_credits import write_credits
 from utils import command_exists, error, log, run
 
 BIN_NAME = "desktop_homunculus"
 INSTALLER_PROJECT = Path("build/windows/installer/Installer.wixproj")
 BUNDLE_DIR = Path("target/bundle")
 RUST_LICENSES_OUTPUT = Path("credits/licenses/RUST_THIRD_PARTY.md")
+JS_LICENSES_OUTPUT = Path("credits/licenses/JS_THIRD_PARTY.md")
 CEF_STAGING_DIR = Path("build/windows/installer/cef_runtime")
 RUNTIME_STAGING_DIR = Path("build/windows/installer/runtime")
 BIN_STAGING_DIR = Path("build/windows/installer/bin")
@@ -176,6 +178,8 @@ def release_windows() -> None:
     if skip_credits:
         if not RUST_LICENSES_OUTPUT.exists():
             error(f"SKIP_GEN_CREDITS set but {RUST_LICENSES_OUTPUT} not found. Commit credits first.")
+        if not JS_LICENSES_OUTPUT.exists():
+            error(f"SKIP_GEN_CREDITS set but {JS_LICENSES_OUTPUT} not found. Commit credits first.")
         log("SKIP_GEN_CREDITS set, using committed credits file.")
     else:
         RUST_LICENSES_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
@@ -186,6 +190,7 @@ def release_windows() -> None:
             "--output-file", str(RUST_LICENSES_OUTPUT),
             "about.hbs",
         ])
+        write_credits(Path(__file__).resolve().parents[2])
 
     # 5. Stage CEF runtime files for installer
     stage_cef_files()

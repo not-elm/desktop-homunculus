@@ -6,6 +6,8 @@ on:
       - "packages/**"
       - "mods/**"
       - "engine/ui/**"
+      - "engine/scripts/gen_js_credits.py"
+      - "engine/credits/licenses/JS_THIRD_PARTY.md"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "biome.json"
@@ -34,6 +36,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build --filter '!docs'
+      - name: Check the JS licence credits are up to date
+        run: python3 engine/scripts/gen_js_credits.py && git diff --exit-code engine/credits/licenses/JS_THIRD_PARTY.md
       - run: pnpm check-types
       - run: pnpm test
       - run: pnpm lint:ci
