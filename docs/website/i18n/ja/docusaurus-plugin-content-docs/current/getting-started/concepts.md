@@ -28,7 +28,6 @@ Persona はシステムトレイからアクセスできる **Persona Management
 | MOD | 機能 |
 |---|---|
 | `@hmcs/persona` | Persona 管理とデフォルトのキャラクター動作 |
-| `@hmcs/assets` | 組み込み VRM モデル、アニメーション、効果音 |
 | `@hmcs/menu` | 右クリックコンテキストメニュー |
 | `@hmcs/settings` | アプリケーション設定パネル |
 
@@ -36,14 +35,14 @@ Persona はシステムトレイからアクセスできる **Persona Management
 
 ## Asset
 
-**Asset** は、MOD にバンドルされたファイルです — VRM モデル、アニメーション（VRMA）、効果音、画像、HTML UI など。Asset は **`mod-name:asset-id`** の形式の ID で参照します。
+**Asset** は、エンジンに組み込まれているか MOD にバンドルされたファイルです — VRM モデル、アニメーション（VRMA）、効果音、画像、HTML UI など。Asset は **`mod-name:asset-id`** の形式の ID で参照します。
 
 例：
 - `vrm:elmer` — 組み込みの VRM キャラクターモデル
 - `vrma:idle-maid` — デフォルトの待機アニメーション
 - `se:open` — UI オープン時の効果音
 
-`@hmcs/assets` MOD が、Persona システムを動かすデフォルトの Asset セットを提供します。
+これらのデフォルトの Asset はエンジンに組み込まれており、Persona システムをすぐに動かせます。
 
 ## 次のステップ
 

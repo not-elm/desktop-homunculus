@@ -78,7 +78,7 @@ await character.playVrma({
 
 ## Built-in Animations
 
-The `@hmcs/assets` MOD provides these default VRMA animations:
+The engine provides these built-in VRMA animations:
 
 | Asset ID            | Description                       |
 | ------------------- | --------------------------------- |

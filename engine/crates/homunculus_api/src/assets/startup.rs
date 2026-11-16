@@ -35,16 +35,19 @@ pub fn restore_imported_assets(mut registry: ResMut<AssetRegistry>, prefs: NonSe
             .file_name()
             .map(PathBuf::from)
             .unwrap_or_else(|| stored_path.clone());
-        let absolute_path = homunculus_dir().join("assets").join(&filename);
-        let entry = AssetEntry {
-            id: AssetId::new(&asset.id),
-            path: filename,
-            absolute_path,
+        let entry = AssetEntry::imported(
+            AssetId::new(&asset.id),
+            filename,
+            &homunculus_dir().join("assets"),
             asset_type,
-            description: asset.description,
-            mod_name: "local".to_string(),
-        };
-        registry.register_imported(entry);
+            asset.description,
+        );
+        if !registry.register_imported(entry) {
+            warn!(
+                "Skipping imported asset '{}': the ID is reserved by a built-in asset",
+                asset.id
+            );
+        }
     }
 
     info!(
@@ -61,6 +64,7 @@ fn parse_asset_type(s: &str) -> Option<AssetType> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use homunculus_core::prelude::AssetOrigin;
 
     #[test]
     fn parse_known_types() {
@@ -106,7 +110,7 @@ mod tests {
         assert!(entry.is_some(), "Imported asset should be in the registry");
         let entry = entry.unwrap();
         assert_eq!(entry.asset_type, AssetType::Vrm);
-        assert_eq!(entry.mod_name, "local");
+        assert_eq!(entry.origin, AssetOrigin::Local);
         assert_eq!(entry.description.as_deref(), Some("Test model"));
     }
 
@@ -132,5 +136,55 @@ mod tests {
             registry.get("bad:type").is_none(),
             "Asset with unknown type should not be registered"
         );
+    }
+
+    /// Asserts that restoring imported assets skips a row whose ID belongs to
+    /// a built-in asset, leaving the built-in asset and the database row in
+    /// place.
+    ///
+    /// Case: before upgrading, a user imported their own model as `vrm:elmer`,
+    /// which is now a built-in asset ID.
+    #[test]
+    fn restore_skips_rows_that_collide_with_builtin_ids() {
+        let mut app = App::new();
+        app.add_plugins(MinimalPlugins)
+            .init_resource::<AssetRegistry>()
+            .insert_non_send(PrefsDatabase::open_in_memory())
+            .add_systems(Startup, restore_imported_assets);
+        app.world_mut()
+            .resource_mut::<AssetRegistry>()
+            .register_builtin(AssetEntry {
+                id: AssetId::new("vrm:elmer"),
+                path: PathBuf::from("vrm/Elmer.vrm"),
+                absolute_path: PathBuf::from("/engine/assets/vrm/Elmer.vrm"),
+                asset_type: AssetType::Vrm,
+                description: None,
+                origin: AssetOrigin::Builtin,
+            });
+        app.world()
+            .non_send::<PrefsDatabase>()
+            .upsert_imported_asset(
+                "vrm:elmer",
+                None,
+                "/home/test/.homunculus/assets/vrm_elmer.vrm",
+                "vrm",
+                None,
+                Some("/original/my-model.vrm"),
+            )
+            .unwrap();
+
+        app.update();
+
+        let registry = app.world().resource::<AssetRegistry>();
+        assert_eq!(
+            registry.get("vrm:elmer").map(|entry| &entry.origin),
+            Some(&AssetOrigin::Builtin)
+        );
+        let rows = app
+            .world()
+            .non_send::<PrefsDatabase>()
+            .list_imported_assets()
+            .unwrap();
+        assert!(rows.iter().any(|row| row.id == "vrm:elmer"));
     }
 }

@@ -55,7 +55,7 @@ Set `"service": "index.ts"` inside the `"homunculus"` field of your `package.jso
 Assets are referenced by globally unique string IDs in the format `"mod-name:asset-name"`. For example:
 
 - `"my-mod:character"` -- a VRM model declared by `my-mod`
-- `"vrma:idle-maid"` -- a VRMA animation from the built-in `@hmcs/assets` MOD
+- `"vrma:idle-maid"` -- a VRMA animation built into the engine
 
 Assets are declared in your MOD's `package.json` under the `homunculus.assets` field. See [Asset IDs](./project-setup/asset-ids) for details.
 

@@ -75,12 +75,15 @@ fn list_assets(In(filter): In<AssetFilter>, registry: Res<AssetRegistry>) -> Vec
                 .asset_type
                 .as_ref()
                 .is_none_or(|t| t == &e.asset_type)
-                && filter.mod_name.as_ref().is_none_or(|m| m == &e.mod_name)
+                && filter
+                    .mod_name
+                    .as_ref()
+                    .is_none_or(|m| m == e.origin.label())
         })
         .map(|e| AssetInfo {
             id: e.id.clone(),
             asset_type: e.asset_type.clone(),
-            mod_name: e.mod_name.clone(),
+            mod_name: e.origin.label().to_string(),
             description: e.description.clone(),
         })
         .collect()

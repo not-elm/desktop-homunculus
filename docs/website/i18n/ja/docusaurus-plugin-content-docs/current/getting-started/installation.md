@@ -118,7 +118,7 @@ Windows でウィンドウの背景が透明ではなく黒く表示される場
 セットアップ中に公式 MOD のインストールに失敗した場合（ネットワーク問題など）、手動でインストールしてください：
 
 ```shell
-hmcs mod install @hmcs/assets @hmcs/persona @hmcs/menu @hmcs/settings
+hmcs mod install @hmcs/persona @hmcs/menu @hmcs/settings
 ```
 
 その後、Desktop Homunculus を再起動してください。

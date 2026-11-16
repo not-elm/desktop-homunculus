@@ -83,7 +83,7 @@ async function main() {
 
     const packages = Object.keys(JSON.parse(listRes.body));
 
-    // For each package, check if it has a 'homunculus' field
+    // For each package, check if it has a 'homunculus' field and is not deprecated
     // (filters out @hmcs/sdk, @hmcs/ui, @hmcs/cli, @hmcs/cli-darwin-*, etc.)
     const mods = [];
     for (const name of packages) {
@@ -91,7 +91,7 @@ async function main() {
             const pkgRes = await fetch('https://registry.npmjs.org/' + encodeURIComponent(name) + '/latest');
             if (pkgRes.status !== 200) continue;
             const pkg = JSON.parse(pkgRes.body);
-            if (pkg.homunculus) {
+            if (pkg.homunculus && !pkg.deprecated) {
                 mods.push(name);
             }
         } catch (_) {

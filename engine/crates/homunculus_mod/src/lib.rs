@@ -1,35 +1,17 @@
-//! # Homunculus Mod
-//!
-//! This crate provides mod system functionality for the Desktop Homunculus application,
-//! enabling users to install and manage mods as NPM packages.
-//!
-//! ## Overview
-//!
-//! `homunculus_mod` implements a mod system based on NPM package conventions:
-//! - Mods are installed via `npm add` into `$MODS_ROOT/node_modules/`
-//! - Discovery reads `$MODS_ROOT/package.json` dependencies
-//! - Services (`main`) run as long-running Node.js child processes
-//! - MOD commands (`bin`) are executed via HTTP API
-//!
-//! ## Mod Structure
-//!
-//! ```text
-//! $MODS_ROOT/
-//! ├── package.json          # Root manifest with dependencies
-//! ├── package-lock.json
-//! └── node_modules/
-//!     └── my-mod/
-//!         ├── package.json  # Must include "homunculus" field
-//!         ├── index.js      # Entry point (main)
-//!         └── assets/       # Additional assets
-//! ```
+//! MOD system for Desktop Homunculus: discovers MODs installed as npm packages,
+//! runs their services, and registers their assets alongside the engine's
+//! built-in assets.
 
+mod builtin_assets;
 mod load;
 pub mod managed_process;
 mod mod_asset_reader;
 pub mod mod_service;
 pub mod node_process;
 
+pub use crate::builtin_assets::BuiltinAssetsDir;
+
+use crate::builtin_assets::register_builtin_assets;
 use crate::load::ModLoadPlugin;
 use crate::mod_asset_reader::ModAssetReader;
 use crate::mod_service::ModServicePlugin;
@@ -42,6 +24,10 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 
+/// Plugin that discovers installed MODs and registers built-in and MOD assets.
+///
+/// The app must insert [`HomunculusConfig`] and [`BuiltinAssetsDir`] before
+/// adding this plugin.
 pub struct HomunculusModPlugin;
 
 impl Plugin for HomunculusModPlugin {
@@ -65,6 +51,7 @@ impl Plugin for HomunculusModPlugin {
         app.init_resource::<AssetRegistry>();
         app.init_resource::<ModRegistry>();
         app.add_plugins((NodeProcessPlugin, ModLoadPlugin, ModServicePlugin));
+        app.add_systems(PreStartup, register_builtin_assets);
     }
 }
 

@@ -3,9 +3,10 @@ import { host } from './host';
 /**
  * Assets API namespace for querying available mod assets.
  *
- * Provides access to the asset registry, which contains all assets declared
- * by installed mods. Assets are referenced by their globally unique ID using
- * the format `"mod-name:asset-name"` (e.g., `"elmer:idle"`, `"my-mod:click"`).
+ * Provides access to the asset registry, which contains the engine's built-in
+ * assets, assets declared by installed mods, and files imported by the user.
+ * Assets are referenced by their globally unique ID (e.g., `"vrm:elmer"`,
+ * `"my-mod:click"`).
  *
  * @example
  * ```typescript
@@ -16,7 +17,10 @@ import { host } from './host';
  * const vrms = await assets.list({ type: "vrm" });
  *
  * // Filter by mod
- * const elmerAssets = await assets.list({ mod: "elmer" });
+ * const myModAssets = await assets.list({ mod: "my-mod" });
+ *
+ * // Built-in assets shipped with the engine
+ * const builtin = await assets.list({ mod: "builtin" });
  * ```
  */
 export namespace assets {
@@ -29,7 +33,11 @@ export namespace assets {
     id: string;
     /** The asset type. */
     type: AssetType;
-    /** The mod that provides this asset. */
+    /**
+     * Where this asset comes from: `"builtin"` for assets shipped with the
+     * engine, `"local"` for files imported by the user, otherwise the name of
+     * the mod that declares it.
+     */
     mod: string;
     /** Optional description of the asset. */
     description?: string;
@@ -39,7 +47,7 @@ export namespace assets {
   export interface AssetFilter {
     /** Filter by asset type. */
     type?: AssetType;
-    /** Filter by mod name. */
+    /** Filter by origin: a mod name, `"builtin"`, or `"local"`. */
     mod?: string;
   }
 
@@ -58,7 +66,10 @@ export namespace assets {
    * const vrms = await assets.list({ type: "vrm" });
    *
    * // Get assets from a specific mod
-   * const modAssets = await assets.list({ mod: "elmer" });
+   * const modAssets = await assets.list({ mod: "my-mod" });
+   *
+   * // Get the engine's built-in assets
+   * const builtin = await assets.list({ mod: "builtin" });
    *
    * // Combine filters
    * const sounds = await assets.list({ type: "sound", mod: "my-mod" });

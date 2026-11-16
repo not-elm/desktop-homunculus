@@ -34,7 +34,7 @@ use homunculus_drag::HomunculusDragPlugin;
 use homunculus_hit_test::HomunculusHitTestPlugin;
 use homunculus_http_server::HomunculusHttpServerPlugin;
 use homunculus_migration::HomunculusMigrationPlugin;
-use homunculus_mod::HomunculusModPlugin;
+use homunculus_mod::{BuiltinAssetsDir, HomunculusModPlugin};
 use homunculus_power_saver::HomunculusPowerSaverPlugin;
 use homunculus_prefs::HomunculusPrefsPlugin;
 use homunculus_screen::HomunculusScreenPlugin;
@@ -62,9 +62,12 @@ fn main() {
         eprintln!("Node.js version check: {e}");
     }
 
+    let builtin_assets_dir = BuiltinAssetsDir::resolve();
+
     let mut app = App::new();
     app.insert_resource(runtime)
         .insert_resource(config)
+        .insert_resource(builtin_assets_dir.clone())
         .insert_resource(ClearColor(Color::NONE))
         .add_plugins((
             HomunculusModPlugin,
@@ -100,7 +103,7 @@ fn main() {
                     ..default()
                 })
                 .set(AssetPlugin {
-                    file_path: resolve_asset_path(),
+                    file_path: builtin_assets_dir.as_file_path(),
                     unapproved_path_mode: UnapprovedPathMode::Allow,
                     ..default()
                 }),
@@ -198,37 +201,6 @@ fn main() {
             ),
         )
         .run();
-}
-
-/// Resolves the asset directory path based on the current platform and build mode.
-///
-/// - **Dev builds** (CARGO_MANIFEST_DIR set): Uses `"assets"` relative to CWD (Cargo convention).
-/// - **macOS release**: Uses `"../Resources/assets"` (inside `.app` bundle).
-/// - **Windows release**: Uses exe-relative `"assets"` to avoid CWD dependency.
-/// - **Fallback**: `"assets"` relative to CWD.
-fn resolve_asset_path() -> String {
-    // Dev builds: Cargo sets CARGO_MANIFEST_DIR, use default relative path
-    if std::env::var("CARGO_MANIFEST_DIR").is_ok() {
-        return "assets".to_string();
-    }
-
-    if cfg!(target_os = "macos") {
-        return "../Resources/assets".to_string();
-    }
-
-    if cfg!(target_os = "windows") {
-        // Use exe-relative path so MSI installs work regardless of CWD
-        if let Ok(exe_path) = std::env::current_exe()
-            && let Some(exe_dir) = exe_path.parent()
-        {
-            let assets_dir = exe_dir.join("assets");
-            if assets_dir.exists() {
-                return assets_dir.to_string_lossy().into_owned();
-            }
-        }
-    }
-
-    "assets".to_string()
 }
 
 /// Installs a custom panic hook that writes to a log file and shows a message box on Windows.

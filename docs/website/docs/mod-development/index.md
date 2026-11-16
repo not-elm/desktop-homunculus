@@ -67,7 +67,7 @@ Here is the `package.json` for a MOD that loads a VRM character:
 The `homunculus.service` field points to a TypeScript service that uses the SDK to spawn the character and set up its behavior. The `homunculus.assets` field registers a VRM model with the asset ID `my-character:vrm`.
 
 :::note
-This is an illustrative example. The `vrm:elmer` VRM model is declared in the `@hmcs/assets` MOD, and the `@hmcs/persona` MOD handles spawning and behavior. Asset IDs follow `type:name` or `mod-name:asset-name` format (e.g. `vrm:elmer`, `vrma:idle-maid`, `se:open`).
+This is an illustrative example. The `vrm:elmer` VRM model is built into the engine, and the `@hmcs/persona` MOD handles spawning and behavior. Asset IDs follow `type:name` or `mod-name:asset-name` format (e.g. `vrm:elmer`, `vrma:idle-maid`, `se:open`).
 :::
 
 ## Get Started

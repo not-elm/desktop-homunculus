@@ -28,7 +28,6 @@ Official MODs use the `@hmcs/` prefix:
 | MOD | What it does |
 |---|---|
 | `@hmcs/persona` | Persona management and default character behavior |
-| `@hmcs/assets` | Built-in VRM model, animations, and sound effects |
 | `@hmcs/menu` | Right-click context menu |
 | `@hmcs/settings` | Application settings panel |
 
@@ -36,14 +35,14 @@ Additional MODs — such as text-to-speech (`@hmcs/voicevox`) and speech recogni
 
 ## Asset
 
-An **asset** is a file bundled with a MOD — VRM models, animations (VRMA), sound effects, images, or HTML UIs. Assets are referenced by ID in the format **`mod-name:asset-id`**.
+An **asset** is a file built into the engine or bundled with a MOD — VRM models, animations (VRMA), sound effects, images, or HTML UIs. Assets are referenced by ID in the format **`mod-name:asset-id`**.
 
 For example:
 - `vrm:elmer` — the built-in VRM character model
 - `vrma:idle-maid` — the default idle animation
 - `se:open` — a UI open sound effect
 
-The `@hmcs/assets` MOD provides the default set of assets that power the persona system out of the box.
+These default assets are built into the engine and power the persona system out of the box.
 
 ## Next Steps
 

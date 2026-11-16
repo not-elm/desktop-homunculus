@@ -6,14 +6,14 @@ use homunculus_api::prelude::ApiError;
 use homunculus_api::prelude::axum::{HttpResult, IntoHttpResult};
 use serde::Deserialize;
 
-/// List available assets, optionally filtered by type or mod name.
+/// List available assets, optionally filtered by type or origin.
 #[utoipa::path(
     get,
     path = "/assets",
     tag = "assets",
     params(
         ("type" = Option<String>, Query, description = "Filter by asset type"),
-        ("mod" = Option<String>, Query, description = "Filter by mod name"),
+        ("mod" = Option<String>, Query, description = "Filter by origin: a mod name, `builtin` for assets shipped with the engine, or `local` for imported files"),
     ),
     responses(
         (status = 200, description = "List of assets", body = Vec<AssetInfo>),

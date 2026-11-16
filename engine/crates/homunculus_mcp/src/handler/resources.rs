@@ -18,7 +18,7 @@ pub(super) fn resource_definitions() -> Vec<Resource> {
             .with_description("List of installed mods")
             .with_mime_type("application/json"),
         Resource::new("homunculus://assets", "homunculus-assets")
-            .with_description("List of available assets across all mods")
+            .with_description("List of available assets: built-in assets, MOD assets, and imported files")
             .with_mime_type("application/json"),
     ]
 }

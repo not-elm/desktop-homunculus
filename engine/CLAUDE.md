@@ -84,7 +84,7 @@ Custom `SystemParam` types available in `homunculus_core::system_param::prelude`
 - `BoneOffsets` — bone position/offset calculations
 - `Monitors` — monitor/display information
 - `VrmAabb` — AABB calculations for VRM models
-- `AssetResolver` — mod asset loading
+- `AssetResolver` — asset loading by ID (built-in, MOD, and imported assets)
 
 ### Plugin Composition
 
@@ -126,7 +126,8 @@ After changing Rust code, run `cargo test --workspace`.
 - HTTP server port is configured via `~/.homunculus/config.toml` (`port` field, defaults to `3100`). Config uses snake_case TOML keys (e.g., `mods_dir`).
 - Logs are written to `~/.homunculus/Logs/log.txt` (daily rolling). Debug builds: INFO level. Release builds: ERROR level.
 - WebView shortcuts: `F1`/`F2` open/close DevTools, `Cmd+[`/`Cmd+]` navigate back/forward.
-- Asset path resolution varies by platform:
+- Built-in assets live in `engine/assets/` and are declared in `engine/assets/assets.json` (same format as a MOD's `homunculus.assets`, embedded into the binary). Their IDs cannot be taken over by MODs or imports, and they are listed with `mod: "builtin"`.
+- Asset path resolution varies by platform (`BuiltinAssetsDir::resolve` in `homunculus_mod`, relative to Bevy's asset base directory):
   - Dev: `assets/` relative to `CARGO_MANIFEST_DIR`
   - macOS release: `../Resources/assets` (inside `.app` bundle)
   - Windows release: exe-relative path via `std::env::current_exe()` (avoids CWD dependency from MSI installs)

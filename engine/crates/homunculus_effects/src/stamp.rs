@@ -5,12 +5,11 @@ use homunculus_core::prelude::{AppWindows, GlobalViewport, window_local_pos};
 use homunculus_screen::prelude::{DisplayId, GlobalDisplays};
 use rand::random_range;
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 use std::time::Duration;
 
-#[derive(Event, Serialize, Deserialize)]
+#[derive(Event)]
 pub struct RequestStampEffect {
-    pub image_path: PathBuf,
+    pub image: Handle<Image>,
     pub options: Option<StampOptions>,
 }
 
@@ -60,7 +59,6 @@ fn despawn_stamp(
 fn apply_request(
     trigger: On<RequestStampEffect>,
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
     windows: AppWindows,
     cameras: Cameras<Camera2d>,
     primary_window: Query<&Monitor, With<PrimaryMonitor>>,
@@ -90,7 +88,7 @@ fn apply_request(
     commands.spawn((
         layers.clone(),
         Sprite {
-            image: asset_server.load(trigger.image_path.clone()),
+            image: trigger.image.clone(),
             custom_size: Some(stamp_size),
             ..default()
         },

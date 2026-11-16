@@ -44,6 +44,7 @@ impl AssetsApi {
     /// registers it in the ECS `AssetRegistry`, and persists the record.
     pub async fn import(&self, args: ImportAsset) -> ApiResult<ImportAssetResponse> {
         let source = validate_source(&args.source_path)?;
+        self.reject_builtin_id(args.asset_id.clone()).await?;
         let dest = copy_to_managed_storage(&source, &args.asset_id)?;
 
         let dest_str = dest.to_string_lossy().to_string();
@@ -59,6 +60,23 @@ impl AssetsApi {
             })
             .await?
     }
+
+    async fn reject_builtin_id(&self, asset_id: String) -> ApiResult {
+        self.0
+            .schedule(move |task| async move {
+                task.will(Update, once::run(reject_builtin_id).with(asset_id))
+                    .await
+            })
+            .await?
+    }
+}
+
+/// Bevy one-shot system: rejects an asset ID that a built-in asset owns.
+fn reject_builtin_id(In(asset_id): In<String>, registry: Res<AssetRegistry>) -> ApiResult {
+    if registry.is_builtin(&asset_id) {
+        return Err(builtin_id_conflict(&asset_id));
+    }
+    Ok(())
 }
 
 /// Validates that the source file exists and is a file.
@@ -114,18 +132,18 @@ fn register_and_persist(
     prefs: NonSend<PrefsDatabase>,
 ) -> ApiResult<ImportAssetResponse> {
     let asset_id = AssetId::new(&args.asset_id);
-    let dest = PathBuf::from(&dest_path);
     let filename = derive_filename(&PathBuf::from(&source_path), &args.asset_id);
 
-    let entry = AssetEntry {
-        id: asset_id.clone(),
-        path: PathBuf::from(&filename),
-        absolute_path: dest,
-        asset_type: args.asset_type.clone(),
-        description: args.description.clone(),
-        mod_name: "local".to_string(),
-    };
-    registry.register_imported(entry);
+    let entry = AssetEntry::imported(
+        asset_id.clone(),
+        PathBuf::from(&filename),
+        &homunculus_dir().join("assets"),
+        args.asset_type.clone(),
+        args.description.clone(),
+    );
+    if !registry.register_imported(entry) {
+        return Err(builtin_id_conflict(&args.asset_id));
+    }
 
     let type_str = serialize_asset_type(&args.asset_type);
     prefs
@@ -140,6 +158,12 @@ fn register_and_persist(
         .map_err(|e| ApiError::Sql(e.to_string()))?;
 
     Ok(ImportAssetResponse { asset_id })
+}
+
+fn builtin_id_conflict(asset_id: &str) -> ApiError {
+    ApiError::Conflict(format!(
+        "Asset ID '{asset_id}' is reserved by a built-in asset"
+    ))
 }
 
 /// Serializes an `AssetType` to its lowercase string representation.

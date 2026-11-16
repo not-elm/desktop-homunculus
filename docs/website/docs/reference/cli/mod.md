@@ -11,8 +11,8 @@ List, install, and uninstall MOD packages.
 
 ```shell
 hmcs mod list
-hmcs mod install @hmcs/assets @hmcs/persona
-hmcs mod uninstall @hmcs/assets
+hmcs mod install @hmcs/persona @hmcs/settings
+hmcs mod uninstall @hmcs/settings
 ```
 
 ## list
@@ -79,7 +79,7 @@ hmcs mod install <package>...
 Success:
 
 ```shell
-hmcs mod install @hmcs/assets @hmcs/persona
+hmcs mod install @hmcs/persona @hmcs/settings
 ```
 
 Failure example (invalid package name):
@@ -130,7 +130,7 @@ hmcs mod uninstall <package>...
 Success:
 
 ```shell
-hmcs mod uninstall @hmcs/assets @hmcs/persona
+hmcs mod uninstall @hmcs/settings @hmcs/persona
 ```
 
 Failure example (invalid package name):
@@ -242,7 +242,7 @@ hmcs mod update
 Update specific MODs:
 
 ```shell
-hmcs mod update @hmcs/persona @hmcs/assets
+hmcs mod update @hmcs/persona @hmcs/settings
 ```
 
 Update all MODs to their latest versions:
