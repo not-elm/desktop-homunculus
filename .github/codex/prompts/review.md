@@ -6,7 +6,7 @@ You are reviewing a pull request for Desktop Homunculus, a cross-platform deskto
 
 Analyze the changes in this pull request and identify:
 
-1. **Documentation/implementation discrepancies** — Does the code match what CLAUDE.md, doc comments, or the OpenAPI spec describe? Flag any inconsistencies.
+1. **Documentation/implementation discrepancies** — Does the code match what the CLAUDE.md files, doc comments, or the OpenAPI spec describe? Flag any inconsistencies.
 2. **Bugs** — Logical errors, edge cases, potential panics, race conditions, or incorrect behavior.
 3. **Coding standard violations** — Violations of the project-specific rules listed below.
 

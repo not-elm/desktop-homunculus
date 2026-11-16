@@ -1,6 +1,6 @@
 # Rust Coding Style
 
-Rust code in this repo (`engine/src/`, `engine/crates/*`) follows the rules below. Edition 2024, latest stable toolchain. These rules complement `CLAUDE.md`, `engine/CLAUDE.md`, and `bevy-patterns.md`.
+Rust code in this repo (`engine/src/`, `engine/crates/*`) follows the rules below. Edition 2024, latest stable toolchain. These rules complement `engine/CLAUDE.md` and `bevy-patterns.md`.
 
 These rules apply to code you write or change. Code that predates a rule is brought in line when it is touched; do not rewrite untouched files only to comply.
 
