@@ -11,7 +11,7 @@ else
   PYTHON ?= python
 endif
 
-.PHONY: setup debug test fix-lint gen-open-api \
+.PHONY: setup debug test fix-lint gen-open-api build-builtin-ui \
         release-macos release-macos-arm release-macos-x86 release-macos-universal \
         bump-version check-version install-cli stage-runtime \
         build-openclaw-plugin install-openclaw-plugin
@@ -31,9 +31,11 @@ debug-cuda:
 	
 test:
 	pnpm test
+	$(MAKE) build-builtin-ui
 	$(MAKE) -C engine test
 
 fix-lint:
+	$(MAKE) build-builtin-ui
 	$(MAKE) -C engine fix-lint
 	pnpm lint:fix
 
@@ -61,6 +63,9 @@ release-macos-x86:
 release-macos-universal:
 	pnpm build
 	$(MAKE) -C engine release-macos-universal
+
+build-builtin-ui: ## Build the UIs the engine embeds at compile time
+	pnpm --filter '@hmcs/menu-ui...' run build
 
 install-cli: ## Install hmcs CLI via cargo install
 	$(MAKE) -C engine install-cli

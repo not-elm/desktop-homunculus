@@ -5,6 +5,10 @@ on:
     paths:
       - "engine/**"
       - ".github/workflows/ci-rust.yml"
+      - ".github/actions/build-builtin-ui/**"
+      - "packages/ui/**"
+      - "packages/sdk/**"
+      - "pnpm-lock.yaml"
   # Runs on main populate the sccache entries in the main-branch cache scope,
   # which is the only scope every PR can restore from.
   push:
@@ -12,6 +16,10 @@ on:
     paths:
       - "engine/**"
       - ".github/workflows/ci-rust.yml"
+      - ".github/actions/build-builtin-ui/**"
+      - "packages/ui/**"
+      - "packages/sdk/**"
+      - "pnpm-lock.yaml"
 
 permissions:
   contents: read
@@ -43,6 +51,8 @@ jobs:
         working-directory: engine
     steps:
       - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/build-builtin-ui
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -95,6 +105,8 @@ jobs:
         working-directory: engine
     steps:
       - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/build-builtin-ui
 
       - uses: dtolnay/rust-toolchain@stable
 
