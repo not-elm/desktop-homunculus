@@ -7,6 +7,12 @@ use homunculus_core::prelude::{
 use homunculus_utils::runtime::RuntimeResolver;
 use std::path::Path;
 
+/// Official MODs whose features are built into the engine.
+///
+/// A MOD with one of these names is not loaded: its service does not start
+/// and its assets and menu items are not registered.
+const RETIRED_MOD_NAMES: [&str; 1] = ["@hmcs/menu"];
+
 pub(crate) struct ModLoadPlugin;
 
 impl Plugin for ModLoadPlugin {
@@ -44,18 +50,25 @@ fn discover_mods(
 }
 
 fn loadable_mods(mods: Vec<ModInfo>) -> Vec<ModInfo> {
-    mods.into_iter()
-        .filter(|m| {
-            let reserved = AssetOrigin::is_reserved_mod_name(&m.name);
-            if reserved {
-                warn!(
-                    "Skipping mod '{}': the name is reserved for the engine's own assets",
-                    m.name
-                );
-            }
-            !reserved
-        })
-        .collect()
+    mods.into_iter().filter(is_loadable).collect()
+}
+
+fn is_loadable(info: &ModInfo) -> bool {
+    if AssetOrigin::is_reserved_mod_name(&info.name) {
+        warn!(
+            "Skipping mod '{}': the name is reserved for the engine's own assets",
+            info.name
+        );
+        return false;
+    }
+    if RETIRED_MOD_NAMES.contains(&info.name.as_str()) {
+        warn!(
+            "Skipping mod '{}': its features are built into the engine",
+            info.name
+        );
+        return false;
+    }
+    true
 }
 
 fn schedule_service(info: &ModInfo, commands: &mut Commands, mods_dir: &Path) {
@@ -130,6 +143,20 @@ mod tests {
             mod_info("builtin"),
             mod_info("@hmcs/persona"),
         ];
+
+        let names: Vec<String> = loadable_mods(mods).into_iter().map(|m| m.name).collect();
+
+        assert_eq!(names, vec!["@hmcs/persona".to_string()]);
+    }
+
+    /// Asserts that a MOD whose features are now built into the engine is
+    /// excluded from loading while other MODs are kept.
+    ///
+    /// Case: a user upgrades the app while the retired menu MOD is still
+    /// installed in their mods directory.
+    #[test]
+    fn retired_mods_are_not_loaded() {
+        let mods = vec![mod_info("@hmcs/menu"), mod_info("@hmcs/persona")];
 
         let names: Vec<String> = loadable_mods(mods).into_iter().map(|m| m.name).collect();
 
