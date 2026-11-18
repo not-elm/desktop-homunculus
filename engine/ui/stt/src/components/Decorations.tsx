@@ -1,3 +1,5 @@
+import { cn } from '@hmcs/ui';
+
 /**
  * Decorative HUD layers for the STT settings panel: a top-edge highlight
  * with shimmering sweep, a bottom-edge fade line, an animated scanline, and
@@ -64,7 +66,10 @@ function HudCorner({ position }: { position: Position }) {
   return (
     <span
       aria-hidden="true"
-      className={`pointer-events-none absolute z-10 h-3 w-3 animate-holo-corner-pulse motion-reduce:animate-none motion-reduce:opacity-60 ${positionClasses[position]}`}
+      className={cn(
+        'pointer-events-none absolute z-10 h-3 w-3 animate-holo-corner-pulse motion-reduce:animate-none motion-reduce:opacity-60',
+        positionClasses[position],
+      )}
     />
   );
 }

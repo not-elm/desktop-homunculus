@@ -1,5 +1,5 @@
 import { audio, Webview } from '@hmcs/sdk';
-import { cn, Toolbar } from '@hmcs/ui';
+import { Button, cn, Toolbar } from '@hmcs/ui';
 import { useCallback } from 'react';
 import { type ModelCardState, useStt } from '../hooks/useStt';
 import { Decorations } from './Decorations';
@@ -79,13 +79,14 @@ function ModelCard({
       </span>
 
       {model.status === 'not_downloaded' && (
-        <button
+        <Button
           type="button"
-          className="inline-block cursor-pointer rounded border border-[oklch(0.72_0.14_192/0.25)] bg-[oklch(0.72_0.14_192/0.1)] px-[var(--hud-space-md)] py-[var(--hud-space-xs)] font-[inherit] text-[0.7rem] uppercase tracking-[0.06em] text-[oklch(0.72_0.14_192)] transition-[background,border-color] duration-[var(--hud-duration-content)] ease-[ease] hover:border-[oklch(0.72_0.14_192/0.4)] hover:bg-[oklch(0.72_0.14_192/0.2)]"
+          variant="ghost"
+          className="inline-block h-auto cursor-pointer rounded border border-[oklch(0.72_0.14_192/0.25)] bg-[oklch(0.72_0.14_192/0.1)] px-[var(--hud-space-md)] py-[var(--hud-space-xs)] font-normal text-[0.7rem] uppercase tracking-[0.06em] text-[oklch(0.72_0.14_192)] transition-[background,border-color] duration-[var(--hud-duration-content)] ease-[ease] hover:border-[oklch(0.72_0.14_192/0.4)] hover:bg-[oklch(0.72_0.14_192/0.2)] hover:text-[oklch(0.72_0.14_192)]"
           onClick={onDownload}
         >
           Download
-        </button>
+        </Button>
       )}
 
       {isDownloading && (
@@ -100,13 +101,14 @@ function ModelCard({
             <span className="font-mono text-[0.7rem] text-[oklch(0.55_0.02_250/0.6)]">
               {Math.round(model.downloadProgress ?? 0)}%
             </span>
-            <button
+            <Button
               type="button"
-              className="cursor-pointer border-none bg-transparent px-[var(--hud-space-xs)] py-0.5 text-[var(--hud-font-size-sm)] text-[oklch(0.55_0.02_250/0.5)] hover:text-[oklch(0.7_0.18_25)]"
+              variant="ghost"
+              className="h-auto cursor-pointer border-none bg-transparent px-[var(--hud-space-xs)] py-0.5 font-normal text-[length:inherit] text-[oklch(0.55_0.02_250/0.5)] hover:bg-transparent hover:text-[oklch(0.7_0.18_25)]"
               onClick={onCancel}
             >
               ✕
-            </button>
+            </Button>
           </div>
         </>
       )}
