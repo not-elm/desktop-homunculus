@@ -123,15 +123,18 @@ impl BuiltinTrayItems {
         self.items.iter().find(|item| item.key == key)
     }
 
-    pub(crate) fn push(&mut self, item: BuiltinTrayItem) {
+    /// Adds `item` and returns `true`, or returns `false` with a warning when
+    /// its key is `"exit"` or is already registered.
+    pub(crate) fn push(&mut self, item: BuiltinTrayItem) -> bool {
         if item.menu_id() == BUILTIN_EXIT_ID || self.get(item.key).is_some() {
             warn!(
                 "Skipping built-in tray item '{}': the key is reserved or already registered",
                 item.key
             );
-            return;
+            return false;
         }
         self.items.push(item);
+        true
     }
 
     fn by_menu_id(&self, menu_id: &str) -> Option<&BuiltinTrayItem> {
@@ -154,7 +157,8 @@ impl BuiltinTrayAppExt for App {
         on_click: impl IntoSystem<(), (), M> + 'static,
     ) -> &mut Self {
         let on_click = self.register_system(on_click);
-        self.world_mut()
+        let added = self
+            .world_mut()
             .get_resource_or_init::<BuiltinTrayItems>()
             .push(BuiltinTrayItem {
                 key,
@@ -162,11 +166,15 @@ impl BuiltinTrayAppExt for App {
                 order,
                 on_click,
             });
+        if !added {
+            let _ = self.world_mut().unregister_system(on_click);
+        }
         self
     }
 }
 
-/// Startup system that builds the tray icon with menu items from all mods.
+/// Shows the tray icon with a menu of the MOD tray items, the built-in items,
+/// and Exit.
 fn setup_tray(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -183,10 +191,11 @@ fn setup_tray(
     });
 }
 
-/// Update system that handles tray menu click events.
+/// Runs the command of each clicked MOD tray item without waiting for it to
+/// finish, and ignores clicks on built-in items.
 ///
-/// Looks up the clicked menu ID in the registry and spawns a fire-and-forget
-/// task to execute the associated mod command.
+/// Any other clicked ID that belongs to no MOD tray item is logged as a
+/// warning.
 fn handle_tray_clicks(
     mut mr: MessageReader<MenuMessage>,
     registry: Option<Res<TrayMenuRegistry>>,
@@ -395,7 +404,7 @@ fn to_bevy_menu_item(mod_name: &str, item: &TrayMenuItem) -> MenuItem {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bevy::ecs::system::SystemId;
+    use bevy::ecs::system::SystemIdMarker;
     use bevy_tray_icon::menu::MenuId;
     use homunculus_core::prelude::ModInfo;
     use homunculus_utils::prelude::TrayMenuItem;
@@ -537,7 +546,7 @@ mod tests {
             &registry_with_tray_mods(&[
                 ("@hmcs/voicevox", "middle"),
                 ("@hmcs/bottom-example", "bottom"),
-                ("@hmcs/settings", "top"),
+                ("@hmcs/persona", "top"),
             ]),
             &BuiltinTrayItems::default(),
         );
@@ -545,7 +554,7 @@ mod tests {
         assert_eq!(
             menu_texts(&menu),
             vec![
-                "@hmcs/settings",
+                "@hmcs/persona",
                 "@hmcs/voicevox",
                 "@hmcs/bottom-example",
                 "Exit"
@@ -563,7 +572,7 @@ mod tests {
     fn build_menu_skips_separator_for_empty_groups() {
         let (menu, _) = build_menu(
             &registry_with_tray_mods(&[
-                ("@hmcs/settings", "top"),
+                ("@hmcs/persona", "top"),
                 ("@hmcs/bottom-example", "bottom"),
             ]),
             &BuiltinTrayItems::default(),
@@ -571,7 +580,7 @@ mod tests {
 
         assert_eq!(
             menu_texts(&menu),
-            vec!["@hmcs/settings", "@hmcs/bottom-example", "Exit"]
+            vec!["@hmcs/persona", "@hmcs/bottom-example", "Exit"]
         );
         assert_eq!(separator_count(&menu), 2);
     }
@@ -579,11 +588,12 @@ mod tests {
     /// Asserts that the built-in Exit item comes last, right after a separator
     /// that follows the MOD items.
     ///
-    /// Case: the user opens the tray menu with the settings MOD installed.
+    /// Case: the user opens the tray menu with the persona MOD installed while
+    /// no engine feature has registered a built-in item.
     #[test]
     fn build_menu_appends_builtin_exit_after_mod_items() {
         let (menu, _) = build_menu(
-            &registry_with_tray_mods(&[("@hmcs/settings", "top")]),
+            &registry_with_tray_mods(&[("@hmcs/persona", "top")]),
             &BuiltinTrayItems::default(),
         );
         assert_eq!(menu.len(), 3);
@@ -592,9 +602,11 @@ mod tests {
     }
 
     /// Asserts that the menu holds only the built-in Exit item, without a
-    /// separator, when no MOD declares a tray entry.
+    /// separator, when no MOD declares a tray entry and no built-in item is
+    /// registered.
     ///
-    /// Case: MOD discovery fails at startup, so the registry is empty.
+    /// Case: MOD discovery fails at startup, so the registry is empty, and no
+    /// engine feature has registered a built-in item.
     #[test]
     fn build_menu_shows_only_exit_without_mod_items() {
         let (menu, _) = build_menu(&ModRegistry::default(), &BuiltinTrayItems::default());
@@ -608,7 +620,7 @@ mod tests {
     #[test]
     fn builtin_exit_is_not_registered_as_mod_command() {
         let (_, registry) = build_menu(
-            &registry_with_tray_mods(&[("@hmcs/settings", "top")]),
+            &registry_with_tray_mods(&[("@hmcs/persona", "top")]),
             &BuiltinTrayItems::default(),
         );
         assert!(registry.lookup(BUILTIN_EXIT_ID).is_none());
@@ -823,20 +835,38 @@ mod tests {
         assert_eq!(menu_texts(&menu), vec!["Settings", "Exit"]);
     }
 
+    /// Asserts that a built-in item skipped for its key leaves no registered
+    /// system behind.
+    ///
+    /// Case: an engine feature registers its tray item under the key that Exit
+    /// uses.
+    #[test]
+    fn skipped_item_leaves_no_registered_system() {
+        let mut app = App::new();
+        let systems_before = registered_system_count(&mut app);
+
+        app.add_builtin_tray_item("exit", "Quit", 0, || {});
+
+        assert_eq!(registered_system_count(&mut app), systems_before);
+    }
+
     #[derive(Resource, Default)]
     struct Clicks(u32);
-
-    fn noop_system() -> SystemId {
-        World::new().register_system(|| {})
-    }
 
     fn register(items: &mut BuiltinTrayItems, key: &'static str, text: &'static str, order: u32) {
         items.push(BuiltinTrayItem {
             key,
             text,
             order,
-            on_click: noop_system(),
+            on_click: SystemId::from_entity(Entity::PLACEHOLDER),
         });
+    }
+
+    fn registered_system_count(app: &mut App) -> usize {
+        app.world_mut()
+            .query::<&SystemIdMarker>()
+            .iter(app.world())
+            .count()
     }
 
     fn click_builtin(menu_id: &str) -> App {

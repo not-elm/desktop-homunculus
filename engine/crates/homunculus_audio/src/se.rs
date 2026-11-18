@@ -2,6 +2,7 @@
 
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
+use bevy_kira_audio::AudioSource as KiraAudioSource;
 use bevy_kira_audio::prelude::*;
 use homunculus_core::prelude::AssetResolver;
 
@@ -10,7 +11,7 @@ pub struct SeChannel;
 
 #[derive(Event, Debug, Clone)]
 pub struct RequestSe {
-    pub source: Handle<bevy_kira_audio::AudioSource>,
+    pub source: Handle<KiraAudioSource>,
     pub volume: f64,
     pub speed: f64,
     pub panning: f64,
@@ -38,7 +39,7 @@ impl SePlayer<'_, '_> {
     /// When `asset_id` does not resolve to a sound, a warning is logged and
     /// nothing plays.
     pub fn play(&mut self, asset_id: &str) {
-        match self.resolver.load::<bevy_kira_audio::AudioSource>(asset_id) {
+        match self.resolver.load::<KiraAudioSource>(asset_id) {
             Ok(source) => self.commands.trigger(RequestSe {
                 source,
                 volume: 1.0,

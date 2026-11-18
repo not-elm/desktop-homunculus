@@ -73,6 +73,7 @@ fn settings_panel_options() -> WebviewOpenOptions {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bevy::ecs::system::{RunSystemOnce, SystemId};
     use bevy_cef::prelude::{WebviewExtendStandardMaterial, WebviewResizable, WebviewSource};
     use homunculus_audio::prelude::{KiraAudioSource, RequestSe};
     use homunculus_core::prelude::{
@@ -147,8 +148,7 @@ mod tests {
     fn two_clicks_in_one_frame_open_one_panel() {
         let mut app = settings_app();
 
-        click_settings(&mut app);
-        click_settings(&mut app);
+        click_settings_twice_in_one_command_queue(&mut app);
 
         assert_eq!(panels(&mut app).len(), 1);
         assert_eq!(se_log(&app).len(), 1);
@@ -222,15 +222,28 @@ mod tests {
     }
 
     fn click_settings(app: &mut App) {
-        let on_click = app
-            .world()
-            .resource::<BuiltinTrayItems>()
-            .get("settings")
-            .expect("Settings is registered")
-            .on_click;
+        let on_click = settings_on_click(app);
         app.world_mut()
             .run_system(on_click)
             .expect("the Settings system runs");
+    }
+
+    fn click_settings_twice_in_one_command_queue(app: &mut App) {
+        let on_click = settings_on_click(app);
+        app.world_mut()
+            .run_system_once(move |mut commands: Commands| {
+                commands.run_system(on_click);
+                commands.run_system(on_click);
+            })
+            .expect("both clicks are queued");
+    }
+
+    fn settings_on_click(app: &App) -> SystemId {
+        app.world()
+            .resource::<BuiltinTrayItems>()
+            .get("settings")
+            .expect("Settings is registered")
+            .on_click
     }
 
     fn panels(app: &mut App) -> Vec<Entity> {
