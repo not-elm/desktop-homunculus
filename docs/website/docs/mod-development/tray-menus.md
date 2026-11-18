@@ -40,12 +40,16 @@ Add a `tray` object to the `homunculus` field in your `package.json`. Each entry
 | `id` | `string` | Unique identifier for this tray item within the MOD |
 | `text` | `string` | Label displayed in the tray menu |
 | `command` | `string` | MOD command to execute when selected (must match a key in `bin`) |
-| `position` | `number` | (Optional) Sort order — lower numbers appear higher in the menu. Default: `0` |
+| `position` | `string` | (Optional) Group in the menu: `"top"`, `"middle"`, or `"bottom"`. Default: `"middle"` |
 | `items` | `TrayItem[]` | (Optional) Nested child items for creating a submenu |
 
 :::warning
 The `command` value must exactly match a key in the `bin` field of your `package.json`. If the command is not found, the menu item will appear but do nothing when clicked.
 :::
+
+### Menu Order
+
+MOD items are grouped by `position` (`top`, then `middle`, then `bottom`) and sorted by MOD name within each group, with a separator between groups. The engine's built-in **Settings** and **Exit** items always come last, after a separator.
 
 ## Submenus
 
@@ -110,31 +114,31 @@ try {
 
 ## Complete Example
 
-This example adds a "Settings" entry to the system tray that opens an application settings panel.
+This example adds a "Dashboard" entry to the system tray that opens the MOD's own panel.
 
 **`package.json`**:
 
 ```json
 {
-  "name": "@hmcs/settings",
+  "name": "my-mod",
   "version": "1.0.0",
   "type": "module",
   "homunculus": {
     "tray": {
-      "id": "open-settings",
-      "text": "Settings",
-      "command": "settings-open-ui"
+      "id": "open-dashboard",
+      "text": "Dashboard",
+      "command": "my-mod-open-ui"
     },
     "assets": {
-      "settings:ui": {
+      "my-mod:ui": {
         "path": "ui/dist/index.html",
         "type": "html",
-        "description": "Application settings panel UI"
+        "description": "Dashboard panel UI"
       }
     }
   },
   "bin": {
-    "settings-open-ui": "commands/open-ui.ts"
+    "my-mod-open-ui": "commands/open-ui.ts"
   },
   "dependencies": {
     "@hmcs/sdk": "workspace:*"
@@ -153,7 +157,7 @@ import { audio, Webview, webviewSource } from "@hmcs/sdk";
 
 try {
   await Webview.open({
-    source: webviewSource.local("settings:ui"),
+    source: webviewSource.local("my-mod:ui"),
     size: [0.6, 0.6],
     viewportSize: [500, 400],
     offset: [1.1, 0],

@@ -93,6 +93,10 @@ const config: Config = {
             from: "/mods/menu",
             to: "/getting-started/quick-start#right-click-menu",
           },
+          {
+            from: "/mods/settings",
+            to: "/getting-started/quick-start#settings",
+          },
         ],
       },
     ],

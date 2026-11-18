@@ -1,3 +1,5 @@
+//! Request, response, and component types for webviews.
+
 use super::asset::AssetId;
 use super::transform::TransformArgs;
 use super::transform_constraint::WebviewConstraints;
@@ -104,6 +106,17 @@ pub struct WebviewResizableOptions {
     pub aspect_lock: AspectLockMode,
 }
 
+impl Default for WebviewResizableOptions {
+    fn default() -> Self {
+        Self {
+            edge_thickness: default_edge_thickness(),
+            min_size: default_min_size(),
+            max_size: None,
+            aspect_lock: AspectLockMode::default(),
+        }
+    }
+}
+
 fn default_edge_thickness() -> u32 {
     16
 }
@@ -178,4 +191,22 @@ pub struct NavigationState {
     pub can_go_back: bool,
     /// Whether the webview can navigate forward in history.
     pub can_go_forward: bool,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Asserts that the default resize options equal the options an empty
+    /// `resizable: {}` object deserializes to.
+    ///
+    /// Case: an engine feature opens a resizable webview with the default
+    /// options, as a MOD does by passing `resizable: {}`.
+    #[test]
+    fn default_matches_an_empty_object() {
+        let from_json: WebviewResizableOptions =
+            serde_json::from_str("{}").expect("an empty object deserializes");
+
+        assert_eq!(from_json, WebviewResizableOptions::default());
+    }
 }

@@ -4,10 +4,9 @@ use crate::{MENU_HTML, MenuHud};
 use bevy::prelude::*;
 use bevy_vrm1::prelude::ParentSearcher;
 use homunculus_api::prelude::WebviewSpawner;
-use homunculus_audio::prelude::{KiraAudioSource, RequestSe};
+use homunculus_audio::prelude::SePlayer;
 use homunculus_core::prelude::{
-    AssetResolver, LinkedPersona, Persona, PersonaId, TransformArgs, WebviewOpenOptions,
-    WebviewSource,
+    LinkedPersona, Persona, PersonaId, TransformArgs, WebviewOpenOptions, WebviewSource,
 };
 
 const MENU_SIZE: Vec2 = Vec2::new(0.8, 1.0);
@@ -53,7 +52,7 @@ fn toggle_menu(
     menus: Query<Entity, With<MenuHud>>,
     linked_personas: Query<&LinkedPersona>,
     mut spawner: WebviewSpawner,
-    resolver: AssetResolver,
+    mut se: SePlayer,
     mut commands: Commands,
 ) {
     let Some(persona_id) = nearest_clicked_persona(&mut clicks, &parent_searcher, &personas) else {
@@ -61,8 +60,8 @@ fn toggle_menu(
     };
     let has_linked_webview = linked_personas.iter().any(|linked| linked.0 == persona_id);
     match MenuAction::decide(!menus.is_empty(), has_linked_webview) {
-        MenuAction::Close => close_menus(&mut commands, &menus, &resolver),
-        MenuAction::Open => open_menu(&mut spawner, &mut commands, &resolver, persona_id),
+        MenuAction::Close => close_menus(&mut commands, &menus, &mut se),
+        MenuAction::Open => open_menu(&mut spawner, &mut se, persona_id),
         MenuAction::Ignore => {}
     }
 }
@@ -90,27 +89,18 @@ fn clicked_persona<'a>(
     Some((click.hit.depth, persona))
 }
 
-fn close_menus(
-    commands: &mut Commands,
-    menus: &Query<Entity, With<MenuHud>>,
-    resolver: &AssetResolver,
-) {
+fn close_menus(commands: &mut Commands, menus: &Query<Entity, With<MenuHud>>, se: &mut SePlayer) {
     for menu in menus.iter() {
         commands.entity(menu).despawn();
     }
-    play_se(commands, resolver, CLOSE_SOUND);
+    se.play(CLOSE_SOUND);
 }
 
-fn open_menu(
-    spawner: &mut WebviewSpawner,
-    commands: &mut Commands,
-    resolver: &AssetResolver,
-    persona_id: PersonaId,
-) {
+fn open_menu(spawner: &mut WebviewSpawner, se: &mut SePlayer, persona_id: PersonaId) {
     match spawner.open(menu_webview_options(persona_id)) {
         Ok(mut menu) => {
             menu.insert(MenuHud);
-            play_se(commands, resolver, OPEN_SOUND);
+            se.play(OPEN_SOUND);
         }
         Err(e) => error!("Failed to open the right-click menu: {e}"),
     }
@@ -131,18 +121,6 @@ fn menu_webview_options(persona_id: PersonaId) -> WebviewOpenOptions {
         constraints: None,
         linked_persona: Some(persona_id),
         resizable: None,
-    }
-}
-
-fn play_se(commands: &mut Commands, resolver: &AssetResolver, asset_id: &str) {
-    match resolver.load::<KiraAudioSource>(asset_id) {
-        Ok(source) => commands.trigger(RequestSe {
-            source,
-            volume: 1.0,
-            speed: 1.0,
-            panning: 0.0,
-        }),
-        Err(e) => warn!("The right-click menu sound is unavailable: {e}"),
     }
 }
 

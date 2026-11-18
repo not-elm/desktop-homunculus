@@ -361,7 +361,7 @@ Patterns for mod-specific customization:
   }
   ```
 
-- **Custom animations** -- Add keyframe animations in your `index.css`. The settings mod (`mods/settings/ui/src/index.css`) has examples of holographic HUD effects.
+- **Custom animations** -- Add keyframe animations in your `index.css`. The built-in settings panel (`engine/ui/settings/src/index.css`) has examples of holographic HUD effects.
 
 ## Next Steps
 

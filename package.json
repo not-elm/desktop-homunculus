@@ -5,6 +5,7 @@
   "packageManager": "pnpm@10.30.2",
   "scripts": {
     "build": "turbo run build",
+    "build:builtin-ui": "pnpm --filter \"{./engine/ui/*}...\" --fail-if-no-match run build",
     "dev": "turbo run dev",
     "check-types": "turbo run check-types",
     "test": "turbo run test",

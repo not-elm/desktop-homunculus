@@ -9,9 +9,9 @@ use std::path::Path;
 
 /// Official MODs whose features are built into the engine.
 ///
-/// A MOD with one of these names is not loaded: its service does not start
-/// and its assets and menu items are not registered.
-const RETIRED_MOD_NAMES: [&str; 1] = ["@hmcs/menu"];
+/// A MOD with one of these names is not loaded: its service does not start,
+/// and its assets, menu items, and tray item are not registered.
+const RETIRED_MOD_NAMES: [&str; 2] = ["@hmcs/menu", "@hmcs/settings"];
 
 pub(crate) struct ModLoadPlugin;
 
@@ -149,14 +149,18 @@ mod tests {
         assert_eq!(names, vec!["@hmcs/persona".to_string()]);
     }
 
-    /// Asserts that a MOD whose features are now built into the engine is
+    /// Asserts that MODs whose features are now built into the engine are
     /// excluded from loading while other MODs are kept.
     ///
-    /// Case: a user upgrades the app while the retired menu MOD is still
-    /// installed in their mods directory.
+    /// Case: a user upgrades the app while the retired menu and settings MODs
+    /// are still installed in their mods directory.
     #[test]
     fn retired_mods_are_not_loaded() {
-        let mods = vec![mod_info("@hmcs/menu"), mod_info("@hmcs/persona")];
+        let mods = vec![
+            mod_info("@hmcs/menu"),
+            mod_info("@hmcs/settings"),
+            mod_info("@hmcs/persona"),
+        ];
 
         let names: Vec<String> = loadable_mods(mods).into_iter().map(|m| m.name).collect();
 

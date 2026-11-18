@@ -9,7 +9,7 @@ fn main() {
     println!("cargo::rerun-if-changed={}", source.display());
     if !is_built(&source) {
         println!(
-            "cargo::error=The menu UI is not built. Run `pnpm install` and `pnpm --filter '@hmcs/menu-ui...' run build` at the repository root."
+            "cargo::error=The menu UI is not built. Run `pnpm install` and `pnpm run build:builtin-ui` at the repository root."
         );
         return;
     }

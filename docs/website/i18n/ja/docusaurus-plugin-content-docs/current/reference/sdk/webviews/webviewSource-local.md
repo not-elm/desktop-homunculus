@@ -15,7 +15,7 @@ function local(id: string): WebviewSourceLocal
 
 | パラメータ | 型 | 説明 |
 |-----------|------|-------------|
-| `id` | `string` | アセット ID（例：`"settings:ui"`） |
+| `id` | `string` | アセット ID（例：`"my-mod:ui"`） |
 
 ## 戻り値
 

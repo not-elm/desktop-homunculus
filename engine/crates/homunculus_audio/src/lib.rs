@@ -13,7 +13,7 @@ pub mod prelude {
             BgmChannel, BgmPlaybackState, BgmState, BgmStatus, Easing, FadeTween, RequestBgmPause,
             RequestBgmPlay, RequestBgmResume, RequestBgmStop, RequestBgmUpdate,
         },
-        se::{RequestSe, SeChannel},
+        se::{RequestSe, SeChannel, SePlayer},
     };
 }
 

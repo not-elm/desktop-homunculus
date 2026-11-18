@@ -19,12 +19,12 @@ The engine treats asset IDs as opaque strings — it does not validate or parse 
 
 | Part | Source | Example |
 |---|---|---|
-| `mod-name` | Derived from the `name` field in `package.json` | `@hmcs/settings` becomes `settings` |
+| `mod-name` | Derived from the `name` field in `package.json` | `@hmcs/stt` becomes `stt` |
 | `asset-name` | The key in the `homunculus.assets` object | `vrm`, `open`, `ui` |
 
 The **mod name** is extracted from the package name by stripping the scope prefix. For example:
 
-- `@hmcs/settings` -- mod name is `settings`
+- `@hmcs/stt` -- mod name is `stt`
 - `@hmcs/persona` -- mod name is `persona`
 - `my-character` -- mod name is `my-character` (no scope to strip)
 
@@ -116,13 +116,13 @@ await vrm.playVrma({
 import { Webview, webviewSource } from "@hmcs/sdk";
 
 await Webview.open({
-  source: webviewSource.local("settings:ui"),
+  source: webviewSource.local("my-mod:ui"),
   size: [1, 0.9],
   viewportSize: [900, 700],
 });
 ```
 
-The `webviewSource.local("settings:ui")` source tells the engine to load the HTML file registered under the `settings:ui` asset ID.
+The `webviewSource.local("my-mod:ui")` source tells the engine to load the HTML file registered under the `my-mod:ui` asset ID.
 
 ## Using Asset IDs in the HTTP API
 

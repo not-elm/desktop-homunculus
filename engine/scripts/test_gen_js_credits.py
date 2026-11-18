@@ -8,10 +8,15 @@ from pathlib import Path
 import gen_js_credits
 
 
-def write_list(root: Path, relative: str, entries: list[dict]) -> None:
-    path = root / relative
+def write_list(path: Path, entries: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(entries), encoding="utf-8")
+
+
+def add_ui(root: Path, name: str) -> None:
+    ui_dir = root / "engine" / "ui" / name
+    ui_dir.mkdir(parents=True, exist_ok=True)
+    (ui_dir / "package.json").write_text(json.dumps({"name": f"@hmcs/{name}-ui"}), encoding="utf-8")
 
 
 def write_css_packages(root: Path) -> None:
@@ -30,9 +35,12 @@ class GenJsCreditsTest(unittest.TestCase):
         scheduler = {"name": "scheduler", "version": "0.27.0", "identifier": "MIT"}
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            menu_list, ui_list = gen_js_credits.LICENSE_LISTS
-            write_list(root, menu_list, [scheduler, react])
-            write_list(root, ui_list, [react, radix])
+            add_ui(root, "menu")
+            add_ui(root, "settings")
+            menu_list, settings_list, ui_list = gen_js_credits.license_lists(root)
+            write_list(menu_list, [scheduler, react])
+            write_list(settings_list, [react])
+            write_list(ui_list, [react, radix])
             write_css_packages(root)
 
             entries = gen_js_credits.collect(root)
@@ -52,8 +60,9 @@ class GenJsCreditsTest(unittest.TestCase):
     def test_css_only_packages_are_credited(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            for relative in gen_js_credits.LICENSE_LISTS:
-                write_list(root, relative, [])
+            add_ui(root, "menu")
+            for path in gen_js_credits.license_lists(root):
+                write_list(path, [])
             write_css_packages(root)
 
             entries = gen_js_credits.collect(root)
@@ -81,10 +90,40 @@ class GenJsCreditsTest(unittest.TestCase):
 
     def test_missing_list_names_the_build_command(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            add_ui(root, "menu")
             with self.assertRaises(FileNotFoundError) as raised:
-                gen_js_credits.collect(Path(tmp))
+                gen_js_credits.collect(root)
 
-        self.assertIn("pnpm --filter '@hmcs/menu-ui...' run build", str(raised.exception))
+        self.assertIn("pnpm run build:builtin-ui", str(raised.exception))
+
+    def test_license_lists_cover_each_built_in_ui(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            add_ui(root, "settings")
+            add_ui(root, "menu")
+
+            lists = gen_js_credits.license_lists(root)
+
+        self.assertEqual(
+            lists,
+            [
+                root / "engine/ui/menu/dist/licenses.json",
+                root / "engine/ui/settings/dist/licenses.json",
+                root / "packages/ui/dist/licenses.json",
+            ],
+        )
+
+    def test_license_lists_skip_directories_without_a_package(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            add_ui(root, "menu")
+            (root / "engine/ui/stray").mkdir(parents=True)
+
+            lists = gen_js_credits.license_lists(root)
+
+        self.assertNotIn(root / "engine/ui/stray/dist/licenses.json", lists)
+        self.assertEqual(len(lists), 2)
 
 
 if __name__ == "__main__":

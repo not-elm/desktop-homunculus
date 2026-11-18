@@ -42,8 +42,15 @@ export function useSettings() {
 
   const handleClose = useCallback(() => {
     audio.se.play('se:close');
-    Webview.current()?.close();
-  }, []);
+    saveAndClose(initialised.current, fps, alpha).catch(console.error);
+  }, [fps, alpha]);
 
   return { loading, fps, setFps, alpha, setAlpha, handleClose };
+}
+
+async function saveAndClose(initialised: boolean, fps: number, alpha: number) {
+  if (initialised) {
+    await Promise.all([settings.setFps(fps), shadowPanel.setAlpha(alpha)]).catch(console.error);
+  }
+  await Webview.current()?.close();
 }

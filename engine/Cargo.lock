@@ -3622,6 +3622,7 @@ dependencies = [
  "homunculus_power_saver",
  "homunculus_prefs",
  "homunculus_screen",
+ "homunculus_settings",
  "homunculus_shadow_panel",
  "homunculus_sitting",
  "homunculus_speech",
@@ -5199,6 +5200,18 @@ dependencies = [
  "serde",
  "utoipa",
  "windows 0.60.0",
+]
+
+[[package]]
+name = "homunculus_settings"
+version = "0.1.0-alpha.7-dev"
+dependencies = [
+ "bevy",
+ "bevy_cef",
+ "homunculus_api",
+ "homunculus_audio",
+ "homunculus_core",
+ "homunculus_tray",
 ]
 
 [[package]]

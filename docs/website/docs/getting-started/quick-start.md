@@ -43,11 +43,18 @@ The character responds to different states, each with its own behavior:
 
 ### Right-Click Menu {#right-click-menu}
 
-Right-click the character to open the context menu overlay, which is built into the engine. From here you can access settings and other actions provided by installed MODs.
+Right-click the character to open the context menu overlay, which is built into the engine. From here you can access the per-character actions provided by installed MODs.
 
-### Settings
+### Settings {#settings}
 
-Open the Settings panel through the right-click context menu. The settings UI lets you configure the application and MOD-specific options.
+The settings panel is built into the engine. Open the **system tray** → **"Settings"** to show it; picking Settings again while the panel is open does nothing.
+
+| Setting | Description |
+|---|---|
+| Frame Rate | The rendering frame rate (1–120 fps). Lower values reduce CPU/GPU usage. |
+| Shadow Opacity | The transparency of the shadow panel overlay behind the character (0–100%). |
+
+Changes are saved automatically and kept across restarts.
 
 ### Persona Settings
 
@@ -76,7 +83,6 @@ Desktop Homunculus ships with a set of official MODs under the `@hmcs` scope:
 | MOD | Description |
 |---|---|
 | `@hmcs/persona` | Persona management UI and default behavior service — configure identity, personality, and appearance |
-| `@hmcs/settings` | Application settings panel accessible from the system tray |
 
 ## Additional MODs
 
