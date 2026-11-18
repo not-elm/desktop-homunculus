@@ -39,7 +39,6 @@ use homunculus_mod::{BuiltinAssetsDir, HomunculusModPlugin};
 use homunculus_power_saver::HomunculusPowerSaverPlugin;
 use homunculus_prefs::HomunculusPrefsPlugin;
 use homunculus_screen::HomunculusScreenPlugin;
-use homunculus_settings::HomunculusSettingsPlugin;
 use homunculus_shadow_panel::HomunculusShadowPanelPlugin;
 use homunculus_sitting::HomunculusSittingPlugin;
 use homunculus_speech::HomunculusSpeechPlugin;
@@ -120,7 +119,6 @@ fn main() {
             HomunculusMigrationPlugin,
             HomunculusTrayPlugin,
             HomunculusMenuPlugin,
-            HomunculusSettingsPlugin,
         ))
         .add_plugins((
             HomunculusCorePlugin,

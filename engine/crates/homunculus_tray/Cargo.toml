@@ -10,9 +10,14 @@ publish.workspace = true
 [dependencies]
 bevy = { workspace = true }
 bevy_tray_icon = { workspace = true }
+homunculus_api = { workspace = true }
+homunculus_audio = { workspace = true }
 homunculus_core = { workspace = true }
 homunculus_utils = { workspace = true }
 tracing = { workspace = true }
+
+[dev-dependencies]
+bevy_cef = { workspace = true }
 
 [lints]
 workspace = true
