@@ -23,6 +23,17 @@ enum MenuAction {
     Ignore,
 }
 
+/// Opens the right-click menu on a secondary click on a character, and closes
+/// it on the next secondary click.
+pub(crate) struct MenuTogglePlugin;
+
+impl Plugin for MenuTogglePlugin {
+    fn build(&self, app: &mut App) {
+        app.add_message::<PointerClick>()
+            .add_systems(Update, toggle_menu);
+    }
+}
+
 impl MenuAction {
     fn decide(menu_open: bool, persona_has_linked_webview: bool) -> Self {
         if menu_open {
@@ -35,7 +46,7 @@ impl MenuAction {
     }
 }
 
-pub(crate) fn toggle_menu(
+fn toggle_menu(
     mut clicks: MessageReader<PointerClick>,
     parent_searcher: ParentSearcher,
     personas: Query<&Persona>,

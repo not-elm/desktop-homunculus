@@ -3,6 +3,7 @@
 
 mod toggle;
 
+use crate::toggle::MenuTogglePlugin;
 use bevy::prelude::*;
 
 const MENU_HTML: &str = include_str!(concat!(env!("OUT_DIR"), "/menu.html"));
@@ -22,8 +23,8 @@ pub struct HomunculusMenuPlugin;
 
 impl Plugin for HomunculusMenuPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<PointerClick>()
-            .add_systems(Update, (toggle::toggle_menu, close_orphaned_menus));
+        app.add_plugins(MenuTogglePlugin)
+            .add_systems(Update, close_orphaned_menus);
     }
 }
 
