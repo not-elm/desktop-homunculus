@@ -9,6 +9,7 @@ on:
       - "packages/ui/**"
       - "packages/sdk/**"
       - "pnpm-lock.yaml"
+      - "package.json"
   # Runs on main populate the sccache entries in the main-branch cache scope,
   # which is the only scope every PR can restore from.
   push:
@@ -20,6 +21,7 @@ on:
       - "packages/ui/**"
       - "packages/sdk/**"
       - "pnpm-lock.yaml"
+      - "package.json"
 
 permissions:
   contents: read

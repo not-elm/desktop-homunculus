@@ -11,13 +11,10 @@ import json
 import sys
 from pathlib import Path
 
-BUILD_COMMAND = "pnpm --filter '@hmcs/menu-ui...' run build"
+BUILD_COMMAND = "pnpm run build:builtin-ui"
 
-# Repo-relative licence lists. A new built-in UI adds its own list here.
-LICENSE_LISTS = [
-    "engine/ui/menu/dist/licenses.json",
-    "packages/ui/dist/licenses.json",
-]
+BUILTIN_UI_DIR = "engine/ui"
+SHARED_UI_LICENSE_LIST = "packages/ui/dist/licenses.json"
 
 # Packages inlined into the UIs through a CSS `@import`, as (package name,
 # workspace whose node_modules resolves it). Vite's licence lists only cover JS
@@ -39,9 +36,19 @@ Do not edit manually.
 """
 
 
+def license_lists(repo_root: Path) -> list[Path]:
+    """The licence list of each built-in UI, sorted by UI name, then `@hmcs/ui`'s.
+
+    A built-in UI is a directory under `engine/ui/` that holds a `package.json`.
+    """
+    manifests = (repo_root / BUILTIN_UI_DIR).glob("*/package.json")
+    ui_lists = [manifest.parent / "dist" / "licenses.json" for manifest in sorted(manifests)]
+    return ui_lists + [repo_root / SHARED_UI_LICENSE_LIST]
+
+
 def collect(repo_root: Path) -> list[dict]:
     """Merge every licence list, deduplicated and sorted by `name@version`."""
-    entries = [entry for relative in LICENSE_LISTS for entry in read_list(repo_root / relative)]
+    entries = [entry for path in license_lists(repo_root) for entry in read_list(path)]
     entries += [read_css_package(repo_root, name, workspace) for name, workspace in CSS_PACKAGES]
     merged: dict[str, dict] = {}
     for entry in entries:

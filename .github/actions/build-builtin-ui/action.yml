@@ -1,5 +1,5 @@
 name: Build Built-in UI
-description: Builds the engine's built-in UIs (the menu UI and its workspace dependencies) that the engine embeds at compile time
+description: Builds the engine's built-in UIs (engine/ui/*) and their workspace dependencies, which the engine embeds at compile time
 
 runs:
   using: composite
@@ -14,9 +14,9 @@ runs:
     - name: Install built-in UI dependencies
       shell: bash
       working-directory: ${{ github.workspace }}
-      run: pnpm install --frozen-lockfile --filter '@hmcs/menu-ui...'
+      run: pnpm install --frozen-lockfile --filter '{./engine/ui/*}...'
 
     - name: Build built-in UIs
       shell: bash
       working-directory: ${{ github.workspace }}
-      run: pnpm --filter '@hmcs/menu-ui...' run build
+      run: pnpm run build:builtin-ui

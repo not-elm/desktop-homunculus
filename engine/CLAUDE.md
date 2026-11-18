@@ -14,7 +14,7 @@ make setup-cef            # Download CEF framework only (macOS; skips if already
 make release-windows     # Build MSI installer via WiX 4.x (Windows only)
 ```
 
-Built-in UIs (`../engine/ui/<name>/`, e.g. the right-click menu) are embedded into the binary at compile time, so cargo needs them built first: run `make build-builtin-ui` at the repository root (or `pnpm --filter '@hmcs/menu-ui...' run build`). The root `make debug` / `make test` / release targets do this already; a missing build stops cargo with that instruction.
+Built-in UIs (`../engine/ui/<name>/`, e.g. the right-click menu) are embedded into the binary at compile time, so cargo needs them built first: run `make build-builtin-ui` at the repository root (or `pnpm run build:builtin-ui`). The root `make debug` / `make test` / release targets do this already; a missing build stops cargo with that instruction.
 
 Single test:
 ```bash
