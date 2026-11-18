@@ -62,9 +62,24 @@ Desktop Homunculus を初めて起動すると、画面にキャラクターは�
 
 すべての Persona を管理する（新規作成、削除など）には、**システムトレイ** → **"Persona"** で Persona Management ダッシュボードにアクセスしてください。
 
-### Speech to Text
+### Speech to Text {#speech-to-text}
 
-`@hmcs/stt` MOD がインストールされている場合、**システムトレイ** → **"Speech to Text"** で STT コントロールパネルにアクセスできます。Whisper モデルをダウンロードし、言語を設定して、AI Agent との音声入力に使用します。
+Speech to Text パネルはエンジンに組み込まれています。**システムトレイ** → **"Speech to Text"** で開きます。パネルが開いているときに Speech to Text を選んでも、何も起きません。
+
+音声認識は Whisper モデルを使ってローカルで動きます。パネルにはモデルの一覧が出て、モデルをダウンロードでき、進み具合も表示されます。ダウンロードは **✕** で取り消せます。
+
+| モデル | サイズ |
+|---|---|
+| Tiny | 32.2 MB |
+| Base | 59.7 MB |
+| Small | 190 MB |
+| Medium | 539 MB |
+| Large v3 Turbo | 574 MB |
+| Large v3 | 1.08 GB |
+
+モデルは `~/.homunculus/models/` に保存されます。初めてマイクを使うとき、OS がマイクの使用許可を求めることがあります。
+
+音声認識と Push-to-Talk は、SDK の `stt` 名前空間か HTTP API から使います: [音声認識](/reference/api/recognize)、[Push-to-Talk の開始](/reference/api/ptt-start)、[Push-to-Talk の停止](/reference/api/ptt-stop)、[モデルの一覧](/reference/api/list-models)、[モデルのダウンロード](/reference/api/download-model-stream)。
 
 ### アプリの終了
 
@@ -91,7 +106,6 @@ Desktop Homunculus には `@hmcs` スコープの公式 MOD セットが同梱�
 | MOD | 説明 |
 |---|---|
 | `@hmcs/voicevox` | [VoiceVox](https://voicevox.hiroshiba.jp/) エンジンによるテキスト読み上げ連携 |
-| `@hmcs/stt` | Whisper ベースの音声認識による Speech-to-Text（[詳細](../mods/stt)） |
 
 AI 連携については、外部で [OpenClaw](https://docs.openclaw.ai) を起動し、`@hmcs/openclaw-plugin` をインストールしてください。詳細は [AI 連携](../ai-integration) を参照してください。
 
@@ -100,7 +114,7 @@ AI 連携については、外部で [OpenClaw](https://docs.openclaw.ai) を起
 :::
 
 ```shell
-hmcs mod install @hmcs/voicevox @hmcs/stt
+hmcs mod install @hmcs/voicevox
 ```
 
 ## 次のステップ

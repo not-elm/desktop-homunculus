@@ -97,6 +97,10 @@ const config: Config = {
             from: "/mods/settings",
             to: "/getting-started/quick-start#settings",
           },
+          {
+            from: "/mods/stt",
+            to: "/getting-started/quick-start#speech-to-text",
+          },
         ],
       },
     ],

@@ -29,7 +29,7 @@ Persona はシステムトレイからアクセスできる **Persona Management
 |---|---|
 | `@hmcs/persona` | Persona 管理とデフォルトのキャラクター動作 |
 
-テキスト読み上げ（`@hmcs/voicevox`）や音声認識（`@hmcs/stt`）などの追加 MOD は、`hmcs` CLI でいつでもインストールできます。AI 連携については、[AI 連携](../ai-integration)を参照してください（外部で [OpenClaw](https://docs.openclaw.ai) を起動する必要があります）。
+テキスト読み上げ（`@hmcs/voicevox`）などの追加 MOD は、`hmcs` CLI でいつでもインストールできます。音声認識はエンジンに組み込まれています（[Speech to Text](./quick-start#speech-to-text)）。AI 連携については、[AI 連携](../ai-integration)を参照してください（外部で [OpenClaw](https://docs.openclaw.ai) を起動する必要があります）。
 
 ## Asset
 

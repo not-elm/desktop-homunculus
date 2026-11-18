@@ -16,7 +16,7 @@ sidebar_position: 1
 - **Node.js ≥ 22**（OpenClaw の要件）。
 - **[`@hmcs/persona` MOD](/mods/persona)** で persona を 1 件以上作成済みであること。プラグインは Homunculus の persona を OpenClaw のワークスペースに同期します。persona が 1 件もなければ何も起こりません。
 - *(任意)* **[`@hmcs/voicevox` MOD](/mods/voicevox)** — 返答を音声で読み上げたい場合。
-- *(任意)* **[`@hmcs/stt` MOD](/mods/stt)** — 音声でエージェントに話しかけたい場合。
+- *(任意)* 組み込みの **[Speech to Text](/getting-started/quick-start#speech-to-text)** パネルで Whisper モデルをダウンロード済みであること — 音声でエージェントに話しかけたい場合。
 
 ## プラグインをインストール
 
@@ -67,5 +67,5 @@ curl http://127.0.0.1:3100/personas | jq '.[].id'
 
 - [Persona MOD](/mods/persona) — persona の作成と管理
 - [VoiceVox MOD](/mods/voicevox) — 返答の音声読み上げ
-- [STT MOD](/mods/stt) — 音声でエージェントに話しかける
+- [Speech to Text](/getting-started/quick-start#speech-to-text) — 音声でエージェントに話しかける
 - [AI Integration 概要](/ai-integration) — MCP ベースの連携との比較

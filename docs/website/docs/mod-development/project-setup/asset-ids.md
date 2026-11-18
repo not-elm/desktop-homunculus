@@ -19,12 +19,12 @@ The engine treats asset IDs as opaque strings — it does not validate or parse 
 
 | Part | Source | Example |
 |---|---|---|
-| `mod-name` | Derived from the `name` field in `package.json` | `@hmcs/stt` becomes `stt` |
+| `mod-name` | Derived from the `name` field in `package.json` | `@hmcs/voicevox` becomes `voicevox` |
 | `asset-name` | The key in the `homunculus.assets` object | `vrm`, `open`, `ui` |
 
 The **mod name** is extracted from the package name by stripping the scope prefix. For example:
 
-- `@hmcs/stt` -- mod name is `stt`
+- `@hmcs/voicevox` -- mod name is `voicevox`
 - `@hmcs/persona` -- mod name is `persona`
 - `my-character` -- mod name is `my-character` (no scope to strip)
 

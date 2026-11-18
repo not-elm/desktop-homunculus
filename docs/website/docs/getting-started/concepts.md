@@ -29,7 +29,7 @@ Official MODs use the `@hmcs/` prefix:
 |---|---|
 | `@hmcs/persona` | Persona management and default character behavior |
 
-Additional MODs — such as text-to-speech (`@hmcs/voicevox`) and speech recognition (`@hmcs/stt`) — can be installed at any time using the `hmcs` CLI. For AI-powered interaction, see [AI Integration](../ai-integration) (requires running [OpenClaw](https://docs.openclaw.ai) externally).
+Additional MODs — such as text-to-speech (`@hmcs/voicevox`) — can be installed at any time using the `hmcs` CLI. Speech recognition is built into the engine ([Speech to Text](./quick-start#speech-to-text)). For AI-powered interaction, see [AI Integration](../ai-integration) (requires running [OpenClaw](https://docs.openclaw.ai) externally).
 
 ## Asset
 
