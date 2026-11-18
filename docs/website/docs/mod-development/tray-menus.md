@@ -49,7 +49,7 @@ The `command` value must exactly match a key in the `bin` field of your `package
 
 ### Menu Order
 
-MOD items are grouped by `position` (`top`, then `middle`, then `bottom`) and sorted by MOD name within each group, with a separator between groups. The engine's built-in **Settings** and **Exit** items always come last, after a separator.
+MOD items are grouped by `position` (`top`, then `middle`, then `bottom`) and sorted by MOD name within each group, with a separator between groups. The engine's built-in **Speech to Text**, **Settings** and **Exit** items always come last, in that order, after a separator.
 
 ## Submenus
 

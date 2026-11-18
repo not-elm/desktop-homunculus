@@ -3622,7 +3622,6 @@ dependencies = [
  "homunculus_power_saver",
  "homunculus_prefs",
  "homunculus_screen",
- "homunculus_settings",
  "homunculus_shadow_panel",
  "homunculus_sitting",
  "homunculus_speech",
@@ -5203,18 +5202,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "homunculus_settings"
-version = "0.1.0-alpha.7-dev"
-dependencies = [
- "bevy",
- "bevy_cef",
- "homunculus_api",
- "homunculus_audio",
- "homunculus_core",
- "homunculus_tray",
-]
-
-[[package]]
 name = "homunculus_shadow_panel"
 version = "0.1.0-alpha.7-dev"
 dependencies = [
@@ -5248,7 +5235,10 @@ name = "homunculus_tray"
 version = "0.1.0-alpha.7-dev"
 dependencies = [
  "bevy",
+ "bevy_cef",
  "bevy_tray_icon",
+ "homunculus_api",
+ "homunculus_audio",
  "homunculus_core",
  "homunculus_utils",
  "tracing",

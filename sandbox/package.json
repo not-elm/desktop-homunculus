@@ -5,7 +5,6 @@
   "dependencies": {
     "@hmcs/openclaw": "workspace:*",
     "@hmcs/persona": "workspace:*",
-    "@hmcs/stt": "workspace:*",
     "@hmcs/voicevox": "workspace:*"
   },
   "devDependencies": {

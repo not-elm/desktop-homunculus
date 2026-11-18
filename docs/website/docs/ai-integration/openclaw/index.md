@@ -16,7 +16,7 @@ This page covers the end-to-end setup. For a broader comparison with external MC
 - **Node.js ≥ 22** (required by OpenClaw).
 - **[`@hmcs/persona` MOD](/mods/persona)** with at least one persona created. The plugin syncs Homunculus personas to OpenClaw workspaces; it has nothing to do until a persona exists.
 - *(Optional)* **[`@hmcs/voicevox` MOD](/mods/voicevox)** to hear replies read aloud.
-- *(Optional)* **[`@hmcs/stt` MOD](/mods/stt)** to talk to agents by voice.
+- *(Optional)* A Whisper model downloaded in the built-in **[Speech to Text](/getting-started/quick-start#speech-to-text)** panel, to talk to agents by voice.
 
 ## Install the plugin
 
@@ -67,5 +67,5 @@ Refer to the [OpenClaw plugin configuration docs](https://docs.openclaw.ai) for 
 
 - [Persona MOD](/mods/persona) — create and manage personas.
 - [VoiceVox MOD](/mods/voicevox) — add text-to-speech to replies.
-- [STT MOD](/mods/stt) — talk to agents by voice.
+- [Speech to Text](/getting-started/quick-start#speech-to-text) — talk to agents by voice.
 - [AI Integration overview](/ai-integration) — compare OpenClaw with MCP-based integrations.

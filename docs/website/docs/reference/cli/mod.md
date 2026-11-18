@@ -11,8 +11,8 @@ List, install, and uninstall MOD packages.
 
 ```shell
 hmcs mod list
-hmcs mod install @hmcs/persona @hmcs/stt
-hmcs mod uninstall @hmcs/stt
+hmcs mod install @hmcs/persona @hmcs/voicevox
+hmcs mod uninstall @hmcs/voicevox
 ```
 
 ## list
@@ -34,7 +34,7 @@ Success:
 ```text
  NAME            VERSION  DESCRIPTION
  @hmcs/persona   1.0.0    Persona management
- @hmcs/stt       1.0.0    Speech-to-text panel
+ @hmcs/voicevox  1.0.0    VoiceVox text-to-speech
 ```
 
 No installed MODs:
@@ -79,7 +79,7 @@ hmcs mod install <package>...
 Success:
 
 ```shell
-hmcs mod install @hmcs/persona @hmcs/stt
+hmcs mod install @hmcs/persona @hmcs/voicevox
 ```
 
 Failure example (invalid package name):
@@ -130,7 +130,7 @@ hmcs mod uninstall <package>...
 Success:
 
 ```shell
-hmcs mod uninstall @hmcs/stt @hmcs/persona
+hmcs mod uninstall @hmcs/voicevox @hmcs/persona
 ```
 
 Failure example (invalid package name):
@@ -242,7 +242,7 @@ hmcs mod update
 Update specific MODs:
 
 ```shell
-hmcs mod update @hmcs/persona @hmcs/stt
+hmcs mod update @hmcs/persona @hmcs/voicevox
 ```
 
 Update all MODs to their latest versions:

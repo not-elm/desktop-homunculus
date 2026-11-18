@@ -62,9 +62,24 @@ Right-click the character and select **"Persona"** to open the per-persona setti
 
 To manage all your personas (create new ones, delete old ones), open the **system tray** → **"Persona"** to access the Persona Management dashboard.
 
-### Speech to Text
+### Speech to Text {#speech-to-text}
 
-If you have the `@hmcs/stt` MOD installed, open the **system tray** → **"Speech to Text"** to access the STT control panel. Download a Whisper model, configure your preferred language, and use voice input with the AI Agent.
+The Speech to Text panel is built into the engine. Open the **system tray** → **"Speech to Text"** to show it; picking Speech to Text again while the panel is open does nothing.
+
+Speech recognition runs locally with Whisper models. The panel lists the models and downloads them, showing the progress; a download can be cancelled with **✕**.
+
+| Model | Size |
+|---|---|
+| Tiny | 32.2 MB |
+| Base | 59.7 MB |
+| Small | 190 MB |
+| Medium | 539 MB |
+| Large v3 Turbo | 574 MB |
+| Large v3 | 1.08 GB |
+
+Models are stored in `~/.homunculus/models/`. The OS may ask for microphone access the first time the microphone is used.
+
+Recognition and Push-to-Talk are used from the SDK's `stt` namespace or the HTTP API: [recognize](/reference/api/recognize), [start Push-to-Talk](/reference/api/ptt-start), [stop Push-to-Talk](/reference/api/ptt-stop), [list models](/reference/api/list-models), and [download a model](/reference/api/download-model-stream).
 
 ### Exiting the App
 
@@ -91,7 +106,6 @@ You can extend Desktop Homunculus with optional MODs. Install any of them at any
 | MOD | Description |
 |---|---|
 | `@hmcs/voicevox` | Text-to-speech integration using the [VoiceVox](https://voicevox.hiroshiba.jp/) engine |
-| `@hmcs/stt` | Speech-to-text with Whisper-based voice recognition ([details](../mods/stt)) |
 
 For AI-powered interaction, install [OpenClaw](https://docs.openclaw.ai) externally and set up the `@hmcs/openclaw-plugin` bridge. See [AI Integration](../ai-integration) for details.
 
@@ -100,7 +114,7 @@ The `@hmcs/voicevox` MOD requires the VoiceVox engine to be installed and runnin
 :::
 
 ```shell
-hmcs mod install @hmcs/voicevox @hmcs/stt
+hmcs mod install @hmcs/voicevox
 ```
 
 ## What's Next?

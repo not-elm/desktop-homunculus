@@ -88,7 +88,7 @@ Beyond connecting external AI clients via MCP, you can give personas a built-in 
 | **MCP** (external AI client) | Flexible integration with any AI tool — Claude Desktop, Claude Code, Codex, or custom clients |
 | **Agent MOD** (built-in) | Turnkey AI agent experience — voice input, workspace awareness, session persistence |
 
-Combined with [`@hmcs/stt`](/mods/stt) for voice input and [`@hmcs/voicevox`](/mods/voicevox) for speech output, the Agent MOD enables a complete voice → text → AI reasoning → action → speech flow.
+Combined with the built-in [Speech to Text](/getting-started/quick-start#speech-to-text) for voice input and [`@hmcs/voicevox`](/mods/voicevox) for speech output, the Agent MOD enables a complete voice → text → AI reasoning → action → speech flow.
 
 ## Known Limitations
 

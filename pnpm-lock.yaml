@@ -213,6 +213,46 @@ importers:
         specifier: 'catalog:'
         version: 2.3.4(rollup@4.68.3)(vite@7.3.8(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.108.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
+  engine/ui/stt:
+    dependencies:
+      '@hmcs/sdk':
+        specifier: workspace:*
+        version: link:../../../packages/sdk
+      '@hmcs/ui':
+        specifier: workspace:*
+        version: link:../../../packages/ui
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+    devDependencies:
+      '@tailwindcss/vite':
+        specifier: 'catalog:'
+        version: 4.3.5(vite@7.3.8(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.108.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.3.0(@types/react@19.3.0)
+      '@vitejs/plugin-react-swc':
+        specifier: 'catalog:'
+        version: 4.3.3(vite@7.3.8(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.108.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.3.5
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 7.3.8(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.108.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
+      vite-plugin-singlefile:
+        specifier: 'catalog:'
+        version: 2.3.4(rollup@4.68.3)(vite@7.3.8(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.108.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+
   mods/openclaw:
     dependencies:
       '@hmcs/sdk':
@@ -285,49 +325,6 @@ importers:
       zod:
         specifier: 'catalog:'
         version: 3.25.76
-    devDependencies:
-      '@tailwindcss/vite':
-        specifier: 'catalog:'
-        version: 4.3.5(vite@7.3.8(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.108.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
-      '@types/node':
-        specifier: ^25.3.3
-        version: 25.9.9
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: 'catalog:'
-        version: 19.3.0(@types/react@19.3.0)
-      '@vitejs/plugin-react-swc':
-        specifier: 'catalog:'
-        version: 4.3.3(vite@7.3.8(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.108.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
-      tailwindcss:
-        specifier: 'catalog:'
-        version: 4.3.5
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-      vite:
-        specifier: 'catalog:'
-        version: 7.3.8(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.108.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
-      vite-plugin-singlefile:
-        specifier: 'catalog:'
-        version: 2.3.4(rollup@4.68.3)(vite@7.3.8(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.108.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
-
-  mods/stt:
-    dependencies:
-      '@hmcs/sdk':
-        specifier: workspace:*
-        version: link:../../packages/sdk
-      '@hmcs/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      react:
-        specifier: 'catalog:'
-        version: 19.3.1
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.3.1(react@19.3.1)
     devDependencies:
       '@tailwindcss/vite':
         specifier: 'catalog:'
@@ -690,9 +687,6 @@ importers:
       '@hmcs/persona':
         specifier: workspace:*
         version: link:../mods/persona
-      '@hmcs/stt':
-        specifier: workspace:*
-        version: link:../mods/stt
       '@hmcs/voicevox':
         specifier: workspace:*
         version: link:../mods/voicevox

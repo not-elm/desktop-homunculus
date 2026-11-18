@@ -1,9 +1,12 @@
 //! # Homunculus Tray
 //!
 //! System tray integration for Desktop Homunculus: builds the tray menu from
-//! MOD declarations, the built-in items engine features register, and the
-//! built-in Exit item, and handles clicks on it.
+//! MOD declarations, the built-in Speech to Text and Settings panels, other
+//! built-in items, and the built-in Exit item, and handles clicks on it.
 
+mod panel;
+
+use crate::panel::BuiltinPanelsPlugin;
 use bevy::ecs::system::SystemId;
 use bevy::prelude::*;
 use bevy::tasks::IoTaskPool;
@@ -90,16 +93,18 @@ impl TrayMenuRegistry {
 
 /// Plugin that shows the Desktop Homunculus tray icon and its menu.
 ///
-/// The menu lists the tray items declared by MODs, then the built-in items
-/// registered with [`BuiltinTrayAppExt::add_builtin_tray_item`], and always
-/// ends with the built-in Exit item. Clicking a MOD item runs its command,
-/// clicking a built-in item runs its system, and clicking Exit requests an
-/// app exit.
+/// The menu lists the tray items declared by MODs, then the built-in items,
+/// and always ends with the built-in Exit item. The built-in items are always
+/// Speech to Text and Settings, in that order, plus any registered with
+/// [`BuiltinTrayAppExt::add_builtin_tray_item`]. Clicking a MOD item runs its
+/// command, clicking a built-in item runs its system, and clicking Exit
+/// requests an app exit. Speech to Text and Settings each open their panel
+/// unless that panel is already open.
 pub struct HomunculusTrayPlugin;
 
 impl Plugin for HomunculusTrayPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(TrayIconPlugin)
+        app.add_plugins((TrayIconPlugin, BuiltinPanelsPlugin))
             .init_resource::<BuiltinTrayItems>()
             .add_systems(Startup, setup_tray)
             .add_systems(Update, handle_tray_clicks)
@@ -801,18 +806,19 @@ mod tests {
     /// Asserts that a built-in item registered before the tray plugin is added
     /// is kept by the tray's own setup.
     ///
-    /// Case: the settings plugin is added to the app before the tray plugin.
+    /// Case: an engine feature registers its tray item before the tray plugin
+    /// is added.
     #[test]
     fn items_registered_before_tray_setup_are_kept() {
         let mut app = App::new();
-        app.add_builtin_tray_item("settings", "Settings", 0, || {});
+        app.add_builtin_tray_item("test-item", "Test item", 0, || {});
 
         app.add_plugins(HomunculusTrayPlugin);
 
         assert!(
             app.world()
                 .resource::<BuiltinTrayItems>()
-                .get("settings")
+                .get("test-item")
                 .is_some()
         );
     }
