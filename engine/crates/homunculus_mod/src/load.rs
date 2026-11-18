@@ -11,7 +11,7 @@ use std::path::Path;
 ///
 /// A MOD with one of these names is not loaded: its service does not start,
 /// and its assets, menu items, and tray item are not registered.
-const RETIRED_MOD_NAMES: [&str; 2] = ["@hmcs/menu", "@hmcs/settings"];
+const RETIRED_MOD_NAMES: [&str; 3] = ["@hmcs/menu", "@hmcs/settings", "@hmcs/stt"];
 
 pub(crate) struct ModLoadPlugin;
 
@@ -152,13 +152,14 @@ mod tests {
     /// Asserts that MODs whose features are now built into the engine are
     /// excluded from loading while other MODs are kept.
     ///
-    /// Case: a user upgrades the app while the retired menu and settings MODs
-    /// are still installed in their mods directory.
+    /// Case: a user upgrades the app while the retired menu, settings and STT
+    /// MODs are still installed in their mods directory.
     #[test]
     fn retired_mods_are_not_loaded() {
         let mods = vec![
             mod_info("@hmcs/menu"),
             mod_info("@hmcs/settings"),
+            mod_info("@hmcs/stt"),
             mod_info("@hmcs/persona"),
         ];
 

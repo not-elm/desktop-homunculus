@@ -2,7 +2,7 @@
 
 use std::path::{Path, PathBuf};
 
-const BUILTIN_UIS: [&str; 1] = ["settings"];
+const BUILTIN_UIS: [&str; 2] = ["settings", "stt"];
 
 fn main() {
     let ui_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../ui");

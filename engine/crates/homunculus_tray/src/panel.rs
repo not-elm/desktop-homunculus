@@ -2,6 +2,7 @@
 //! of each kind open at a time.
 
 mod settings;
+mod stt;
 
 use crate::BuiltinTrayAppExt;
 use bevy::prelude::*;
@@ -11,6 +12,7 @@ use homunculus_core::prelude::{
     TransformArgs, WebviewOpenOptions, WebviewResizableOptions, WebviewSource,
 };
 use settings::SettingsPanel;
+use stt::SttPanel;
 
 const PANEL_SIZE: Vec2 = Vec2::new(0.8, 1.0);
 const PANEL_TRANSLATION: Vec3 = Vec3::new(0.0, 0.0, 10.0);
@@ -39,6 +41,7 @@ pub(crate) struct BuiltinPanelsPlugin;
 
 impl Plugin for BuiltinPanelsPlugin {
     fn build(&self, app: &mut App) {
+        add_panel::<SttPanel>(app);
         add_panel::<SettingsPanel>(app);
     }
 }
