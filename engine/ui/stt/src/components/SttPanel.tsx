@@ -104,7 +104,7 @@ function ModelCard({
             <Button
               type="button"
               variant="ghost"
-              className="h-auto cursor-pointer border-none bg-transparent px-[var(--hud-space-xs)] py-0.5 font-normal text-[length:inherit] text-[oklch(0.55_0.02_250/0.5)] hover:bg-transparent hover:text-[oklch(0.7_0.18_25)]"
+              className="h-auto cursor-pointer border-none bg-transparent px-[var(--hud-space-xs)] py-0.5 font-normal text-[length:inherit] text-inherit hover:bg-transparent hover:text-[oklch(0.7_0.18_25)]"
               onClick={onCancel}
             >
               ✕
