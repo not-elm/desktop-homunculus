@@ -1,6 +1,6 @@
 # Tailwind CSS Style
 
-Mod UIs (`mods/*/ui/`) and `@hmcs/ui` use **Tailwind CSS v4**. All styling MUST follow Tailwind's utility-first methodology. Do not invent semantic class names, do not write parallel custom CSS, do not reach for `@apply` as a default.
+Mod UIs (`mods/*/ui/`), the engine's built-in UIs (`engine/ui/*/`), and `@hmcs/ui` use **Tailwind CSS v4**. All styling MUST follow Tailwind's utility-first methodology. Do not invent semantic class names, do not write parallel custom CSS, do not reach for `@apply` as a default.
 
 ## The Core Rule: Utility-First, Always
 

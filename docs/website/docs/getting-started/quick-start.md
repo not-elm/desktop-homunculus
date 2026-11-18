@@ -41,9 +41,9 @@ The character responds to different states, each with its own behavior:
 | **`drag`** | Click and drag the character |
 | **`sitting`** | Drop the character on a window edge |
 
-### Right-Click Menu
+### Right-Click Menu {#right-click-menu}
 
-Right-click the character to open the context menu overlay. From here you can access settings and other actions provided by installed MODs.
+Right-click the character to open the context menu overlay, which is built into the engine. From here you can access settings and other actions provided by installed MODs.
 
 ### Settings
 
@@ -77,7 +77,6 @@ Desktop Homunculus ships with a set of official MODs under the `@hmcs` scope:
 |---|---|
 | `@hmcs/persona` | Persona management UI and default behavior service — configure identity, personality, and appearance |
 | `@hmcs/settings` | Application settings panel accessible from the system tray |
-| `@hmcs/menu` | Right-click context menu overlay |
 
 ## Additional MODs
 

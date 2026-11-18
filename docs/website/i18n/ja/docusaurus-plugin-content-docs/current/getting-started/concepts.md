@@ -21,14 +21,13 @@ Persona はシステムトレイからアクセスできる **Persona Management
 
 ## MOD
 
-**MOD** は、Desktop Homunculus に機能を追加するパッケージです。Persona 管理、アニメーション、右クリックメニューなどのコア機能は、インストーラーに同梱される公式 MOD によって提供されます。
+**MOD** は、Desktop Homunculus に機能を追加するパッケージです。右クリックメニューと既定のアセット（キャラクターモデル・アニメーション・効果音）はエンジンに組み込まれています。それ以外のコア機能（Persona 管理と設定パネル）は、インストーラーに同梱される公式 MOD によって提供されます。
 
 公式 MOD は `@hmcs/` プレフィックスを使用します：
 
 | MOD | 機能 |
 |---|---|
 | `@hmcs/persona` | Persona 管理とデフォルトのキャラクター動作 |
-| `@hmcs/menu` | 右クリックコンテキストメニュー |
 | `@hmcs/settings` | アプリケーション設定パネル |
 
 テキスト読み上げ（`@hmcs/voicevox`）や音声認識（`@hmcs/stt`）などの追加 MOD は、`hmcs` CLI でいつでもインストールできます。AI 連携については、[AI 連携](../ai-integration)を参照してください（外部で [OpenClaw](https://docs.openclaw.ai) を起動する必要があります）。

@@ -15,7 +15,7 @@ function local(id: string): WebviewSourceLocal
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | `string` | Asset ID (e.g., `"menu:ui"`, `"settings:ui"`) |
+| `id` | `string` | Asset ID (e.g., `"settings:ui"`) |
 
 ## Returns
 

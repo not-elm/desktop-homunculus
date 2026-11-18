@@ -4,6 +4,7 @@ targets = [
     "engine/Cargo.toml",
     "packages/*/package.json",
     "mods/*/package.json",
+    "engine/ui/*/package.json",
 ]
 
 excludes = ["sandbox/package.json", "docs/website/package.json"]

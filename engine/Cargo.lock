@@ -3616,6 +3616,7 @@ dependencies = [
  "homunculus_hit_test",
  "homunculus_http_server",
  "homunculus_mcp",
+ "homunculus_menu",
  "homunculus_migration",
  "homunculus_mod",
  "homunculus_power_saver",
@@ -5093,6 +5094,18 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
+]
+
+[[package]]
+name = "homunculus_menu"
+version = "0.1.0-alpha.7-dev"
+dependencies = [
+ "bevy",
+ "bevy_cef",
+ "bevy_vrm1",
+ "homunculus_api",
+ "homunculus_audio",
+ "homunculus_core",
 ]
 
 [[package]]

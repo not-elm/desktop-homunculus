@@ -37,10 +37,11 @@ is_allowlisted_css() {
     packages/ui/src/index.css) return 0 ;;
     packages/ui/src/animation.css) return 0 ;;
     packages/ui/.storybook/storybook.css) return 0 ;;
-    mods/menu/ui/.storybook/storybook.css) return 0 ;;
+    engine/ui/menu/.storybook/storybook.css) return 0 ;;
     mods/persona/management/src/index.css) return 0 ;;
   esac
   if [[ "$path" =~ ^mods/[^/]+/ui/src/index\.css$ ]]; then return 0; fi
+  if [[ "$path" =~ ^engine/ui/[^/]+/src/index\.css$ ]]; then return 0; fi
   if [[ "$path" =~ ^mods/persona/shared/[^/]+\.css$ ]]; then return 0; fi
   return 1
 }
@@ -73,12 +74,12 @@ css_candidates=()
 tsx_candidates=()
 if [ "$MODE" = "full" ]; then
   read_lines css_candidates < <(
-    find packages mods \
+    find packages mods engine/ui \
       \( -name node_modules -o -name dist -o -name build -o -name .next -o -name .turbo \) -prune -o \
       -type f -name "*.css" -print 2>/dev/null | sort
   )
   read_lines tsx_candidates < <(
-    find packages mods \
+    find packages mods engine/ui \
       \( -name node_modules -o -name dist -o -name build -o -name .next -o -name .turbo \) -prune -o \
       -type f \( -name "*.tsx" -o -name "*.ts" \) -print 2>/dev/null | sort
   )

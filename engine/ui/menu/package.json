@@ -1,32 +1,23 @@
 {
-  "name": "@hmcs/menu",
+  "name": "@hmcs/menu-ui",
   "version": "0.1.0-alpha.7-dev",
-  "description": "Right-click context menu mod that provides a WebView-based HUD overlay for quick in-app actions",
+  "private": true,
+  "description": "Right-click menu HUD UI built into the Desktop Homunculus engine",
   "license": "MIT",
   "type": "module",
   "author": "notelm",
   "scripts": {
-    "build": "pnpm exec vite build ui",
-    "dev": "pnpm exec vite dev ui",
+    "build": "vite build",
+    "dev": "vite dev",
+    "check-types": "tsc --noEmit",
     "storybook": "storybook dev -p 6007",
     "build-storybook": "storybook build"
-  },
-  "homunculus": {
-    "service": "service.ts",
-    "assets": {
-      "menu:ui": {
-        "path": "ui/dist/index.html",
-        "type": "html",
-        "description": "Menu HUD UI"
-      }
-    }
   },
   "dependencies": {
     "@hmcs/sdk": "workspace:*",
     "@hmcs/ui": "workspace:*",
     "react": "catalog:",
-    "react-dom": "catalog:",
-    "eventsource": "catalog:"
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@storybook/react-vite": "^10.6.7",

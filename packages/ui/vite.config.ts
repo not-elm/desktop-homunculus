@@ -34,6 +34,7 @@ export default defineConfig({
   ],
   build: {
     outDir: 'dist',
+    license: { fileName: 'licenses.json' },
     // default の設定と同じ
     lib: {
       entry: 'src/index.ts',

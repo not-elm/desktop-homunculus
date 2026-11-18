@@ -5,6 +5,10 @@ on:
     paths:
       - "packages/**"
       - "mods/**"
+      - "engine/ui/**"
+      - "engine/scripts/gen_js_credits.py"
+      - "engine/scripts/test_gen_js_credits.py"
+      - "engine/credits/licenses/JS_THIRD_PARTY.md"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "biome.json"
@@ -33,6 +37,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build --filter '!docs'
+      - name: Test the JS licence credits generator
+        run: python3 -m unittest discover -s engine/scripts -p 'test_*.py'
+      - name: Check the JS licence credits are up to date
+        run: python3 engine/scripts/gen_js_credits.py && git diff --exit-code engine/credits/licenses/JS_THIRD_PARTY.md
       - run: pnpm check-types
       - run: pnpm test
       - run: pnpm lint:ci

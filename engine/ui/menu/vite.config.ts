@@ -13,5 +13,6 @@ export default defineConfig({
     emptyOutDir: true,
     assetsInlineLimit: 100000,
     cssCodeSplit: false,
+    license: { fileName: 'licenses.json' },
   },
 });

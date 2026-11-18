@@ -127,17 +127,14 @@ importers:
         specifier: ~5.6.3
         version: 5.6.3
 
-  mods/menu:
+  engine/ui/menu:
     dependencies:
       '@hmcs/sdk':
         specifier: workspace:*
-        version: link:../../packages/sdk
+        version: link:../../../packages/sdk
       '@hmcs/ui':
         specifier: workspace:*
-        version: link:../../packages/ui
-      eventsource:
-        specifier: 'catalog:'
-        version: 4.1.1
+        version: link:../../../packages/ui
       react:
         specifier: 'catalog:'
         version: 19.3.1
@@ -690,9 +687,6 @@ importers:
 
   sandbox:
     dependencies:
-      '@hmcs/menu':
-        specifier: workspace:*
-        version: link:../mods/menu
       '@hmcs/openclaw':
         specifier: workspace:*
         version: link:../mods/openclaw

@@ -66,6 +66,7 @@ test:
 gen-credits:
 	mkdir -p credits/licenses
 	cargo about generate --workspace --locked --config about.toml --output-file $(RUST_LICENSES_OUTPUT) about.hbs
+	$(PYTHON) scripts/gen_js_credits.py
 
 stage-runtime: ## Download and stage Node.js, pnpm, tsx for bundling
 	$(PYTHON) scripts/stage_runtime.py
