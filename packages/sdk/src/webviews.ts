@@ -96,7 +96,7 @@ export function isWebviewSourceHtml(source: WebviewSource): source is WebviewSou
  * ```typescript
  * import { Webview, webviewSource } from "@hmcs/sdk";
  *
- * await Webview.open({ source: webviewSource.local("settings:ui") });
+ * await Webview.open({ source: webviewSource.local("my-mod:ui") });
  * await Webview.open({ source: webviewSource.url("https://example.com") });
  * await wv.navigate(webviewSource.html("<h1>Hello</h1>"));
  * ```
@@ -105,12 +105,12 @@ export namespace webviewSource {
   /**
    * Create a local asset source.
    *
-   * @param id - Asset ID (e.g., `"settings:ui"`)
+   * @param id - Asset ID (e.g., `"my-mod:ui"`)
    *
    * @example
    * ```typescript
-   * const source = webviewSource.local("settings:ui");
-   * // { type: "local", id: "settings:ui" }
+   * const source = webviewSource.local("my-mod:ui");
+   * // { type: "local", id: "my-mod:ui" }
    * ```
    */
   export function local(id: string): WebviewSourceLocal {

@@ -130,15 +130,15 @@ Declares an item for the system tray menu. Unlike `menus` (which appear on right
 
 Tray items can also contain nested `items` for submenus. See [Tray Menus](../tray-menus.md) for the full guide.
 
-**Example** -- the `@hmcs/settings` MOD adds a "Settings" entry to the tray:
+**Example** -- a MOD adds a "Dashboard" entry to the tray:
 
 ```json
 {
   "homunculus": {
     "tray": {
-      "id": "open-settings",
-      "text": "Settings",
-      "command": "settings-open-ui"
+      "id": "open-dashboard",
+      "text": "Dashboard",
+      "command": "my-mod-open-ui"
     }
   }
 }

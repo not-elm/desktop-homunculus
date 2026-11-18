@@ -12,14 +12,19 @@ MODs extend Desktop Homunculus with characters, animations, sound effects, UI pa
 | MOD | Description | Install |
 |---|---|---|
 | [@hmcs/persona](./persona) | Persona management UI and default behavior service (identity, personality, appearance) | Recommended |
-| [@hmcs/settings](./settings) | Application settings panel (frame rate, shadow opacity) via system tray | Recommended |
 | [@hmcs/voicevox](./voicevox) | Text-to-speech integration using the VoiceVox engine | Optional |
 | [@hmcs/stt](./stt) | Speech-to-text control panel with Whisper model management | Optional |
 
 The right-click menu is built into the engine. MODs add their own items to it through the `homunculus.menus` field.
 
+The [settings panel](../getting-started/quick-start#settings) is built into the engine too, and opens from **Settings** in the system tray.
+
 :::info Migrating from `@hmcs/menu`
 The right-click menu used to come from the `@hmcs/menu` MOD. The engine now ignores that MOD, so it is no longer needed and can be removed with `hmcs mod uninstall @hmcs/menu`.
+:::
+
+:::info Migrating from `@hmcs/settings`
+The settings panel used to come from the `@hmcs/settings` MOD. The engine now ignores that MOD, so it is no longer needed and can be removed with `hmcs mod uninstall @hmcs/settings`.
 :::
 
 ## Managing MODs
@@ -35,7 +40,7 @@ Example output:
 ```text
  NAME            VERSION  DESCRIPTION
  @hmcs/persona   1.0.0    Persona management
- @hmcs/settings  1.0.0    Settings panel
+ @hmcs/stt       1.0.0    Speech-to-text panel
 ```
 
 ### Install a MOD

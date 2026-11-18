@@ -21,14 +21,13 @@ Personas are managed through the **Persona Management** dashboard, accessible fr
 
 ## MOD
 
-A **MOD** is a package that adds features to Desktop Homunculus. The right-click menu and the default assets (character model, animations, and sound effects) are built into the engine. Other core functionality — persona management and the settings panel — is provided by official MODs that ship with the installer.
+A **MOD** is a package that adds features to Desktop Homunculus. The right-click menu, the settings panel, and the default assets (character model, animations, and sound effects) are built into the engine. Persona management is provided by an official MOD that ships with the installer.
 
 Official MODs use the `@hmcs/` prefix:
 
 | MOD | What it does |
 |---|---|
 | `@hmcs/persona` | Persona management and default character behavior |
-| `@hmcs/settings` | Application settings panel |
 
 Additional MODs — such as text-to-speech (`@hmcs/voicevox`) and speech recognition (`@hmcs/stt`) — can be installed at any time using the `hmcs` CLI. For AI-powered interaction, see [AI Integration](../ai-integration) (requires running [OpenClaw](https://docs.openclaw.ai) externally).
 
