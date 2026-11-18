@@ -1,0 +1,21 @@
+[package]
+name = "homunculus_settings"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+bevy = { workspace = true }
+homunculus_api = { workspace = true }
+homunculus_audio = { workspace = true }
+homunculus_core = { workspace = true }
+homunculus_tray = { workspace = true }
+
+[dev-dependencies]
+bevy_cef = { workspace = true }
+
+[lints]
+workspace = true
